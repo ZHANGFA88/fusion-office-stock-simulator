@@ -1,6 +1,6 @@
 # Fusion Office（融合办公室）
 
-以 **grokbot-jev-dashboard 的虚拟交易办公室**为基座的个人情报与交易台：走进办公室就能看懂一支自主运行的智能体队伍在干什么、合不合规矩、账对不对。在此之上加了 A股/港股/美股**模拟交易台**（纸面下单、真实下单接口留口）与四个分室：行情、定投赛跑、机械蜘蛛、财经观测台。界面中英双语（默认中文），数据自带的葡语日志经模板翻译层转成当前语言显示。
+以 **grokbot-jev-dashboard 的虚拟交易办公室**为基座的个人情报与交易台：走进办公室就能看懂一支自主运行的智能体队伍在干什么、合不合规矩、账对不对。在此之上加了 A股/港股/美股**模拟交易台**（纸面下单、真实下单接口留口）与分室：行情、定投赛跑、机械蜘蛛、财经观测台和独立的 REA 站点分析。界面中英双语（默认中文），数据自带的葡语日志经模板翻译层转成当前语言显示。
 
 构建规格见 [docs/SPEC-V2.md](docs/SPEC-V2.md)，grokbot 原仓研读笔记见 [STUDY.md](STUDY.md)。钛金影院风版本是独立项目：ZHANGFA88/fusion-dashboard；本仓 `fusion-office-stock-simulator` 为单独的新仓，不覆盖其内容。
 
@@ -18,20 +18,25 @@
 | `/app/race.html` | 赛跑放映室：六大指数定投赛跑全片 + 终值条（组合 ¥2,746,664 / +353.24% / IRR 16.17%） |
 | `/app/spider.html` | 蜘蛛工坊：prompt-spider-ui 舞台（本机 :4317）状态与内嵌 + MCP 工具清单 |
 | `/app/finance-observatory.html` | 财经观测台：行情、公司公告/申报、财经新闻和观察摘要；当前为 DEMO |
+| `/app/rea.html` | REA 只读站点分析：AI Safety HOT 固定目标、话题共现图、主要接口与本机快照；[逆向分析记录](docs/REA-SITE-ANALYSIS.md) |
 | `/app/settings.html` | 数据源与安全设置占位：公开只读、无密码/密钥输入、无配置写 API；不构成身份验证边界 |
 
 ## 运行
 
 本项目提供的交易仅为 PAPER 模拟，不连接真实券商、不构成投资建议。财经观测台与兼容路由 `/api/finance/news` 只返回 DEMO fixture（合成演示数据，不代表实时市场）。默认启动不会启动后台行情/赛跑刷新；用户主动请求其他继承的行情、办公室或赛跑接口仍可能访问外部源，因此不要把整套服务描述为“无 live 请求”，也不要未经授权审查和网络隔离验收就作为公共实时数据预览发布。
 
+REA 站点扫描默认关闭；`--with-rea-inspector` 仅启用固定目标 `aisafetyhot.com/zh` 与 `/zh/hot` 的本机分析 API。REA 场景没有请求拦截/域名白名单，因此即使没有点击、搜索或提交，页面脚本仍可能自行发出资源请求或 Cloudflare RUM 遥测；本功能不保证 GET-only。结果写入静态网站根目录之外的 `$XDG_DATA_HOME/fusion-office/rea/`（默认 `~/.local/share/fusion-office/rea/`，报告权限 0600），不会进入 Git、行情或 PAPER 交易链路。
+
 ```bash
 bash scripts/run.sh                 # 主服务，默认端口 8772；无后台 provider 刷新
 bash scripts/run.sh --with-market-refresh # 显式启用行情/指数/板块/K线/赛跑后台刷新（可能外呼）
+bash scripts/run.sh --with-rea-inspector # 显式启用本机、固定目标的 REA 站点扫描
 node modules/spider/server.mjs      # 蜘蛛舞台，端口 4317（可选）
 ```
 
 - 行情与分析接口沿用 FinSight（`/api/finance/*`），办公室代理 `/api/office/state`。
 - `GET /api/finance/observatory` 只返回本地合成 DEMO fixture；设置页当前也为只读。配置管理与密码认证未实现，不能将设置页当作安全边界。
+- `GET /api/rea/status` 与 `/api/rea/report`、`POST /api/rea/scan` 仅接受 loopback 同源请求且不开放通配 CORS；扫描路由只接受空请求体，目标 URL 固定且必须显式启用。扫描只保留净化后的节点/边与首方请求路径，不保留原始 Evidence 或文章正文。
 - 蜘蛛 MCP（可选）：`cd modules/spider/mcp && npm ci` 后按其 README 接入。
 - 本集成目录不携带 SQLite 数据库文件；首次启动主服务会创建/初始化 `data/finance.db` 与 `data/paper.db`，并为模拟交易写入种子账户/自选数据。若不希望产生这些运行时写入，请勿启动主服务；本轮测试只用临时 loopback handler，未运行主进程。
 

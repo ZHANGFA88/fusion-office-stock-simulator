@@ -2712,13 +2712,14 @@ class Handler(SimpleHTTPRequestHandler):
     def log_message(self, *a):
         pass
 
-    def _json(self, code, obj):
+    def _json(self, code, obj, *, cors=True):
         body = json.dumps(obj, ensure_ascii=False).encode('utf-8')
         try:
             self.send_response(code)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.send_header('Content-Length', str(len(body)))
-            self.send_header('Access-Control-Allow-Origin', '*')
+            if cors:
+                self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(body)
         except (BrokenPipeError, ConnectionResetError):
@@ -2737,6 +2738,17 @@ class Handler(SimpleHTTPRequestHandler):
         path = urllib.parse.urlparse(self.path).path
         q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
         try:
+            if path.startswith('/api/rea/'):
+                from modules.rea_inspector.service import get_report, get_status, is_local_same_origin_request
+                if not is_local_same_origin_request(
+                        self.client_address[0], self.headers.get('Origin'),
+                        self.headers.get('Host'), self.headers.get('Sec-Fetch-Site')):
+                    return self._json(403, {'ok': False, 'error': 'REA API is local same-origin only'}, cors=False)
+                if path == '/api/rea/status':
+                    return self._json(200, get_status(), cors=False)
+                if path == '/api/rea/report':
+                    return self._json(200, get_report(), cors=False)
+                return self._json(404, {'ok': False, 'error': 'not found'}, cors=False)
             if path == '/api/finance/quotes':
                 return self._api_quotes(q)
             if path == '/api/finance/kline':
@@ -2807,6 +2819,25 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):
         path = urllib.parse.urlparse(self.path).path
+        if path == '/api/rea/scan':
+            from modules.rea_inspector.service import InspectorError, is_local_same_origin_request, run_scan
+            if not is_local_same_origin_request(
+                    self.client_address[0], self.headers.get('Origin'),
+                    self.headers.get('Host'), self.headers.get('Sec-Fetch-Site')):
+                return self._json(403, {'ok': False, 'error': 'REA API is local same-origin only'}, cors=False)
+            try:
+                length = int(self.headers.get('Content-Length', '0') or '0')
+            except (TypeError, ValueError):
+                length = -1
+            if length != 0 or self.headers.get('Transfer-Encoding'):
+                self.close_connection = True
+                return self._json(400, {'ok': False, 'error': 'REA scan accepts no request body'}, cors=False)
+            try:
+                return self._json(200, run_scan(), cors=False)
+            except InspectorError as e:
+                return self._json(503, {'ok': False, 'error': str(e)}, cors=False)
+            except Exception:
+                return self._json(500, {'ok': False, 'error': 'REA scan failed; prior local snapshot was preserved'}, cors=False)
         try:
             length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(length) if length else b''

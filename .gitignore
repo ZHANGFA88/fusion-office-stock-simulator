@@ -16,3 +16,9 @@ data/race-refresh.lock
 data/spider-live.json
 data/spider-seen.json
 data/spider-feeder.lock
+
+# Local-only, normalized REA site analysis snapshots
+data/rea/
+
+# Local-only QA screenshot; not part of the source release
+artifacts/finance-observatory-detail.png
