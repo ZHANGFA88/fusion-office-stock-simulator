@@ -1,0 +1,19 @@
+{
+  "kind": "news",
+  "headline": "模拟公告：公司发布季度经营数据",
+  "summary": null,
+  "classification": "company_announcement",
+  "route_reason": "DEMO fixture rule: financial announcement",
+  "symbol": "600000.SH",
+  "symbols": ["600000.SH"],
+  "provider": "demo-fixture",
+  "publisher": "模拟交易所",
+  "market": "CN",
+  "event_ts": "2026-10-16T06:55:00Z",
+  "received_at": "2026-10-16T06:56:00Z",
+  "freshness": "fresh",
+  "source_url": "https://example.invalid/demo/announcement/001",
+  "provider_url": null,
+  "domain": "finance",
+  "data_mode": "DEMO"
+}

@@ -1,0 +1,25 @@
+{
+  "provider": "sec-edgar-submissions-mock",
+  "publisher": "U.S. Securities and Exchange Commission",
+  "source_feed_id": "sec-cik-submissions-fixture",
+  "source_record_id": "0000123456-26-000001",
+  "accession_number": "0000123456-26-000001",
+  "form_type": "10-Q",
+  "market": "US",
+  "instrument_id": "XNAS:MOCK",
+  "exchange": "XNAS",
+  "symbol": "MOCK",
+  "currency": "USD",
+  "title": "Mock issuer files quarterly report",
+  "source_url": "https://www.sec.gov/Archives/edgar/data/123456/000012345626000001/mock.htm?utm_source=fixture#filing",
+  "published_at": "2026-10-16T12:30:00-04:00",
+  "source_time_raw": "2026-10-16T12:30:00-04:00",
+  "received_at": "2026-10-16T16:30:04Z",
+  "language": "en",
+  "content_type": "filing",
+  "is_update": false,
+  "raw": {
+    "description": "This fixture must not leak into normalized user-facing output.",
+    "filing_payload": {"secret_like": "fixture-only"}
+  }
+}

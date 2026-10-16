@@ -1,0 +1,257 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>交易台 · Trading Desk (PAPER)</title>
+<style>
+:root{--pk:#ff4fb4;--card:#111116;--ln:#24242c;--txt:#ececf1;--mut:#8a8a99;--g:#3dff8f;--r:#ff4d5e;--y:#ffd23f;--c:#3fd5ff;--o:#ff9a3c}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:#e04aa6;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:6px 6px;color:var(--txt);font-family:ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;padding:10px 12px}
+.hd{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.hd .lg{width:34px;height:34px;border-radius:8px;background:#111;display:grid;place-items:center}
+.hd h1{margin:0;font:900 26px/1 system-ui,sans-serif;color:#111;letter-spacing:-.5px}
+.hd .sub{font-size:11px;color:#2a0b1e;letter-spacing:1px}
+.paper{background:#111;color:var(--y);font-size:10px;font-weight:900;padding:3px 7px;border-radius:4px;letter-spacing:1px}
+#roomnav{display:flex;gap:4px;align-items:center;margin-left:10px}
+#roomnav a{color:#2a0b1e;text-decoration:none;font:800 12px ui-monospace,monospace;padding:4px 9px;border:2px solid #111;border-radius:5px;letter-spacing:1px}
+#roomnav a.on{background:#111;color:#ff4fb4}#roomnav a:hover{background:#111;color:#fff}
+#langBtn{background:#111;color:#ffd23f;border:2px solid #111;border-radius:5px;font:800 12px ui-monospace,monospace;padding:4px 9px;cursor:pointer}
+.hd .sp{flex:1}.hd .ttl{font:900 20px system-ui,sans-serif;color:#111}
+.pn{background:var(--card);border-radius:7px;padding:10px 12px;box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.ph{display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:1.5px;color:#d6d6e0;margin-bottom:6px}.ph b{color:var(--pk)}
+table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:4px 5px;text-align:left;white-space:nowrap}th{color:var(--mut);font-weight:500;border-bottom:1px solid var(--ln)}
+tr.clk{cursor:pointer}tr.clk:hover td{background:#1b1b22}tr.sel td{background:#2a1022}
+.pos{color:var(--g)}.neg{color:var(--r)}.mut{color:var(--mut)}
+.qstatus{font-size:10.5px;line-height:1.45;overflow-wrap:anywhere}.qstatus.ok{color:var(--g)}.qstatus.warn{color:var(--y)}.qstatus.bad{color:var(--r)}.state{font-size:11px;line-height:1.45;white-space:normal}
+.btn{background:#0c0c10;color:var(--pk);border:1px solid #4a2a3c;border-radius:4px;font:700 11px ui-monospace,monospace;padding:4px 10px;cursor:pointer}
+.btn:hover{background:#2a1022}.btn.big{font-size:14px;padding:9px 0;width:100%}
+.btn:disabled{opacity:.48;cursor:not-allowed;filter:grayscale(.35)}
+.btn.buy{background:var(--g);color:#000;border-color:var(--g)}.btn.sell{background:var(--r);color:#fff;border-color:var(--r)}
+input,select{background:#0c0c10;color:var(--txt);border:1px solid #4a2a3c;border-radius:4px;padding:7px 8px;font:700 13px ui-monospace,monospace;width:100%}
+label{font-size:10px;color:var(--mut);letter-spacing:1px;display:block;margin:8px 0 3px}
+.acc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+.acc .pn .big{font:900 22px ui-monospace,monospace}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.chip{background:#111;color:var(--txt);border:2px solid #111;border-radius:5px;padding:4px 9px;font:700 12px ui-monospace,monospace;cursor:pointer}
+.chip.on{background:var(--pk);color:#000}
+.main{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:8px}
+.col{display:grid;gap:8px;align-content:start}
+#toast{position:fixed;right:14px;bottom:14px;background:#111;border:2px solid var(--pk);color:#111;border-radius:7px;padding:10px 14px;font-size:13px;display:none;z-index:9;max-width:60vw;color:var(--txt)}
+#tape{overflow:hidden;padding:6px 0;margin-bottom:8px}
+.tape-in{display:inline-flex;gap:34px;white-space:nowrap;animation:tp 55s linear infinite;padding-left:12px}
+@keyframes tp{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tape-in span{font-size:12px}.tape-in b{color:#d6d6e0;font-weight:600}
+.pchips{display:inline-flex;gap:4px}
+.pchip{background:#0c0c10;color:var(--mut);border:1px solid #4a2a3c;border-radius:4px;font:700 11px ui-monospace,monospace;padding:3px 9px;cursor:pointer}
+.pchip.on{color:#000;background:var(--y);border-color:var(--y)}
+.ind{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.ind .ib{background:#0c0c10;border:1px solid var(--ln);border-radius:5px;padding:6px 8px}
+.ind .ib .k{font-size:9.5px;color:var(--mut);letter-spacing:1px}
+.ind .ib .v{font-size:13px;font-weight:700;margin-top:2px}
+.qchips{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.qchip{background:#0c0c10;color:var(--txt);border:1px solid #4a2a3c;border-radius:4px;font:700 11px ui-monospace,monospace;padding:4px 9px;cursor:pointer}
+.qchip:hover{background:#2a1022}
+.alloc{height:5px;background:#24242c;border-radius:3px;min-width:56px;overflow:hidden}
+.alloc i{display:block;height:100%;background:var(--pk)}
+.nws{font-size:12px;padding:5px 0;border-bottom:1px dashed var(--ln)}
+.nws a{color:var(--txt);text-decoration:none}.nws a:hover{color:var(--pk)}
+.nws .tm{color:var(--mut);font-size:10.5px;margin-right:7px}
+.ai-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:10px}
+.ai-feed{max-height:270px;overflow:auto;font-size:12px}
+.ai-ev{padding:5px 0;border-bottom:1px dashed var(--ln);display:flex;gap:8px;align-items:flex-start}
+.ai-ev .tm{color:var(--mut);font-size:10.5px;white-space:nowrap;padding-top:1px}
+.pchip2{border-radius:4px;padding:1px 6px;font-size:10px;font-weight:900;letter-spacing:.5px;white-space:nowrap;color:#000}
+.ai-crew{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.ai-mem{background:#0c0c10;border:1px solid var(--ln);border-radius:5px;padding:6px 8px}
+.ai-mem .nm{font-size:11.5px;font-weight:900;letter-spacing:.5px}
+.ai-mem .rl{font-size:10px;color:var(--mut)}
+.ai-mem .la{font-size:10.5px;color:#c9c9d4;margin-top:3px;line-height:1.45}
+.ai-ctl{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.seg{display:inline-flex;border:1px solid #4a2a3c;border-radius:5px;overflow:hidden}
+.seg button{background:#0c0c10;color:var(--mut);border:0;font:700 11.5px ui-monospace,monospace;padding:5px 11px;cursor:pointer}
+.seg button.on{background:var(--pk);color:#000}
+#swrap{padding:8px 10px;margin-bottom:8px;position:relative}
+#sres{position:absolute;left:10px;right:10px;top:calc(100% - 2px);background:#17171e;border:1px solid #4a2a3c;border-radius:6px;z-index:6;display:none;max-height:330px;overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.srow{padding:7px 10px;font-size:12.5px;cursor:pointer;display:flex;gap:10px;align-items:center;border-bottom:1px dashed var(--ln)}
+.srow:hover{background:#2a1022}.srow .mb{font-size:10px;border:1px solid #4a2a3c;border-radius:3px;padding:1px 5px;color:var(--y);margin-left:auto}
+.main,.col,.pn,#posw,#ordw{min-width:0;max-width:100%}#posw,#ordw{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}#posw table{min-width:900px}#ordw table{min-width:680px}#qmeta{overflow-wrap:anywhere}
+.ai-ev>span:last-child{min-width:0;overflow-wrap:anywhere}
+@media(max-width:900px){.hd{flex-wrap:wrap;gap:8px}.hd .sp{display:none}.hd .ttl{margin-left:auto}#roomnav{order:3;flex:1 0 100%;margin-left:0;overflow-x:auto;padding-bottom:2px}#roomnav a{white-space:nowrap}.main{grid-template-columns:minmax(0,1fr)}.ai-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){body{padding:8px}.hd .sub{font-size:10px}.hd .ttl{font-size:16px}.acc{grid-template-columns:minmax(0,1fr)}.acc .pn .big{font-size:20px}.ind{grid-template-columns:repeat(2,minmax(0,1fr))}.ai-crew{grid-template-columns:minmax(0,1fr)}.ai-ctl{align-items:stretch}.ai-ctl select{max-width:100%}.qchips{gap:4px}.ph{gap:6px;flex-wrap:wrap;letter-spacing:.5px}#toast{max-width:calc(100vw - 20px);right:10px}#sres{left:8px;right:8px}}
+@media(max-width:400px){#roomnav a{padding:4px 6px;font-size:10px}.hd h1{font-size:21px}.paper{font-size:9px}.pchip{padding:3px 6px}.tape-in{gap:18px}}
+</style></head><body>
+<div class="hd"><div class="lg"><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" fill="#ff4fb4"/><rect x="6" y="8" width="3" height="4" fill="#111"/><rect x="13" y="8" width="3" height="4" fill="#111"/></svg></div>
+<div><h1>GROKBOT + JEV</h1><div class="sub" id="hsub"></div></div><span class="paper" id="hpaper"></span>
+<nav id="roomnav"><a href="index.html" id="rn_office"></a><a href="trade.html" class="on" id="rn_trade"></a><a href="markets.html" id="rn_markets"></a><a href="race.html" id="rn_race"></a><a href="spider.html" id="rn_spider"></a><a href="finance-observatory.html" id="rn_observatory"></a><a href="settings.html" id="rn_settings"></a><button id="langBtn"></button></nav>
+<div class="sp"></div><div class="ttl" id="httl"></div></div>
+
+<div class="acc" id="acc"><div class="pn"><div class="mut">…</div></div><div class="pn"><div class="mut">…</div></div><div class="pn"><div class="mut">…</div></div></div>
+<div class="pn" id="tape"><div class="tape-in" id="tapeIn"><span class="mut">…</span></div></div>
+<div class="pn" id="swrap"><input id="sq" autocomplete="off" spellcheck="false"><div id="sres"></div></div>
+<div class="chips" id="chips"></div>
+<div class="main">
+ <div class="col">
+  <div class="pn"><div class="ph"><span id="qname">—</span><span class="pchips" id="pchips"><button class="pchip on" data-p="daily"></button><button class="pchip" data-p="weekly"></button><button class="pchip" data-p="monthly"></button></span><b id="qpx">—</b></div>
+   <canvas id="kc" width="860" height="320" style="width:100%;height:240px;cursor:crosshair"></canvas>
+   <div class="mut state" id="kstate" role="status" aria-live="polite">…</div>
+   <div class="mut" id="qmeta" style="font-size:11px;margin-top:4px">—</div>
+   <div class="qstatus" id="qstatus" role="status" aria-live="polite">—</div>
+   <div class="ind" id="ind"></div></div>
+  <div class="pn"><div class="ph"><span id="hpos"></span><b>PAPER</b></div><div id="posw"><table><thead><tr><th data-i="c_mkt"></th><th data-i="c_sym"></th><th data-i="c_qty"></th><th data-i="c_sell"></th><th data-i="c_cost"></th><th data-i="c_px"></th><th data-i="c_mv"></th><th data-i="c_share"></th><th data-i="c_pnl"></th><th data-i="c_action"></th></tr></thead><tbody id="pos"><tr><td colspan="9" class="mut">…</td></tr></tbody></table></div></div>
+ </div>
+ <div class="col">
+  <div class="pn"><div class="ph"><span id="hord"></span><b id="fees"></b></div>
+   <label data-i="f_mkt"></label><select id="om"><option value="CN">A股 · CNY</option><option value="HK">港股 · HKD</option><option value="US">美股 · USD</option></select>
+   <label data-i="f_sym"></label><input id="os" placeholder="600519.SS / 0700.HK / AAPL">
+   <label data-i="f_side"></label><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><button class="btn big buy" id="obuy"></button><button class="btn big" id="osell"></button></div>
+   <label data-i="f_type"></label><select id="ot"><option value="market"></option><option value="limit"></option></select>
+   <div id="limw" style="display:none"><label data-i="f_price"></label><input id="op" type="number" step="0.01" min="0"></div>
+   <label data-i="f_qty"></label><input id="oq" type="number" step="1" min="1" value="100">
+   <div class="qchips" id="qchips"></div>
+   <div class="mut" id="est" style="font-size:11px;margin:8px 0"></div>
+   <button class="btn big" id="osub" style="background:var(--pk);color:#000;border-color:var(--pk)"></button>
+   <div class="mut" style="font-size:10.5px;margin-top:8px" id="rules"></div>
+   <div class="mut" id="modeHint" aria-live="polite" style="font-size:10.5px;margin-top:6px;color:var(--y)"></div></div>
+  <div class="pn"><div class="ph"><span id="hords"></span><span><button class="btn" id="reset"></button></span></div>
+   <div id="ordw"><table><thead><tr><th data-i="c_time"></th><th data-i="c_sym"></th><th data-i="c_side"></th><th data-i="c_qty"></th><th data-i="c_fill"></th><th data-i="c_fee"></th><th data-i="c_st"></th><th></th></tr></thead><tbody id="ords"></tbody></table></div></div>
+  <div class="pn"><div class="ph"><span id="hnews"></span><b>DEMO</b></div><div id="news"><span class="mut">…</span></div></div>
+ </div>
+</div>
+<div class="pn" style="margin-top:8px"><div class="ph"><span id="hai"></span><b id="aistate">…</b></div>
+<div class="ai-ctl"><button class="btn big" id="aiToggle" style="width:auto;padding:7px 18px"></button>
+<span class="seg" id="aiProf"><button data-p="conservative"></button><button data-p="balanced"></button><button data-p="aggressive"></button></span>
+<select id="aiCycle" style="width:auto"><option value="5">5</option><option value="10">10</option><option value="30">30</option><option value="60">60</option></select><span class="mut" style="font-size:11px" id="aicyc"></span>
+<span class="mut" style="font-size:10.5px" id="ainote"></span></div>
+<div class="ai-grid"><div class="ai-feed" id="aifeed"><span class="mut">…</span></div><div class="ai-crew" id="aicrew"></div></div></div>
+<div id="toast"></div>
+<script>
+const LANG=(()=>{try{const q=new URLSearchParams(location.search).get('lang');if(q==='en'||q==='zh')return q}catch(e){}try{return localStorage.getItem('office_lang')||'zh'}catch(e){return'zh'}})();
+const D={zh:{sub:'模拟股票桌面 · 行情与组合',paper:'📄 PAPER · 虚拟资金',office:'办公室',trade:'交易台',markets:'行情',race:'赛跑',spider:'蜘蛛',observatory:'财经观测台',settings:'设置',ttl:'股票交易台 · 模拟盘',
+ cash:'现金',eq:'权益',pv:'持仓市值',pos:'持仓',ord:'下单',ords:'工单（最近）',reset:'重置模拟账户',news:'最新快讯',
+ f_mkt:'市场',f_sym:'代码',f_side:'方向',f_type:'类型',f_price:'限价',f_qty:'数量',buy:'买入',sell:'卖出',market:'市价',limit:'限价',submit:'提交订单',
+ c_mkt:'市场',c_sym:'代码',c_qty:'数量',c_sell:'可卖',c_cost:'成本',c_px:'现价',c_mv:'市值',c_share:'占比',c_pnl:'盈亏',c_action:'操作',c_time:'时间',c_side:'方向',c_fill:'成交价',c_fee:'费用',c_st:'状态',
+	 fees:'模拟费率',rules:'模拟规则：A股买入 100 股整数手、T+1 当日买入不可卖；港股/美股模拟盘可当日买入并卖出（T+0 日内交易），这不等同于结算周期（港股 T+2、美国多数适用证券 T+1）。模拟盘不模拟券商资金交收与保证金限制；市价单按最新报价成交，限价单目前不自动撮合。真实下单通道已留口、未接入。',
+ flow:'操作：搜索/选择标的（自动带市场）→ 选买卖和市价/限价 → 填数量、核对预估 → 提交（仅 PAPER；A股买入按100股递增）',readonly:'公开预览只读：行情、持仓和工单可查看；下单、撤单、重置及 AI 设置已关闭。',resetConfirm:'确定清空当前模拟账户的持仓、订单和成交记录并重置虚拟资金？',aiConfirm:'启用后 AI 小队会自动提交纸面模拟订单，不会连接真实券商。确定启用？',
+ est:'预估金额',estfee:'预估费用',filled:'已成交',open:'挂单中',cancelled:'已撤销',cancel:'撤单',none:'暂无',ok:'工单 #',fail:'下单失败',stale:'旧价',loading:'加载中…',loadFail:'加载失败',noPos:'暂无持仓',noOrders:'暂无订单',noNews:'暂无快讯',noKline:'暂无K线数据',noQuote:'暂无可用报价',timeUnknown:'时间未提供',sourceUnknown:'来源未提供',age:'数据年龄',quoteSource:'来源',quoteTime:'报价时间',fresh:'近2分钟',staleData:'缓存旧价',aged:'超过2分钟',searchFail:'搜索失败，请重试',sellAction:'卖出',quoteNeed:'暂无可用报价，无法估算',klineFail:'K线加载失败',noAcct:'暂无账户',noWatch:'暂无自选股',noIndicators:'暂无指标数据',noMarketData:'暂无行情数据',modeFail:'权限状态无法确认，交易已保持只读',
+ pd:'日K',pw:'周K',pm:'月K',searchPh:'🔎 搜索股票名称 / 代码 / 拼音，如 比亚迪、腾讯、NVDA',noRes:'没找到，换个关键词试试',hai:'🤖 AI 炒股小队（办公室八人格）',aiOn:'⏸ 停用小队',aiOff:'▶ 启用小队',aiMin:'分钟/轮',aiNote:'只操作模拟盘：股票池=自选+精选，规则评分+风控闸门，每笔单都带理由（见工单备注）',aiOffState:'未启用',aiNoEng:'引擎未运行（用 run.sh 启动后生效）',aiRun:'运行中',aiRound:'第',aiRound2:'轮',aiNext:'下轮',prof_cons:'保守',prof_bal:'平衡',prof_aggr:'激进',half:'半仓',all:'全仓',rsiOb:'超买',rsiOs:'超卖',rsiN:'中性',gold:'金叉',dead:'死叉',up:'多头',dn:'空头'},
+en:{sub:'PAPER STOCK DESK · MARKETS & PORTFOLIO',paper:'📄 PAPER · VIRTUAL MONEY',office:'Office',trade:'Trade Desk',markets:'Markets',race:'Race',spider:'Spider',observatory:'Observatory',settings:'Settings',ttl:'STOCK DESK · PAPER',
+ cash:'Cash',eq:'Equity',pv:'Positions value',pos:'Positions',ord:'New order',ords:'Orders (recent)',reset:'Reset paper account',news:'Latest news',
+ f_mkt:'Market',f_sym:'Symbol',f_side:'Side',f_type:'Type',f_price:'Limit price',f_qty:'Quantity',buy:'BUY',sell:'SELL',market:'Market',limit:'Limit',submit:'Place order',
+ c_mkt:'Market',c_sym:'Symbol',c_qty:'Qty',c_sell:'Sellable',c_cost:'Cost',c_px:'Price',c_mv:'Value',c_share:'Share',c_pnl:'P&L',c_action:'Action',c_time:'Time',c_side:'Side',c_fill:'Fill',c_fee:'Fee',c_st:'Status',
+ flow:'Use: search/select a symbol (market auto-detected) → choose side and market/limit → enter quantity and review estimate → submit (PAPER only; A-share buys use 100-share lots).',readonly:'Public preview is read-only: quotes, positions and orders are viewable; trading, cancel, reset and AI settings are disabled.',resetConfirm:'Clear this paper account, including positions, orders and fills, and reset virtual cash?',aiConfirm:'When enabled, the AI crew can submit paper orders automatically. It will not connect to a real broker. Enable?',
+	 fees:'paper fees',rules:'Paper rules: A-share buys use 100-share lots and cannot be sold the same day (T+1). HK/U.S. paper positions can be bought and sold on the same day (intraday trading, not settlement); HK settlement is T+2 and most applicable U.S. securities settle T+1. Broker cash-settlement and margin requirements are not simulated. Market orders use the latest quote; limit orders do not auto-match. No live broker is connected.',
+ est:'Est. amount',estfee:'Est. fee',filled:'filled',open:'open',cancelled:'cancelled',cancel:'cancel',none:'none yet',ok:'Order #',fail:'Order failed',stale:'stale',loading:'Loading…',loadFail:'Load failed',noPos:'No positions',noOrders:'No orders yet',noNews:'No news available',noKline:'No candlestick data',noQuote:'No quote available',timeUnknown:'Time not provided',sourceUnknown:'Source not provided',age:'Age',quoteSource:'Source',quoteTime:'Quote time',fresh:'Updated within 2 min',staleData:'Cached stale quote',aged:'Older than 2 min',searchFail:'Search failed. Try again.',sellAction:'Sell',quoteNeed:'No quote available; estimate unavailable',klineFail:'Kline load failed',noAcct:'No account data',noWatch:'No watchlist symbols',noIndicators:'No indicator data',noMarketData:'No market data',modeFail:'Permission status unavailable; trading remains read-only',
+ pd:'D',pw:'W',pm:'M',searchPh:'🔎 Search stocks by name or symbol (e.g. NVDA, 00700)',noRes:'No matches — try another keyword',hai:'🤖 AI TRADING CREW (the office eight)',aiOn:'⏸ Stop crew',aiOff:'▶ Start crew',aiMin:'min/cycle',aiNote:'Paper only: universe = watchlist + picks, rule scoring + risk gates, every order carries its rationale (see order notes)',aiOffState:'Disabled',aiNoEng:'Engine not running (start via run.sh)',aiRun:'Running',aiRound:'cycle ',aiRound2:'',aiNext:'next',prof_cons:'Conservative',prof_bal:'Balanced',prof_aggr:'Aggressive',half:'Half',all:'All-in',rsiOb:'overbought',rsiOs:'oversold',rsiN:'neutral',gold:'golden cross',dead:'death cross',up:'bullish',dn:'bearish'}};
+const T=D[LANG];document.documentElement.lang=LANG==='zh'?'zh-CN':'en';
+const $=i=>document.getElementById(i),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const f2=(v,d=2)=>v==null||isNaN(v)?'—':(+v).toLocaleString(LANG==='zh'?'zh-CN':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const CSYM={CNY:'¥',HKD:'HK$',USD:'$'};
+$('hsub').textContent=T.sub;$('hpaper').textContent=T.paper;$('httl').textContent=T.ttl;
+['office','trade','markets','race','spider','observatory','settings'].forEach(k=>$('rn_'+k).textContent=T[k]);
+$('langBtn').textContent=LANG==='zh'?'EN':'中文';$('langBtn').onclick=()=>{try{localStorage.setItem('office_lang',LANG==='zh'?'en':'zh')}catch(e){}location.href=location.pathname+'?lang='+(LANG==='zh'?'en':'zh')};
+document.querySelectorAll('[data-i]').forEach(e=>e.textContent=T[e.dataset.i]||e.dataset.i);
+$('sq').placeholder=T.searchPh;$('hpos').textContent=T.pos;$('hord').textContent=T.ord;$('hords').textContent=T.ords;$('hnews').textContent=T.news;$('reset').textContent=T.reset;$('fees').textContent=T.fees;$('rules').textContent=T.rules;
+$('obuy').textContent=T.buy;$('osell').textContent=T.sell;$('osub').textContent=T.submit;
+$('ot').options[0].textContent=T.market;$('ot').options[1].textContent=T.limit;
+$('acc').innerHTML=`<div class="pn mut state">${T.loading}</div><div class="pn mut state">${T.loading}</div><div class="pn mut state">${T.loading}</div>`;$('pos').innerHTML=`<tr><td colspan="10" class="mut state">${T.loading}</td></tr>`;$('ords').innerHTML=`<tr><td colspan="8" class="mut state">${T.loading}</td></tr>`;$('news').innerHTML=`<span class="mut state">${T.loading}</span>`;$('qstatus').textContent=T.loading;$('kstate').textContent=T.loading;
+document.querySelectorAll('#pchips .pchip').forEach(b=>b.textContent=T['p'+b.dataset.p[0]]);
+let SIDE='buy',SEL=null,WATCH=[],QUOTES={},ACCTS=[],POS=[],PERIOD='daily',KS=[],READ_ONLY=true;
+function toast(m,ok){const t=$('toast');t.textContent=m;t.style.display='block';t.style.borderColor=ok?'var(--g)':'var(--r)';setTimeout(()=>t.style.display='none',4200)}
+async function J(u,o){const r=await fetch(u,o);const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||r.status);return d}
+function applyReadOnly(on){READ_ONLY=!!on;['osub','reset','aiToggle','aiCycle'].forEach(id=>$(id).disabled=READ_ONLY);document.querySelectorAll('#aiProf button').forEach(b=>b.disabled=READ_ONLY);document.querySelectorAll('[data-pos-sell]').forEach(b=>b.disabled=READ_ONLY||+(b.dataset.posQty||0)<=0);$('modeHint').textContent=READ_ONLY?T.readonly:T.flow}
+async function loadMode(){try{const d=await J('/api/trade/mode');applyReadOnly(!!d.read_only)}catch(e){applyReadOnly(true);$('modeHint').textContent=T.modeFail}}
+applyReadOnly(true);
+function mktOf(sym){sym=String(sym||'').toUpperCase();if(/\.HK$/.test(sym))return'HK';if(/\.(SS|SZ)$/.test(sym))return'CN';return'US'}
+async function loadTape(){try{const ix=await J('/api/finance/indices');const items=(ix.items||[]).concat(WATCH.map(w=>QUOTES[w.symbol]).filter(Boolean).map(q=>({name:q.name,price:q.price,change_pct:q.change_pct})));
+ const one=items.map(x=>`<span><b>${esc(x.name)}</b> ${f2(x.price)} <span class="${x.change_pct>=0?'pos':'neg'}">${x.change_pct>=0?'+':''}${f2(x.change_pct)}%</span></span>`).join('');$('tapeIn').innerHTML=one?one+one:`<span class="mut">${T.noMarketData}</span>`}catch(e){$('tapeIn').innerHTML=`<span class="mut">${T.loadFail}: ${esc(e.message)}</span>`}}
+async function loadWatch(){$('chips').innerHTML=`<span class="mut state">${T.loading}</span>`;try{const w=await J('/api/finance/watchlist');WATCH=w.items||[];if(!WATCH.length){$('chips').innerHTML=`<span class="mut state">${T.noWatch}</span>`;return}const syms=WATCH.map(x=>x.symbol).join(',');const q=await J('/api/finance/quotes?symbols='+encodeURIComponent(syms));(q.items||[]).forEach(x=>QUOTES[x.symbol]=x);
+ $('chips').innerHTML=WATCH.map(x=>{const qq=QUOTES[x.symbol];return`<button class="chip ${SEL===x.symbol?'on':''}" data-sym="${esc(x.symbol)}">${esc(x.symbol)} ${qq?f2(qq.price):'—'} <span class="${(qq&&qq.change_pct>=0)?'pos':'neg'}">${qq?(qq.change_pct>=0?'+':'')+f2(qq.change_pct):''}%</span></button>`}).join('');document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>select(c.dataset.sym));if(!SEL)select(WATCH[0].symbol);else paintQuote()}catch(e){$('chips').innerHTML=`<span class="mut state warn">${T.loadFail}: ${esc(e.message)}</span>`;$('qstatus').className='qstatus bad';$('qstatus').textContent=T.loadFail+': '+e.message;$('qmeta').textContent=T.noQuote}}
+function select(sym){SEL=sym;$('os').value=sym;$('om').value=mktOf(sym);updateQtyRule();document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.sym===sym));paintQuote();loadKline();loadInd();paintQchips();est()}
+function updateQtyRule(){const lot=$('om').value==='CN'&&SIDE==='buy';$('oq').step=lot?'100':'1';$('oq').min=lot?'100':'1'}
+function quoteStamp(q){const raw=Number(q.ts)||0,age=raw?Math.max(0,Math.floor(Date.now()/1000-raw)):null,stamp=raw?new Date(raw*1000).toLocaleString(LANG==='zh'?'zh-CN':'en-US',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}):T.timeUnknown,ageText=age==null?T.timeUnknown:age<60?age+'s':Math.floor(age/60)+'m',source=q.provider||q.source||T.sourceUnknown,state=q.stale?T.staleData:age==null?T.timeUnknown:age<120?T.fresh:T.aged;return`${T.quoteSource}: ${esc(source)} · ${T.quoteTime}: ${stamp} · ${T.age}: ${ageText} · ${state}`}
+function paintQuote(){const q=QUOTES[SEL];if(!q){$('qname').textContent=SEL||'—';$('qpx').textContent='—';$('qmeta').textContent=T.noQuote;$('qstatus').className='qstatus warn';$('qstatus').textContent=T.noQuote;return}
+ $('qname').textContent=(q.name||q.symbol)+' · '+q.symbol;$('qpx').innerHTML=`<span class="${q.change_pct>=0?'pos':'neg'}">${f2(q.price)} ${q.change_pct>=0?'▲':'▼'} ${f2(Math.abs(q.change_pct))}%</span>`;
+ $('qmeta').textContent=`O ${f2(q.open)} · H ${f2(q.high)} · L ${f2(q.low)} · Prev ${f2(q.prev_close)} · Vol ${q.volume?f2(q.volume,0):'—'}`;const age=Number(q.ts)?Date.now()/1000-Number(q.ts):null;$('qstatus').className='qstatus '+(q.stale||age==null||age>=120?'warn':'ok');$('qstatus').textContent=quoteStamp(q)}
+function maArr(ks,n){const o=[];let s=0;for(let i=0;i<ks.length;i++){s+=ks[i].close;if(i>=n)s-=ks[i-n].close;o.push(i>=n-1?s/n:null)}return o}
+function drawK(hover){const c=$('kc'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);const ks=KS;if(ks.length<2)return;
+ let lo=Math.min(...ks.map(k=>k.low)),hi=Math.max(...ks.map(k=>k.high));if(hi-lo<1e-9){hi+=1;lo-=1}
+ const W=c.width,H=c.height,PH=Math.round(H*0.78),P=22,bw=W/ks.length,Y=v=>PH-P-(v-lo)/(hi-lo)*(PH-2*P),vmax=Math.max(...ks.map(k=>k.volume||0))||1;
+ x.strokeStyle='#24242c';x.beginPath();for(let i=1;i<4;i++){x.moveTo(0,PH*i/4);x.lineTo(W,PH*i/4)}x.stroke();
+ ks.forEach((k,i)=>{const up=k.close>=k.open,col=up?'#3dff8f':'#ff4d5e',cx=i*bw+bw/2;
+  x.fillStyle=col;x.globalAlpha=.55;const vh=(k.volume||0)/vmax*(H-PH-14);x.fillRect(i*bw+1,H-vh,Math.max(1,bw-2),vh);x.globalAlpha=1;
+  x.strokeStyle=col;x.beginPath();x.moveTo(cx,Y(k.high));x.lineTo(cx,Y(k.low));x.stroke();const a=Y(Math.max(k.open,k.close)),b2=Y(Math.min(k.open,k.close));x.fillStyle=col;x.fillRect(i*bw+1,a,Math.max(1,bw-2),Math.max(1,b2-a))});
+ const line=(arr,col)=>{x.strokeStyle=col;x.lineWidth=1.2;x.beginPath();let st=false;arr.forEach((v,i)=>{if(v==null)return;const cx=i*bw+bw/2,cy=Y(v);if(!st){x.moveTo(cx,cy);st=true}else x.lineTo(cx,cy)});x.stroke();x.lineWidth=1};
+ line(maArr(ks,5),'#ffd23f');line(maArr(ks,20),'#3fd5ff');
+ const lp=ks[ks.length-1].close;x.strokeStyle='rgba(255,79,180,.6)';x.setLineDash([4,4]);x.beginPath();x.moveTo(0,Y(lp));x.lineTo(W,Y(lp));x.stroke();x.setLineDash([]);
+ x.fillStyle='#8a8a99';x.font='11px ui-monospace,monospace';x.fillText(f2(hi),6,14);x.fillText(f2(lo),6,PH-6);x.fillText(ks[0].date+' → '+ks[ks.length-1].date,6,H-4);
+ x.fillStyle='#ffd23f';x.fillText('MA5',W-118,14);x.fillStyle='#3fd5ff';x.fillText('MA20',W-76,14);
+ if(hover!=null&&ks[hover]){const k=ks[hover],cx=hover*bw+bw/2;x.strokeStyle='rgba(236,236,241,.35)';x.beginPath();x.moveTo(cx,0);x.lineTo(cx,H);x.stroke();
+  $('qmeta').textContent=`${k.date} · O ${f2(k.open)} · H ${f2(k.high)} · L ${f2(k.low)} · C ${f2(k.close)} · Vol ${k.volume?f2(k.volume,0):'—'}`}}
+async function loadKline(){if(!SEL)return;$('kstate').className='mut state';$('kstate').textContent=T.loading;try{const d=await J('/api/finance/kline?symbol='+encodeURIComponent(SEL)+'&period='+PERIOD+'&count=120');KS=(d.kline||[]).slice(-120);drawK();$('kstate').className='mut state'+(KS.length<2?' warn':'');$('kstate').textContent=KS.length<2?T.noKline:''}catch(e){KS=[];drawK();$('kstate').className='mut state warn';$('kstate').textContent=T.klineFail+': '+e.message}}
+async function loadInd(){if(!SEL)return;$('ind').innerHTML=`<div class="mut state">${T.loading}</div>`;try{const d=await J('/api/finance/analyze?symbol='+encodeURIComponent(SEL));const I=d.indicators||{};if(!I.ok){$('ind').innerHTML=`<div class="mut state">${T.noIndicators}</div>`;return}
+ const rsi=I.rsi,rsiT=rsi>=70?T.rsiOb:rsi<=30?T.rsiOs:T.rsiN,rsiC=rsi>=70?'neg':rsi<=30?'pos':'';
+ const mc=I.macd||{},kd=I.kdj||{},bo=I.boll||{};
+ const box=(k,v,c)=>`<div class="ib"><div class="k">${k}</div><div class="v ${c||''}">${v}</div></div>`;
+ $('ind').innerHTML=box('MA5 / MA10',f2((I.ma||{}).MA5)+' / '+f2((I.ma||{}).MA10))+box('MA20 / MA60',f2((I.ma||{}).MA20)+' / '+f2((I.ma||{}).MA60))
+ +box('RSI',f2(rsi,1)+' · '+rsiT,rsiC)+box('MACD',f2(mc.DIF,2)+' / '+f2(mc.DEA,2),mc.trend==='up'?'pos':'neg')
+ +box('KDJ',f2(kd.K,0)+' / '+f2(kd.D,0)+' / '+f2(kd.J,0),kd.signal==='overbought'?'neg':kd.signal==='oversold'?'pos':'')
+ +box('BOLL',f2(bo.lower,0)+' ~ '+f2(bo.upper,0))+box((LANG==='zh'?'量比':'Vol ratio'),'5d '+f2((I.volume||{}).vol_ratio_5)+' · 20d '+f2((I.volume||{}).vol_ratio_20))
+ +box((LANG==='zh'?'20日高低':'20d H/L'),f2((I.high_low||{}).high_20)+' / '+f2((I.high_low||{}).low_20))}catch(e){$('ind').innerHTML=`<div class="mut state warn">${T.loadFail}: ${esc(e.message)}</div>`}}
+async function loadAcct(){try{const a=await J('/api/trade/account');ACCTS=a.accounts||[];$('acc').innerHTML=ACCTS.length?ACCTS.map(x=>`<div class="pn"><div class="ph"><span>${esc(x.market_name)} · ${esc(x.market)}</span><b>${esc(x.currency)}</b></div><div class="big">${CSYM[x.currency]||''}${f2(x.equity,0)}</div><div class="mut" style="font-size:11px">${T.cash} ${f2(x.cash)} · ${T.pv} ${f2(x.positions_value)} · ${T.pos} ${x.positions}${x.valuation_complete===false?' · <span class=\"qstatus warn\">'+(LANG==='zh'?'估值不完整':'Valuation incomplete')+'</span>':''}</div></div>`).join(''):`<div class="pn mut state">${T.noAcct}</div>`;paintQchips()}catch(e){$('acc').innerHTML=`<div class="pn mut state warn">${T.loadFail}: ${esc(e.message)}</div>`}}
+async function loadPos(){try{const d=await J('/api/trade/positions');POS=d.positions||[];const tot={};POS.forEach(p=>{if(p.market_value!=null)tot[p.market]=(tot[p.market]||0)+p.market_value});
+ $('pos').innerHTML=POS.length?POS.map(p=>{const share=p.market_value!=null&&tot[p.market]?p.market_value/tot[p.market]*100:null;return`<tr class="clk" data-sym="${esc(p.symbol)}"><td>${esc(p.market)}</td><td>${esc(p.symbol)}<br><span class="mut">${esc(p.name||'')}</span></td><td>${p.qty}</td><td>${p.sellable_qty}</td><td>${f2(p.avg_cost,3)}</td><td>${p.price==null?'—':f2(p.price)}${p.quote_status==='missing'?' <span class="mut">'+(LANG==='zh'?'缺报价':'Missing quote')+'</span>':''}${p.price_stale?' <span class="mut">'+T.stale+'</span>':''}</td><td>${p.market_value==null?'— <span class="mut">'+(p.quote_status==='stale'?(LANG==='zh'?'旧价不可估值':'Stale; value unavailable'):(LANG==='zh'?'估值缺失':'Value unavailable'))+'</span>':f2(p.market_value)}</td><td>${share==null?'—':`<div class="alloc"><i style="width:${share.toFixed(1)}%"></i></div><span class="mut">${f2(share,1)}%</span>`}</td><td class="${(p.unrealized_pnl||0)>=0?'pos':'neg'}">${p.unrealized_pnl==null?'—':f2(p.unrealized_pnl)+' ('+f2(p.unrealized_pnl_pct)+'%)'}</td><td><button class="btn sell" data-pos-sell="${esc(p.symbol)}" data-pos-market="${esc(p.market)}" data-pos-qty="${Number(p.sellable_qty)||0}" ${READ_ONLY||!(Number(p.sellable_qty)>0)?'disabled':''}>${T.sellAction}</button></td></tr>`}).join(''):`<tr><td colspan="10" class="mut state">${T.noPos}</td></tr>`;
+ document.querySelectorAll('#pos tr.clk').forEach(r=>r.onclick=()=>select(r.dataset.sym));document.querySelectorAll('[data-pos-sell]').forEach(b=>b.onclick=e=>{e.stopPropagation();select(b.dataset.posSell);$('om').value=b.dataset.posMarket;SIDE='sell';$('osell').className='btn big sell';$('obuy').className='btn big';$('osub').style.background='var(--r)';$('osub').style.color='#fff';$('oq').value=Number(b.dataset.posQty)||'';updateQtyRule();paintQchips();est();$('hord').scrollIntoView({behavior:'smooth',block:'center'});$('os').focus()});applyReadOnly(READ_ONLY);est()}catch(e){$('pos').innerHTML=`<tr><td colspan="10" class="mut state warn">${T.loadFail}: ${esc(e.message)}</td></tr>`}}
+async function loadOrds(){try{const d=await J('/api/trade/orders');const items=(d.orders||[]).slice(0,30);$('ords').innerHTML=items.length?items.map(o=>`<tr><td class="mut">${o.ts?new Date(o.ts*1000).toLocaleString(LANG==='zh'?'zh-CN':'en-US',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}):''}</td><td>${esc(o.symbol)}${o.note?`<br><span class="mut" style="font-size:10px;white-space:normal">${esc(o.note)}</span>`:''}</td><td class="${o.side==='buy'?'pos':'neg'}">${o.side==='buy'?T.buy:T.sell}</td><td>${o.qty}</td><td>${o.fill_price==null?(o.limit_price||'—'):f2(o.fill_price)}</td><td>${f2(o.fee)}</td><td>${T[o.status]||o.status}</td><td>${o.status==='open'?`<button class="btn" data-cancel="${o.id}">${T.cancel}</button>`:''}</td></tr>`).join(''):`<tr><td colspan="8" class="mut state">${T.noOrders}</td></tr>`;
+ document.querySelectorAll('[data-cancel]').forEach(b=>{b.disabled=READ_ONLY;b.onclick=async()=>{try{await J('/api/trade/cancel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:+b.dataset.cancel})});refresh()}catch(e){toast(e.message,0)}}})}catch(e){$('ords').innerHTML=`<tr><td colspan="8" class="mut state warn">${T.loadFail}: ${esc(e.message)}</td></tr>`}}
+async function loadNews(){try{const d=await J('/api/finance/observatory');if(d.data_mode!=='DEMO'||d.demo!==true)throw new Error('Non-DEMO news response blocked');const items=(d.news||[]).slice(0,6);$('news').innerHTML=items.map(n=>{const raw=n.event_ts||n.received_at||'',stamp=raw?new Date(raw).toLocaleString(LANG==='zh'?'zh-CN':'en-US',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}):T.timeUnknown;return`<div class="nws"><span class="tm">${esc(n.publisher||n.provider||'DEMO fixture')} · DEMO · ${esc(stamp)}</span><br><span>${esc(n.title||'')}</span></div>`}).join('')||`<span class="mut state">${T.noNews}</span>`}catch(e){$('news').innerHTML=`<span class="mut state warn">${T.loadFail}: ${esc(e.message)}</span>`}}
+function refresh(){loadAcct();loadPos();loadOrds()}
+function feeEst(mkt,amt,side){if(amt<=0)return 0;if(mkt==='CN'){let f=Math.max(5,amt*0.00025);if(side==='sell')f+=amt*0.0005;return f}if(mkt==='HK')return amt*(0.0003+0.000057);return 0}
+function est(){const sym=$('os').value.trim().toUpperCase();const q=QUOTES[sym];const px=$('ot').value==='limit'?parseFloat($('op').value):(q?q.price:null);const qty=parseFloat($('oq').value)||0;
+ $('est').textContent=px?T.est+': '+f2(px*qty)+' · '+T.estfee+': '+f2(feeEst($('om').value,px*qty,SIDE)):($('ot').value==='market'?T.quoteNeed:'')}
+function paintQchips(){const qs=[100,200,500,1000];$('qchips').innerHTML=qs.map(n=>`<button class="qchip" data-q="${n}">${n}</button>`).join('')+`<button class="qchip" data-q="half">${T.half}</button><button class="qchip" data-q="all">${T.all}</button>`;
+ document.querySelectorAll('#qchips .qchip').forEach(b=>b.onclick=()=>{const v=b.dataset.q;
+  if(v==='half'||v==='all'){const mkt=$('om').value,acc=ACCTS.find(a=>a.market===mkt);const sym=$('os').value.trim().toUpperCase();const q=QUOTES[sym];const frac=v==='half'?0.5:1;
+   if(SIDE==='buy'&&acc&&q&&q.price>0){let n=Math.floor(acc.cash*frac/q.price);if(mkt==='CN')n=Math.floor(n/100)*100;$('oq').value=Math.max(0,n)}
+   else if(SIDE==='sell'){const p=POS.find(x=>x.symbol===sym&&x.market===mkt);if(p)$('oq').value=Math.floor(p.sellable_qty*frac)}}
+  else $('oq').value=v;est()})}
+$('kc').addEventListener('mousemove',e=>{if(!KS.length)return;const r=$('kc').getBoundingClientRect();const bw=r.width/KS.length;const i=Math.max(0,Math.min(KS.length-1,Math.floor((e.clientX-r.left)/bw)));drawK(i)});
+$('kc').addEventListener('mouseleave',()=>{drawK();paintQuote()});
+document.querySelectorAll('#pchips .pchip').forEach(b=>b.onclick=()=>{PERIOD=b.dataset.p;document.querySelectorAll('#pchips .pchip').forEach(x=>x.classList.toggle('on',x===b));loadKline()});
+ $('obuy').onclick=()=>{SIDE='buy';$('obuy').className='btn big buy';$('osell').className='btn big';$('osub').style.background='var(--g)';updateQtyRule();paintQchips();est()};
+ $('osell').onclick=()=>{SIDE='sell';$('osell').className='btn big sell';$('obuy').className='btn big';$('osub').style.background='var(--r)';$('osub').style.color='#fff';updateQtyRule();paintQchips();est()};
+ $('ot').onchange=()=>{$('limw').style.display=$('ot').value==='limit'?'block':'none';est()};
+ $('om').onchange=()=>{updateQtyRule();est()};
+ ['os','oq','op'].forEach(i=>$(i).addEventListener('input',()=>{if(i==='os'){$('om').value=mktOf($('os').value);updateQtyRule()}est()}));
+$('osub').onclick=async()=>{const body={market:$('om').value,symbol:$('os').value.trim(),side:SIDE,qty:+$('oq').value,type:$('ot').value};if(body.type==='limit')body.price=parseFloat($('op').value);
+ try{const r=await J('/api/trade/order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});toast(T.ok+(r.id??'')+(r.status?' · '+(T[r.status]||r.status):''),1);refresh()}catch(e){toast(T.fail+': '+e.message,0)}};
+$('reset').onclick=async()=>{if(!confirm(T.resetConfirm))return;try{await J('/api/trade/reset',{method:'POST'});refresh();toast(T.reset+' ✓',1)}catch(e){toast(e.message,0)}};
+let sT=null;
+$('sq').addEventListener('input',()=>{clearTimeout(sT);const v=$('sq').value.trim();if(!v){$('sres').style.display='none';return}sT=setTimeout(async()=>{try{const d=await J('/api/finance/search?q='+encodeURIComponent(v));const box=$('sres');
+ if(!d.items||!d.items.length){box.innerHTML=`<div class="srow mut">${T.noRes}</div>`}
+ else box.innerHTML=d.items.map(x=>`<div class="srow" data-sym="${esc(x.symbol)}"><b>${esc(x.name)}</b><span class="mut">${esc(x.symbol)}</span><span class="mb">${esc(x.market)}</span></div>`).join('');
+ box.style.display='block';
+ box.querySelectorAll('.srow[data-sym]').forEach(r=>r.onclick=()=>pickSearch(r.dataset.sym))}catch(e){$('sres').innerHTML=`<div class="srow mut">${T.searchFail}</div>`;$('sres').style.display='block'}},220)});
+$('sq').addEventListener('keydown',e=>{if(e.key==='Enter'){const f=$('sres').querySelector('.srow[data-sym]');if(f)pickSearch(f.dataset.sym)}if(e.key==='Escape')$('sres').style.display='none'});
+document.addEventListener('click',e=>{if(!$('swrap').contains(e.target))$('sres').style.display='none'});
+async function loadSelQuote(){if(!SEL||WATCH.some(w=>w.symbol===SEL))return;$('qstatus').className='qstatus';$('qstatus').textContent=T.loading;try{const q=await J('/api/finance/quotes?symbols='+encodeURIComponent(SEL));(q.items||[]).forEach(x=>QUOTES[x.symbol]=x);paintQuote();est()}catch(e){$('qstatus').className='qstatus bad';$('qstatus').textContent=T.loadFail+': '+e.message;$('qmeta').textContent=T.noQuote}}
+async function pickSearch(sym){$('sres').style.display='none';$('sq').value='';select(sym);loadSelQuote()}
+loadMode();loadWatch().then(()=>loadTape());refresh();loadNews();
+const PERSONAS={CHIEF:['#ff4fb4','拍板决策','Final calls'],SCAN:['#3f8cff','指标扫描','Indicator scan'],VET:['#ececf1','审查否决','Veto gate'],RISK:['#ff9a3c','风控闸门','Risk gates'],SOCIAL:['#ff4d5e','新闻舆情','News sentiment'],CRAWLER:['#3fd5ff','数据抓取','Data fetch'],FILLS:['#3dff8f','执行下单','Execution'],JOURNAL:['#ffd23f','复盘记录','Journal']};
+$('hai').textContent=T.hai;$('ainote').textContent=T.aiNote;$('aicyc').textContent=T.aiMin;
+document.querySelectorAll('#aiProf button').forEach(b=>b.textContent=({conservative:T.prof_cons,balanced:T.prof_bal,aggressive:T.prof_aggr})[b.dataset.p]||b.dataset.p);
+let AICFG={enabled:false,profile:'balanced',cycle_min:10};
+async function aiSet(patch){if(patch.enabled&&!AICFG.enabled&&!confirm(T.aiConfirm))return;try{const d=await J('/api/ai/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(patch)});AICFG=d.config||AICFG;loadAI()}catch(e){toast(e.message,0)}}
+$('aiToggle').onclick=()=>aiSet({enabled:!AICFG.enabled});
+document.querySelectorAll('#aiProf button').forEach(b=>b.onclick=()=>aiSet({profile:b.dataset.p}));
+$('aiCycle').onchange=()=>aiSet({cycle_min:+$('aiCycle').value});
+async function loadAI(){try{const d=await J('/api/ai/status');const cfg=d.config||{};AICFG=cfg;const st=d.status||{};
+ $('aiToggle').textContent=cfg.enabled?T.aiOn:T.aiOff;$('aiToggle').style.background=cfg.enabled?'var(--r)':'var(--g)';$('aiToggle').style.color=cfg.enabled?'#fff':'#000';$('aiToggle').style.borderColor='transparent';
+ document.querySelectorAll('#aiProf button').forEach(b=>b.classList.toggle('on',b.dataset.p===cfg.profile));
+ $('aiCycle').value=String(cfg.cycle_min||10);
+ $('aistate').textContent=!cfg.enabled?T.aiOffState:!d.running?T.aiNoEng:(T.aiRun+' · '+T.aiRound+(st.cycle||0)+T.aiRound2+(st.next_cycle_ts?' · '+T.aiNext+' '+new Date(st.next_cycle_ts*1000).toLocaleTimeString(LANG==='zh'?'zh-CN':'en-US',{hour:'2-digit',minute:'2-digit',hour12:false}):''));
+ const evs=(st.events||[]).slice().reverse();
+ $('aifeed').innerHTML=evs.length?evs.map(e=>{const P=PERSONAS[e.persona]||['#888',e.persona,''];const ic=e.kind==='buy'?'▲':e.kind==='sell'?'▼':e.kind==='veto'?'⛔':e.kind==='warn'?'⚠':'·';
+ return`<div class="ai-ev"><span class="tm">${new Date(e.ts*1000).toLocaleTimeString(LANG==='zh'?'zh-CN':'en-US',{hour:'2-digit',minute:'2-digit',hour12:false})}</span><span class="pchip2" style="background:${P[0]}">${e.persona}</span><span class="${e.kind==='buy'?'pos':e.kind==='sell'?'neg':''}">${ic} ${esc(e.text)}</span></div>`}).join(''):'<span class="mut">—</span>';
+ const pl=st.persona_last||{};
+ $('aicrew').innerHTML=Object.keys(PERSONAS).map(k=>{const P=PERSONAS[k];const last=pl[k];
+ return`<div class="ai-mem"><div class="nm" style="color:${P[0]}">${k} <span class="rl">· ${LANG==='zh'?P[1]:P[2]}</span></div><div class="la">${last?esc(last.text):'—'}</div></div>`}).join('');
+ }catch(e){}}
+loadAI();setInterval(loadAI,10000);
+setInterval(()=>{loadWatch();refresh();loadSelQuote()},15000);setInterval(()=>{loadTape();loadNews();if(SEL)loadInd()},60000);
+</script></body></html>

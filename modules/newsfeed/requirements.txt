@@ -1,0 +1,2 @@
+# Static HTTP Fetcher is the only Scrapling component used; no browser install command is required.
+scrapling[fetchers]==0.4.15

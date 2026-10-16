@@ -1,0 +1,357 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GROKBOT + JEV — 交易办公室 (PAPER)</title>
+<style>
+:root{--pk:#ff4fb4;--pk2:#e0359a;--bg:#0c0c10;--card:#111116;--ln:#24242c;--txt:#ececf1;--mut:#8a8a99;--g:#3dff8f;--r:#ff4d5e;--y:#ffd23f;--c:#3fd5ff;--o:#ff9a3c}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden}
+body{background:#e04aa6;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:6px 6px;color:var(--txt);font-family:ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace}
+#stage{position:absolute;left:0;top:0;width:1180px;transform-origin:0 0;padding:10px 12px}
+.hd{display:flex;align-items:center;gap:14px;height:46px}
+.hd .lg{width:34px;height:34px;border-radius:8px;background:#111;display:grid;place-items:center}
+.hd h1{margin:0;font:900 30px/1 system-ui,Segoe UI,sans-serif;color:#111;letter-spacing:-.5px}.hd .sub{font-size:11px;color:#2a0b1e;letter-spacing:1px}
+.hd .sp{flex:1}.hd .day{font-size:11px;color:#2a0b1e;letter-spacing:1px}.clk{background:#0c0c10;color:#ececf1;font:800 18px ui-monospace,monospace;padding:4px 10px;border-radius:5px;border:2px solid #111}
+.paper{background:#111;color:var(--y);font-size:10px;font-weight:900;padding:3px 7px;border-radius:4px;letter-spacing:1px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 8px}
+.cd{background:var(--card);border-radius:7px;padding:8px 10px 7px;height:96px;position:relative;overflow:hidden;box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.cd .ic{position:absolute;left:10px;top:9px;width:20px;height:20px;border-radius:50%}
+.cd .nm{margin-left:28px;font:900 17px/1 system-ui,sans-serif;letter-spacing:.5px}.cd .st{margin-left:28px;font-size:9.5px;color:var(--mut);margin-top:2px}
+.cd .tg{position:absolute;right:9px;top:9px;font-size:8.5px;border:1px solid #4a2a3c;color:var(--pk);padding:1px 5px;border-radius:3px;letter-spacing:1px}
+.cd .row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:9px;gap:8px}.cd .tk{font-size:9.5px;color:#b7b7c4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cd .nv{font:800 14px ui-monospace,monospace;white-space:nowrap}
+.cd .bar{height:3px;background:#24242c;border-radius:2px;margin-top:4px;overflow:hidden}.cd .bar i{display:block;height:100%}
+.cd .q{font-size:9.5px;color:#d6d6e0;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cd .q.m{color:var(--mut)}
+#ofr{background:#0b0b0f;border-radius:8px;padding:5px;box-shadow:0 0 0 2px #b0287c inset}
+#owrap{position:relative;width:1146px;aspect-ratio:16/9;border-radius:5px;overflow:hidden;background:#0b0b0f}#obg,#oc{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.pn{background:var(--card);border-radius:7px;padding:8px 10px;margin-top:8px;position:relative}
+.ph{display:flex;justify-content:space-between;font-size:10.5px;letter-spacing:1.5px;color:#d6d6e0;margin-bottom:4px}.ph b{color:var(--pk);font-weight:700}
+.pos{color:var(--g)}.neg{color:var(--r)}.mut{color:var(--mut)}
+#bal{display:block;width:1132px;height:170px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:8px}.duo .pn{height:318px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:10px}td,th{padding:2px 4px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}th{color:var(--mut);font-weight:500;border-bottom:1px solid var(--ln)}tr.sel td{background:#2a1022}
+.pass{color:var(--g);font-weight:800}.fail{color:var(--r);font-weight:800}.pend{color:var(--y)}
+.b{padding:0 4px;border-radius:3px;font-weight:900;font-size:9px}.GOOD,.ENTRY{background:var(--g);color:#000}.WARN,.PENDENTE{background:var(--y);color:#000}.RUG,.REJECT{background:var(--r);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin:4px 0}.stats div{background:#0c0c10;border-radius:4px;padding:3px 5px;font-size:9px;color:var(--mut)}.stats b{display:block;color:#ececf1;font-size:11px}
+.btn{background:#0c0c10;color:var(--pk);border:1px solid #4a2a3c;border-radius:3px;font:700 9px ui-monospace,monospace;padding:1px 6px;cursor:pointer;margin-left:4px}
+.code{font-size:10.5px;line-height:15.5px}.code .k{color:#ececf1}.code .v{color:var(--y)}.code .c{color:var(--mut)}.code .rw{display:grid;grid-template-columns:170px 70px 70px 14px}.code .rw.bad{background:#2a1022}
+.pills{position:absolute;left:10px;bottom:8px;font-size:9px;display:flex;gap:4px;align-items:center}.pills span{border:1px dashed #44445a;padding:1px 5px;border-radius:3px;color:var(--mut)}.pills span.on{background:var(--pk);color:#000;border-color:var(--pk)}
+
+/* ===== layout que enche a janela (sem escala uniforme) ===== */
+#stage{position:fixed;inset:0;width:auto;transform:none!important;padding:8px 10px;display:grid;gap:8px;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) clamp(210px,31vh,420px);grid-template-areas:"hd hd hd" "cl of cr" "bt bt bt"}
+.hd{grid-area:hd;height:auto}.hd h1{font-size:clamp(20px,1.6vw,32px)}
+.cards{margin:0;display:flex;flex-direction:column;gap:8px;min-height:0;min-width:0}#cardsL{grid-area:cl}#cardsR{grid-area:cr}
+.cd{height:auto;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-between;padding:clamp(6px,.8vh,12px) 10px}
+.cd .nm{font-size:clamp(14px,1.05vw,21px)}.cd .st,.cd .tk,.cd .q{font-size:clamp(9.5px,.62vw,12.5px)}.cd .nv{font-size:clamp(13px,.95vw,19px)}.cd .row{margin-top:4px}
+#ofr{grid-area:of;height:100%;min-height:0;aspect-ratio:16/9;max-width:calc(100vw - 2*clamp(230px,17vw,420px) - 36px);justify-self:center;padding:4px}
+#owrap{width:100%!important;height:100%}
+#bot3{grid-area:bt;display:grid;grid-template-columns:1fr 1.15fr 1.05fr;gap:8px;min-height:0}
+#bot3 .pn{margin:0;height:auto!important;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+#bal{width:100%!important;flex:1;min-height:0}
+.an{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto minmax(0,1fr) minmax(0,1.1fr);gap:4px 8px}.an .stats{grid-column:1/3;margin:0}
+#ach{width:100%!important;height:100%!important;min-height:0}.an .rt{min-height:0;overflow:hidden}
+#atabw{grid-column:1/3;min-height:0;overflow:hidden}
+.code{overflow:hidden}.th{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:6px;padding-bottom:26px}#spd{width:100%!important;height:100%!important;min-height:0}
+.code{font-size:clamp(9.5px,.6vw,12px);line-height:1.45}.code .rw{grid-template-columns:minmax(0,1.9fr) minmax(0,.8fr) minmax(0,.8fr) 14px}.code .rw span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table{font-size:clamp(9.5px,.58vw,12px)}.ph{font-size:clamp(10px,.62vw,12.5px)}
+@media(max-width:768px){html,body{height:auto;min-height:100%;overflow:auto}#stage{position:relative;inset:auto;width:100%;min-height:100vh;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto auto;grid-template-areas:"hd hd" "of of" "cl cr" "bt bt";padding:8px;gap:8px}.hd{flex-wrap:wrap;gap:8px;min-width:0}.hd .sp{display:none}#roomnav{order:10;flex:1 1 100%;width:100%;max-width:100%;min-width:0;margin:0;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}#roomnav a,#langBtn{flex:none}#ofr{width:100%;max-width:100%;height:auto;aspect-ratio:16/9}#owrap{height:auto!important;aspect-ratio:16/9}.cards{min-width:0;min-height:0}.cd{height:auto;min-height:100px;flex:none}#bot3{grid-template-columns:repeat(2,minmax(0,1fr))}#bot3 .pn:first-child{grid-column:1/-1}.hd .ttl{margin-left:auto}}
+@media(max-width:600px){#stage{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto auto auto;grid-template-areas:"hd" "of" "cl" "cr" "bt";padding:7px;gap:7px}#ofr{padding:3px}.cards{gap:7px}.cd{min-height:92px}.cd .nm{font-size:15px}.cd .st,.cd .tk,.cd .q{font-size:10px}#bot3{grid-template-columns:minmax(0,1fr)}#bot3 .pn:first-child{grid-column:auto}.duo{grid-template-columns:minmax(0,1fr)}.hd h1{font-size:22px}.hd .sub{font-size:9px;letter-spacing:.5px}.paper{font-size:9px}#stockchip,#aichip{max-width:calc(50% - 14px);font-size:10px;padding:5px 7px}.ph{letter-spacing:.7px}}
+@media(max-width:390px){#roomnav{gap:3px}#roomnav a,#langBtn{font-size:11px;padding:4px 7px}.cd{padding:7px}.cd .nv{font-size:14px}.code{font-size:9.5px}}
+@media(max-width:360px){#stage{padding:5px;gap:5px}.hd{gap:5px}.cd .nm{font-size:14px}.cd .tk,.cd .q{font-size:9.5px}#stockchip,#aichip{font-size:9px;padding:4px 5px}}
+</style><style>#roomnav{display:flex;gap:4px;align-items:center;margin-left:10px}#roomnav a{color:#2a0b1e;text-decoration:none;font:800 12px ui-monospace,monospace;padding:4px 9px;border:2px solid #111;border-radius:5px;letter-spacing:1px}#roomnav a.on{background:#111;color:#ff4fb4}#roomnav a:hover{background:#111;color:#fff}#langBtn{background:#111;color:#ffd23f;border:2px solid #111;border-radius:5px;font:800 12px ui-monospace,monospace;padding:4px 9px;cursor:pointer;letter-spacing:1px}#stockchip{position:absolute;left:10px;bottom:10px;z-index:5;background:rgba(10,10,16,.92);border:2px solid #3dff8f;border-radius:7px;color:#ececf1;font:700 12px/1.5 ui-monospace,monospace;padding:7px 11px;max-width:72%;box-shadow:0 2px 0 rgba(0,0,0,.35)}#stockchip b{color:#3dff8f}#stockchip .mut{color:#8a8a99}#aichip{position:absolute;right:10px;bottom:10px;z-index:5;background:rgba(10,10,16,.92);border:2px solid #ff4fb4;border-radius:7px;color:#ececf1;font:700 12px/1.55 ui-monospace,monospace;padding:7px 11px;max-width:47%;box-shadow:0 2px 0 rgba(0,0,0,.35);cursor:pointer}#aichip b{color:#ff4fb4}#aichip .mut{color:#8a8a99}</style><script>
+/* 内联自 assets/i18n.js（沙箱浏览器不执行本地外链脚本，故内联；改词条须两处同步） */
+/* Fusion Office 双语包 + 葡语日志模板翻译层
+ * 界面字符串：I18N[lang]；数据日志：trLog(msg, lang) 按引擎固定句式翻译，未覆盖回退原文并加标记。 */
+(function(){
+'use strict';
+const I18N={
+zh:{title:'GROKBOT + JEV — 交易办公室 (PAPER)',sub:'模拟股票桌面 · 行情与组合',paper:'📄 PAPER · 虚拟资金',
+ nav_office:'办公室',nav_trade:'交易台',nav_markets:'行情',nav_race:'赛跑',nav_spider:'蜘蛛',nav_observatory:'财经观测台',nav_settings:'设置',
+ saldo:'余额',jev:'JEV · 分析',thr_note:'— 桌面规则（引擎）',fail_closed:'所有否决一律失败关闭',
+ th_autopre:'自动预审',th_veto:'否决钥匙',day:'日',live:'实况',delayed:'延迟',nodata:'无数据',cb:'熔断',cb_ok:'熔断正常',clk_suffix:' 里斯本',gates:['RugCheck 报告','X 主页','VET 只放 GOOD','真实官网','CA 已确认','无付费热度','流动性 ≥ $40k','量 < 10× 流动性','交易对 ≥ 30 分钟','boosts < 30'],
+ st_chief:'从不无共识开仓',st_scan:'寻找异动',st_vet:'链上风险，是否真实？',st_social:'项目的 X 账号',st_risk:'下多少、进不进',st_fills:'执行（纸面）',st_journal:'记录每一张工单',st_crawler:'先读完，再由桌面决定',
+ m_bal:'虚拟余额',m_seen:'已见代币',m_good:'GOOD / 已评',m_hype:'平均热度（模拟）',m_closed:'已平仓',m_fill:'最近成交',m_tickets:'工单',m_profiles:'项目 / 交易对',
+ tv_bal:'虚拟余额 (PAPER)',cb_pause:'暂停 — 熔断',connecting:'正在连接引擎…',
+ crawler_lines:['追踪气味中…','闻到鲸鱼味了 🐋','又读完一个项目'],scan_lines:['新猎物：','雷达响了：','发现目标：'],
+ crawler_read:n=>('读了 '+(n||'—')+' 个项目，交给桌上决定'),
+ vet_rug:' 闻着像 rug',vet_good:' 链上干净',sim_suffix:'（模拟）',risk_no:'过不了：',
+ why_norc:'无 RugCheck',why_nox:'无 X',why_nosite:'无官网',why_lowliq:'流动性低',why_baby:'新对',why_rules:'规则',
+ chief_cb:'熔断开着，谁也不许进',risk_watch:' 持仓中，盯着呢',journal_reg:'正在登记',
+ bal:'余额',analyzed:' 已分析',p_price:'价格',p_liq:'流动性',p_age:'年龄',ach_cap:'最近代币 24h 涨跌',spider_cap:'否决蛛网（真实计数）',
+ pills_note:' — 顺序就是关键：',hard_note:'算术，不花钱',vet_note:'CHIEF 的否决项',yes:'是',no:'否',
+ stocks:'股票交易员',stocks_total:'总市值',stocks_today:'今日盈亏',stocks_last:'最近工单',stocks_none:'暂无工单',stocks_paper:'模拟盘'},
+en:{title:'GROKBOT + JEV — Trading Office (PAPER)',sub:'PAPER STOCK DESK · MARKETS & PORTFOLIO',paper:'📄 PAPER · VIRTUAL MONEY',
+ nav_office:'Office',nav_trade:'Trade Desk',nav_markets:'Markets',nav_race:'Race',nav_spider:'Spider',nav_observatory:'Observatory',nav_settings:'Settings',
+ saldo:'BALANCE',jev:'JEV · ANALYSIS',thr_note:'— desk rules (engine)',fail_closed:'EVERY VETO FAILS CLOSED',
+ th_autopre:'AUTO-PRE',th_veto:'VETO KEYS',day:'DAY',live:'LIVE',delayed:'DELAYED',nodata:'NO DATA',cb:'CIRCUIT BREAKER',cb_ok:'breaker OK',clk_suffix:' PT',gates:['RugCheck report','X profile','VET GOOD only','real website','CA confirmed','no paid hype','liquidity ≥ $40k','vol < 10× liq','pair ≥ 30 min','boosts < 30'],
+ st_chief:'never opens without consensus',st_scan:'hunting what moves',st_vet:'on-chain risk, is it real?',st_social:"the project's X account",st_risk:'how much, and whether in',st_fills:'execution (paper)',st_journal:'logs every ticket',st_crawler:'reads first, desk decides after',
+ m_bal:'virtual balance',m_seen:'tokens seen',m_good:'GOOD / rated',m_hype:'avg hype (simulated)',m_closed:'closed',m_fill:'last fill',m_tickets:'tickets',m_profiles:'profiles / pairs',
+ tv_bal:'VIRTUAL BALANCE (PAPER)',cb_pause:'PAUSED — breaker',connecting:'connecting to engine…',
+ crawler_lines:['following the scent…','smells like a whale 🐋','another profile read'],scan_lines:['new critter: ','radar pinged: ','land in sight: '],
+ crawler_read:n=>('read '+(n||'—')+' profiles, the desk decides'),
+ vet_rug:' smells like a rug',vet_good:' clean on-chain',sim_suffix:' (simulated)',risk_no:'no pass: ',
+ why_norc:'no RugCheck',why_nox:'no X',why_nosite:'no site',why_lowliq:'low liq',why_baby:'baby pair',why_rules:'rules',
+ chief_cb:'breaker on, nobody gets in',risk_watch:' open, watching it',journal_reg:'logging',
+ bal:'BALANCE',analyzed:' ANALYZED',p_price:'Price',p_liq:'Liquidity',p_age:'Age',ach_cap:'24h change of latest tokens',spider_cap:'veto web (real counts)',
+ pills_note:' — order is the point: ',hard_note:'arithmetic, costs nothing',vet_note:"CHIEF's vetoes",yes:'yes',no:'no',
+ stocks:'STOCKS TRADER',stocks_total:'Total value',stocks_today:'Today P&L',stocks_last:'Last order',stocks_none:'no orders yet',stocks_paper:'PAPER'}};
+/* ---------- 葡语日志模板翻译 ---------- */
+function frag(s,zh){ // 片段级替换（VET 报告尾巴、测试理由共用）
+ const R=zh?[
+  [/VET on-chain \(RugCheck\): sem problemas detetados/g,'链上验真（RugCheck）：未发现问题'],
+  [/VET on-chain parcial \(RPC\): só RPC \(sem dados de holders\)/g,'链上验真（部分·RPC）：仅 RPC（无持有人数据）'],
+  [/VET on-chain \(RugCheck\):/g,'链上验真（RugCheck）：'],
+  [/heurístico \(fallback\)/g,'启发式（兜底）'],[/heur (GOOD|WARN|RUG) (\d+)\/100/g,'启发式 $1 $2/100'],
+  [/aviso:/g,'警告：'],[/perigo:/g,'危险：'],[/maior holder/g,'最大持有人'],[/\(liquidez\/idade\)/g,'（流动性/年龄）'],
+  [/só RPC \(sem dados de holders\)/g,'仅 RPC（无持有人数据）'],[/não corresponde ao aviso suave único/g,'与唯一软警告不符'],
+  [/com (\d+) motivos/g,'共 $1 个理由'],[/auto-vet (GOOD|WARN|RUG)/g,'自动验真 $1']
+ ]:[
+  [/VET on-chain \(RugCheck\): sem problemas detetados/g,'on-chain vet (RugCheck): no issues found'],
+  [/VET on-chain parcial \(RPC\): só RPC \(sem dados de holders\)/g,'on-chain vet (partial RPC): RPC only (no holder data)'],
+  [/VET on-chain \(RugCheck\):/g,'on-chain vet (RugCheck):'],
+  [/heurístico \(fallback\)/g,'heuristic (fallback)'],[/heur (GOOD|WARN|RUG) (\d+)\/100/g,'heur $1 $2/100'],
+  [/aviso:/g,'warning:'],[/perigo:/g,'danger:'],[/maior holder/g,'top holder'],[/\(liquidez\/idade\)/g,'(liquidity/age)'],
+  [/só RPC \(sem dados de holders\)/g,'RPC only (no holder data)'],[/não corresponde ao aviso suave único/g,'does not match the single soft warning'],
+  [/com (\d+) motivos/g,'with $1 reasons'],[/auto-vet (GOOD|WARN|RUG)/g,'auto-vet $1']
+ ];
+ R.forEach(([a,b])=>{s=s.replace(a,b)});return s}
+function reason(r,zh){ // BLOQUEADO 的单条理由
+ r=r.replace(/^veto: /,''); let m;
+ if(m=r.match(/^sem relatório RugCheck(?: \(RugCheck: HTTP (\d+)\))?$/))return zh?('无 RugCheck 报告'+(m[1]?'（HTTP '+m[1]+'）':'')):('no RugCheck report'+(m[1]?' (HTTP '+m[1]+')':''));
+ if(m=r.match(/^VET (RUG|WARN) \(só GOOD limpo entra\)$/))return zh?('VET 为 '+m[1]+'（只放行干净的 GOOD）'):('VET '+m[1]+' (only clean GOOD passes)');
+ if(r==='sem website')return zh?'无官网':'no website';
+ if(m=r.match(/^par sem perfil X nas socials(?: \(link não é perfil: (\S+?)\))?$/))return zh?('交易对无 X 主页'+(m[1]?'（链接非主页）':'')):('pair has no X profile'+(m[1]?' (link is not a profile)':''));
+ if(r==='CA não confirmado')return zh?'合约地址未确认':'CA unconfirmed';
+ if(m=r.match(/^liquidez (\S+) < (\S+)$/))return (zh?'流动性 ':'liquidity ')+m[1]+' < '+m[2];
+ if(m=r.match(/^vol24h (\S+) ≥ (\S+) liq$/))return (zh?'24h 量 ':'24h vol ')+m[1]+' ≥ '+m[2]+(zh?'×流动性':'× liq');
+ if(m=r.match(/^injeção: salto visto em (\d+)\/(\d+) leituras seguidas$/))return zh?('注入嫌疑：连续 '+m[2]+' 次读数中 '+m[1]+' 次跳变'):('injection: jump in '+m[1]+'/'+m[2]+' straight reads');
+ if(m=r.match(/^injeção: liquidez (\S+) < (\S+)$/))return zh?('注入嫌疑：流动性 '+m[1]+' < '+m[2]):('injection: liquidity '+m[1]+' < '+m[2]);
+ if(m=r.match(/^lançamento: liquidez (\S+) < (\S+)$/))return zh?('发射期：流动性 '+m[1]+' < '+m[2]):('launch: liquidity '+m[1]+' < '+m[2]);
+ if(m=r.match(/^injeção: (.*)$/))return (zh?'注入嫌疑：':'injection: ')+frag(m[1],zh);
+ if(m=r.match(/^criador com histórico de rug \(risk: (.+)\)$/))return zh?('创建者有 rug 前科（'+m[1]+'）'):('creator has rug history (risk: '+m[1]+')');
+ if(m=r.match(/^holder \(não-pool\) com (\S+) > (\S+)$/))return zh?('单一持有人（非池）'+m[1]+' > '+m[2]):('single holder (non-pool) '+m[1]+' > '+m[2]);
+ if(m=r.match(/^(\d+) insiders ligados > (\d+)$/))return zh?('关联内幕地址 '+m[1]+' 个 > '+m[2]):(m[1]+' linked insiders > '+m[2]);
+ if(m=r.match(/^lançamento: (\d+) insiders > (\d+)$/))return zh?('发射期：内幕地址 '+m[1]+' 个 > '+m[2]):('launch: '+m[1]+' insiders > '+m[2]);
+ if(m=r.match(/^teste: (.*)$/))return (zh?'测试：':'test: ')+frag(m[1],zh);
+ return frag(r,zh)}
+function trLog(msg,lang){ if(!msg||msg==='—'||msg.length<2)return msg; const zh=lang!=='en'; let m;
+ if(m=msg.match(/^DexScreener: (\d+) perfis Solana, (\d+) pares com preço/))return zh?('DexScreener：'+m[1]+' 个 Solana 项目，'+m[2]+' 个有报价的交易对'):('DexScreener: '+m[1]+' Solana profiles, '+m[2]+' priced pairs');
+ if(m=msg.match(/^Encontrou (\$\S+) — vol (\S+), liq (\S+), (\S+)/))return zh?('发现 '+m[1]+' — 量 '+m[2]+'，流动性 '+m[3]+'，'+m[4]):('Found '+m[1]+' — vol '+m[2]+', liq '+m[3]+', '+m[4]);
+ if(m=msg.match(/^(\$\S+): sentimento (\d+)\/100 — SIMULADO, não usado/))return zh?(m[1]+'：情绪 '+m[2]+'/100 — 模拟值，未采用'):(m[1]+': sentiment '+m[2]+'/100 — SIMULATED, unused');
+ if(m=msg.match(/^(\$\S+): (GOOD|WARN|RUG) \[fonte: auto RugCheck\+heurístico\] — (.*)$/))return zh?(m[1]+'：'+m[2]+'［来源：自动 RugCheck+启发式］— '+frag(m[3],1)):(m[1]+': '+m[2]+' [source: auto RugCheck+heuristic] — '+frag(m[3],0));
+ if(m=msg.match(/^(\$\S+) (TESTE )?BLOQUEADO[^:]*: (?:regras da mesa: )?(.*)$/)){const parts=[];let dep=0,cur='';for(let i=0;i<m[3].length;i++){const ch=m[3][i];if(ch==='(')dep++;if(ch===')')dep--;if(ch===';'&&dep===0){parts.push(cur);cur='';if(m[3][i+1]===' ')i++}else cur+=ch}if(cur)parts.push(cur);const rs=parts.map(x=>reason(x.trim(),zh)).join(zh?'；':'; ');return zh?(m[1]+' 被拦'+(m[2]?'（测试）':'')+'：桌面规则：'+rs):(m[1]+' BLOCKED'+(m[2]?' (TEST)':'')+': desk rules: '+rs)}
+ if(m=msg.match(/^APROVADO (\$\S+): tamanho (\S+), risco (\S+) \(([^)]+)\)(.*)$/))return zh?('批准 '+m[1]+'：仓位 '+m[2]+'，风险 '+m[3]+'（'+m[4]+'）'+(m[5]?' · VET WARN → 仓位减半':'')):('APPROVED '+m[1]+': size '+m[2]+', risk '+m[3]+' ('+m[4]+')'+(m[5]?' · VET WARN → size halved':''));
+ if(m=msg.match(/^Resumo: (\d+) abertas, saldo virtual (\S+) — dados ao vivo/))return zh?('摘要：'+m[1]+' 笔持仓，虚拟余额 '+m[2]+' — 实时数据'):('Summary: '+m[1]+' open, virtual balance '+m[2]+' — live data');
+ if(m=msg.match(/^Relatório noturno (\S+) escrito \((\d+) trades, P&L (\S+)\)/))return zh?('夜间报告 '+m[1]+' 已生成（'+m[2]+' 笔交易，盈亏 '+m[3]+'）'):('Night report '+m[1]+' written ('+m[2]+' trades, P&L '+m[3]+')');
+ if(/^TICKET PAPER/.test(msg)){let s=msg.replace('TICKET PAPER TESTE',zh?'纸面工单·测试':'PAPER TICKET TEST').replace(/\(aviso: ([^)]+)\)/g,zh?'（注意：$1）':'(warning: $1)').replace(/ hoje\b/g,zh?' 今日':' today').replace(/teste (\d+)\/(\d+)/g,zh?'测试 $1/$2':'test $1/$2');return s}
+ if(msg==='auto (RugCheck + heurístico)')return zh?'自动（RugCheck + 启发式）':'auto (RugCheck + heuristic)';
+ return msg+(zh?' [原文]':' [orig.]')}
+window.I18N=I18N;window.trLog=trLog;
+})();
+
+</script></head><body><div id="stage">
+<div class="hd"><div class="lg"><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" fill="#ff4fb4"/><rect x="6" y="8" width="3" height="4" fill="#111"/><rect x="13" y="8" width="3" height="4" fill="#111"/></svg></div>
+<div><h1>GROKBOT + JEV</h1><div class="sub" id="hsub">模拟股票桌面 · 行情与组合</div></div><span class="paper" id="hpaper">📄 PAPER · 虚拟资金</span><nav id="roomnav"><a href="index.html" class="on" id="rn_office">办公室</a><a href="trade.html" id="rn_trade">交易台</a><a href="markets.html" id="rn_markets">行情</a><a href="race.html" id="rn_race">赛跑</a><a href="spider.html" id="rn_spider">蜘蛛</a><a href="finance-observatory.html" id="rn_observatory">财经观测台</a><a href="settings.html" id="rn_settings">设置</a><button id="langBtn">EN</button></nav>
+<div class="sp"></div><div class="day" id="day">—</div><div class="day" id="live">—</div><div class="clk" id="clk">--:-- PT</div></div>
+<div class="cards" id="cardsL"></div>
+<div id="ofr"><div id="owrap"><img id="obg" src="/app/assets/office-bg.jpg" alt="办公室像素场景 / Pixel office scene"><canvas id="oc" width="2048" height="1152"></canvas><div id="stockchip"></div><div id="aichip"></div></div></div>
+<div class="cards" id="cardsR"></div>
+<div id="bot3">
+<div class="pn"><div class="ph"><span><span id="hSaldo">余额</span> · <span id="bday">—</span> · PAPER</span><b id="bstat">—</b></div><canvas id="bal" width="1000" height="300"></canvas></div>
+<div class="pn"><div class="ph"><span><span id="hJev">JEV · 分析</span> <span class="mut" id="atok"></span></span><span><b id="nscan">—</b><button class="btn" id="expJ">JSON</button><button class="btn" id="expC">CSV</button></span></div>
+ <div class="an"><div class="stats" id="astats"></div><canvas id="ach" width="620" height="230"></canvas><div class="rt"><table id="achk"></table></div>
+ <div id="atabw"><table><thead><tr><th>TOKEN</th><th>LIQ</th><th>VOL 24H</th><th>24H</th><th id="hAutoPre">自动预审</th><th>FINAL</th><th id="hVeto">否决钥匙</th></tr></thead><tbody id="atab"></tbody></table></div></div></div>
+<div class="pn"><div class="ph"><span>thresholds.py <span class="mut" id="hThrNote">— 桌面规则（引擎）</span></span><b id="hFailClosed">所有否决一律失败关闭</b></div>
+ <div class="th"><div class="code" id="thr"></div><canvas id="spd" width="420" height="500"></canvas></div>
+ <div class="pills" id="pills"></div></div>
+</div></div>
+<script>
+(function(){'use strict';
+const POLL=20000;
+const $=i=>document.getElementById(i),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const f2=(v,d=2)=>v==null||isNaN(v)?'—':(+v).toLocaleString(LOC,{minimumFractionDigits:d,maximumFractionDigits:d});
+const usd=v=>v==null||isNaN(v)?'—':(v<0?'−':'')+'$'+f2(Math.abs(v));const sg=v=>v==null||isNaN(v)?'—':(v>=0?'+':'')+usd(v);
+const fk=n=>n==null||isNaN(n)?'—':n>=1e6?'$'+f2(n/1e6,2)+'M':'$'+f2(n/1e3,1)+'k';
+const hm=t=>t?new Date(t).toLocaleTimeString(LOC,{timeZone:'Europe/Lisbon',hour:'2-digit',minute:'2-digit'}):'—';
+const snapshotTime=t=>t?new Date(t).toLocaleString(LOC,{timeZone:'Europe/Lisbon',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+const ageLabel=s=>s==null?'时间未提供':s<60?'刚刚':s<3600?Math.floor(s/60)+' 分钟前':s<86400?(s/3600).toFixed(1)+' 小时前':(s/86400).toFixed(1)+' 天前';
+const age=ms=>{if(!ms)return'—';const m=(Date.now()-ms)/6e4;return m<60?Math.round(m)+'min':m<2880?f2(m/60,1)+'h':f2(m/1440,0)+'d'};
+const pick=a=>a[Math.random()*a.length|0],now=()=>performance.now();
+const PK='#ff4fb4',G='#3dff8f',R='#ff4d5e',Y='#ffd23f',C='#3fd5ff',O='#ff9a3c',W='#f2f2f7';
+let S=null;
+const LANG=(()=>{try{const q=new URLSearchParams(location.search).get('lang');if(q==='en'||q==='zh')return q}catch(e){}try{return localStorage.getItem('office_lang')||'zh'}catch(e){return'zh'}})(),TI=(window.I18N||{})[LANG]||{},tr=s=>window.trLog?window.trLog(s,LANG):s,LOC=LANG==='zh'?'zh-CN':'en-US';try{document.documentElement.lang=LOC;if(TI.title)document.title=TI.title}catch(e){}
+// ---------- escala da página (cabe numa janela) ----------
+function fitC(id){const c=$(id);if(!c)return;const r=c.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);const w=Math.max(50,Math.round(r.width*d)),h=Math.max(50,Math.round(r.height*d));if(c.width!==w||c.height!==h){c.width=w;c.height=h}}
+function scale(){['bal','ach','spd'].forEach(fitC);if(S){balance();analysis()}}
+addEventListener('resize',scale);
+// ---------- bots ----------
+const BOTS=[
+ {n:'CHIEF',c:PK,st:'nunca abre posição sem consenso',ag:['CHIEF'],ic:'👑'},
+ {n:'SCAN',c:'#3d7bff',st:'à procura do que mexe',ag:['SCAN'],ic:'🔭'},
+ {n:'VET',c:W,st:'risco on-chain, é real?',ag:['AUTO-VET','VET'],ic:'🔍'},
+ {n:'SOCIAL',c:R,st:'a conta X do projeto',ag:['SOCIAL'],ic:'📱'},
+ {n:'RISK',c:O,st:'quanto e se entra',ag:['RISK'],ic:'🛡️'},
+ {n:'FILLS',c:G,st:'execução (paper)',ag:['FILLS'],ic:'🔔'},
+ {n:'JOURNAL',c:Y,st:'regista cada ticket',ag:['JOURNAL'],ic:'✏️'},
+ {n:'CRAWLER',c:C,st:'lê primeiro, depois o desk decide',ag:['CRAWLER'],ic:'🧢'}];
+BOTS.forEach(b=>{const k='st_'+b.n.toLowerCase();if(TI[k])b.st=TI[k]});
+const BY=Object.fromEntries(BOTS.map(b=>[b.n,b]));
+function agOf(b){const ag=(S&&S.agents)||{};let best=null;b.ag.forEach(k=>{const v=ag[k];if(v&&(!best||(v.at||0)>(best.at||0)))best=v});
+ if(!best&&b.n==='SOCIAL'){const l=((S&&S.logs)||[]).filter(l=>/sentimento/.test(l.msg||'')).pop();if(l)best={last:l.msg,at:l.t,on:true}}return best}
+function cardNum(b){const d=S||{},tk=d.tokens||[];switch(b.n){
+ case'CHIEF':return[usd(d.bal),TI.m_bal||'saldo'];case'SCAN':return[d.seen?String(d.seen.length):'—',TI.m_seen||'vistos'];
+ case'VET':{const n=tk.filter(t=>t.vet).length;return[n?tk.filter(t=>t.vet==='GOOD').length+'/'+n :'—',TI.m_good||'GOOD']}
+ case'SOCIAL':{const v=tk.map(t=>t.sent).filter(x=>x!=null);return[v.length?f2(v.reduce((a,b)=>a+b,0)/v.length,0)+'/100':'—',TI.m_hype||'hype']}
+ case'RISK':return[(d.wins??'—')+'W '+(d.losses??'—')+'L',TI.m_closed||'fechadas'];
+ case'FILLS':{const c=(d.closed||[]).slice().sort((a,b)=>Date.parse(b.exitTime||0)-Date.parse(a.exitTime||0))[0];return[c?sg(c.pnl):'—',c?(TI.m_fill||'fill')+' $'+c.name:(TI.m_fill||'fill')]}
+ case'JOURNAL':return[d.tid!=null?'#'+d.tid:'—',TI.m_tickets||'tickets'];
+ case'CRAWLER':{const m=((agOf(b)||{}).last||'').match(/(\d+) perfis.*?(\d+) pares/);return[m?m[1]+' / '+m[2] :'—',TI.m_profiles||'perfis']}}}
+function cards(){const H=BOTS.map(b=>{const a=agOf(b),n=cardNum(b),fresh=a&&a.at?Math.max(4,100-(Date.now()-a.at)/6e4*2):0;
+ const q=lastLog(b);return`<div class="cd"><span class="ic" style="background:${b.c}"></span><div class="nm" style="color:${b.c}">${b.n}</div><div class="st">${esc(b.st)}</div><span class="tg">${a&&a.on===false?'OFF':'PAPER'}</span>
+ <div class="row"><span class="tk">${esc(n[1])} · ${a&&a.at?hm(a.at):'—'}</span><span class="nv">${esc(n[0])}</span></div><div class="bar"><i style="width:${fresh}%;background:${b.c}"></i></div>
+ <div class="q ${q?'':'m'}">${q?'“'+esc(tr(q))+'”':esc(tr((a&&a.last)||'—'))}</div></div>`});$('cardsL').innerHTML=H.slice(0,4).join('');$('cardsR').innerHTML=H.slice(4).join('')}
+const TAGS={CHIEF:['CHIEF','SYS'],SCAN:['SCAN'],VET:['VET','AUTO-VET'],SOCIAL:['SOCIAL'],RISK:['PIPE'],FILLS:['FILLS'],JOURNAL:['JOURNAL'],CRAWLER:['CRAWLER']};
+function lastLog(b){const l=((S&&S.logs)||[]).filter(l=>TAGS[b.n].includes(l.tag)||(b.n==='SOCIAL'&&/sentimento/.test(l.msg||''))).pop();return l?l.msg:''}
+// ================= ESCRITÓRIO (ilustração + sobreposição animada) =================
+// coordenadas no espaço da imagem 1024x576; buffer pixel 512x288 (1 px arte = 2 px imagem), escalado x4 no canvas 2048x1152
+const cv=$('oc'),g=cv.getContext('2d'),BWd=512,BHd=288,K=4,buf=document.createElement('canvas');buf.width=BWd;buf.height=BHd;const b=buf.getContext('2d');
+const R_=(x,y,w,h,c)=>{b.fillStyle=c;b.fillRect(Math.round(x),Math.round(y),Math.max(1,Math.round(w)),Math.max(1,Math.round(h)))};
+function disc(cx,cy,r,c){cx=Math.round(cx);cy=Math.round(cy);b.fillStyle=c;for(let dy=-r;dy<=r;dy++){const w=Math.round(Math.sqrt(r*r-dy*dy));b.fillRect(cx-w,cy+dy,2*w+1,1)}}
+function ell(cx,cy,rx,ry,c){cx=Math.round(cx);cy=Math.round(cy);b.fillStyle=c;for(let dy=-ry;dy<=ry;dy++){const w=Math.round(rx*Math.sqrt(1-(dy*dy)/(ry*ry)));b.fillRect(cx-w,cy+dy,2*w+1,1)}}
+function shade(hex,f){const n=parseInt(hex.slice(1),16);const ch=s=>Math.max(0,Math.min(255,Math.round(s*f)));return'#'+((1<<24)|(ch(n>>16)<<16)|(ch(n>>8&255)<<8)|ch(n&255)).toString(16).slice(1)}
+function pline(x0,y0,x1,y1,c,ph,dash){x0=Math.round(x0);y0=Math.round(y0);x1=Math.round(x1);y1=Math.round(y1);const dx=Math.abs(x1-x0),dy=-Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1;let e=dx+dy,k=0;b.fillStyle=c;
+ for(let i=0;i<3000;i++){if(!dash||((k+ph)%dash)<dash*.55)b.fillRect(x0,y0,1,1);k++;if(x0===x1&&y0===y1)break;const e2=2*e;if(e2>=dy){e+=dy;x0+=sx}if(e2<=dx){e+=dx;y0+=sy}}}
+const T=[];const tx=(t,x,y,sz,c,al,glow)=>T.push([t,x,y,sz,c,al,glow]);// x,y em coords imagem
+const SEATS={SCAN:[268,258],VET:[453,258],SOCIAL:[633,258],RISK:[243,402],FILLS:[448,406],JOURNAL:[641,414],CHIEF:[868,236]};
+const A=BOTS.map((bt,i)=>{const home=SEATS[bt.n]||[560,330];return{...bt,i,home,x:home[0],y:home[1],tgt:null,bub:'',bubT:0,busyT:0,icon:'',iconT:0,fixed:'',moving:false,ph:i*.8}});
+const AB=Object.fromEntries(A.map(a=>[a.n,a]));
+const WALK=[[560,330],[360,330],[150,320],[520,470],[740,330],[740,470],[300,470],[110,250],[560,190]];
+function say(a,t,ms){a.bub=t;a.bubT=now()+(ms||4200)}function act(a,ms){a.busyT=now()+(ms||6000)}function ico(a,k,ms){a.icon=k;a.iconT=now()+(ms||3500)}
+setInterval(()=>{const a=AB.CRAWLER;if(!a.tgt)a.tgt=pick(WALK)},2600);
+function step(a,dt){if(!a.tgt){a.moving=false;return}const dx=a.tgt[0]-a.x,dy=a.tgt[1]-a.y,d=Math.hypot(dx,dy),s=dt*.05;a.moving=true;a.dir=dx>=0?1:-1;if(d<=s){a.x=a.tgt[0];a.y=a.tgt[1];a.tgt=null;a.moving=false;if(Math.random()<.4)say(a,pick(TI.crawler_lines||['…']),2400)}else{a.x+=dx/d*s;a.y+=dy/d*s}}
+// TV: velas reais da curva de capital por cima do gráfico da ilustração
+const TV=[343,17,644,135];
+function tvOverlay(t){const x0=TV[0]/2+2,y0=TV[1]/2+2,w=(TV[2]-TV[0])/2-4,h=(TV[3]-TV[1])/2-4;const eq=((S&&S.equity)||[]).map(e=>+e.v).filter(v=>!isNaN(v));
+ b.fillStyle='rgba(6,8,12,.9)';b.fillRect(Math.round(x0),Math.round(y0),Math.round(w),Math.round(h));
+ for(let k=1;k<4;k++)for(let xx=x0+2;xx<x0+w-2;xx+=3)R_(xx,y0+k*h/4,1,1,'#1a2230');
+ if(eq.length<4){tx('—',(x0+w/2)*2,(y0+h/2)*2,22,'#8a8a99','center');return}
+ const n=Math.min(36,Math.floor(eq.length/2)),k=Math.ceil(eq.length/n),cs=[];for(let i=0;i<eq.length;i+=k){const s=eq.slice(Math.max(0,i-1),i+k);cs.push({o:s[0],c:s[s.length-1],h:Math.max(...s),l:Math.min(...s)})}
+ let lo=Math.min(...cs.map(c=>c.l)),hi=Math.max(...cs.map(c=>c.h));if(hi-lo<1){lo-=5;hi+=5}const top=y0+9,bot=y0+h-12,Y_=v=>bot-(v-lo)/(hi-lo)*(bot-top),cw=(w-24)/cs.length;
+ cs.forEach((c,i)=>{const cx=x0+4+i*cw+cw/2,up=c.c>=c.o,col=up?'#2fe07c':'#ff4d5e';R_(cx,Y_(c.h),1,Math.max(1,Y_(c.l)-Y_(c.h)),col);const a=Y_(Math.max(c.o,c.c)),bb=Y_(Math.min(c.o,c.c));R_(cx-1,a,3,Math.max(1,bb-a),col);
+  const vv=Math.abs(c.c-c.o)/(hi-lo+1e-9);R_(cx-1,y0+h-2-vv*8,3,vv*8+1,up?'#145c38':'#6a1f2b')});
+ const lv=eq[eq.length-1],ly=Y_(lv);if(((t/500)|0)%2)R_(x0+w-20,ly-2,18,5,lv>=eq[0]?'#2fe07c':'#ff4d5e');
+ tx((TI.tv_bal||'SALDO VIRTUAL (PAPER)')+' · '+usd(S.bal),(x0+3)*2,(y0+4)*2,10,'#ececf1','left');tx(f2(hi,0),(x0+w-2)*2,(top+2)*2,9,'#8a8a99','right');tx(f2(lo,0),(x0+w-2)*2,(bot)*2,9,'#8a8a99','right')}
+// personagens: blob pixel com contorno, sombra, brilho, mãos e adereço
+function blob(a,t){const busy=now()<a.busyT,fr=(t/(busy?140:420)+a.i)|0,bob=a.moving?(fr%2):(fr%3===1?1:0);const X=a.x/2,Yb=a.y/2,cy=Yb-6-bob,r=6,c=a.c,dk=shade(c,.62),lt=shade(c,1.25);
+ ell(X+1,Yb+1,7,2,'rgba(0,0,0,.55)');
+ disc(X,cy,r+1,'#0a0a10');disc(X,cy,r,c);for(let dy=2;dy<=r;dy++){const w=Math.round(Math.sqrt(r*r-dy*dy));R_(X-w,cy+dy,2*w+1,1,dk)}R_(X-r,cy+r-1,2*r+1,1,'#0a0a10');R_(X-r+1,cy+r,2*r-1,1,'#0a0a10');
+ R_(X-3,cy-4,2,1,lt);R_(X-4,cy-3,1,2,lt);
+ const lk=a.moving?a.dir||0:0,blink=((t/2600+a.i*.37)%1)<.05;const ec='#0a0a10';if(blink){R_(X-3+lk,cy,2,1,ec);R_(X+1+lk,cy,2,1,ec)}else{R_(X-3+lk,cy-1,2,2,ec);R_(X+1+lk,cy-1,2,2,ec);R_(X-3+lk,cy-1,1,1,'#fff');R_(X+1+lk,cy-1,1,1,'#fff')}
+ R_(X-1+lk,cy+2,3,1,shade(c,.4));R_(X-4,cy+1,1,1,'rgba(255,120,160,.7)');R_(X+4,cy+1,1,1,'rgba(255,120,160,.7)');
+ const typ=busy||!a.moving,hy=typ?(fr%2?-1:0):0;[[X-8,cy+3+hy],[X+7,cy+3-hy]].forEach(([hx,hy2])=>{R_(hx-1,hy2-1,3,3,'#0a0a10');R_(hx,hy2,2,2,c)});
+ const P=a.n,sw=busy?(fr%2?1:-1):0;
+ if(P==='CHIEF'){R_(X-4,cy-r-2,9,2,'#ffd23f');R_(X-4,cy-r-4,1,2,'#ffd23f');R_(X,cy-r-5,1,3,'#ffd23f');R_(X+4,cy-r-4,1,2,'#ffd23f');R_(X,cy-r-2,1,1,'#ff4fb4');R_(X-1,cy+3,3,3,'#16161c');R_(X,cy+3,1,3,'#ff4fb4')}
+ else if(P==='SCAN'){R_(X-4+lk,cy-2,3,3,'#16161c');R_(X+1+lk,cy-2,3,3,'#16161c');R_(X-3+lk,cy-1,1,1,'#3fd5ff');R_(X+2+lk,cy-1,1,1,'#3fd5ff')}
+ else if(P==='VET'){const hx=X+10,hy3=cy+sw;b.fillStyle='#e9eef2';for(let k=0;k<12;k++){const an=k/12*6.283;b.fillRect(Math.round(hx+Math.cos(an)*2.5),Math.round(hy3+Math.sin(an)*2.5),1,1)}R_(hx-2,hy3+2,1,3,'#8f98a0')}
+ else if(P==='SOCIAL'){R_(X+8,cy-2,3,5,'#0a0a10');R_(X+9,cy-1+((t/160|0)%3),1,1,'#3fd5ff')}
+ else if(P==='CRAWLER'){R_(X-5,cy-r,11,2,'#0d5a4a');R_(X-4,cy-r-1,9,1,'#0d5a4a');R_(X+(a.dir<0?-8:3),cy-r+1,5,1,'#0d5a4a')}
+ else if(P==='RISK'){const sx=X+10,sy=cy;R_(sx-2,sy-3,5,6,'#e9eef2');R_(sx-1,sy+3,3,1,'#e9eef2');R_(sx,sy-2,1,5,'#ff4d5e');R_(sx-1,sy,3,1,'#ff4d5e')}
+ else if(P==='FILLS'){const bx=X+sw,by=cy-r-5;R_(bx-2,by-2,5,4,'#ffd23f');R_(bx-3,by+2,7,1,'#ffd23f');R_(bx,by+3,1,1,'#0a0a10');if(busy){R_(bx-6,by-1,1,2,'#ffd23f');R_(bx+6,by-1,1,2,'#ffd23f')}}
+ else if(P==='JOURNAL'){R_(X-11,cy+1,4,4,'#e9eef2');pline(X+8,cy+3+(typ?fr%2:0),X+11,cy-1,'#ffd23f');R_(X+8,cy+3,1,1,'#ffc6a0')}
+ const ic=now()<a.iconT?a.icon:(busy?'spin':''),I=[X,cy-r-(P==='CHIEF'||P==='FILLS'?10:5)];
+ if(ic==='spin'){for(let k=0;k<6;k++){const an=k/6*6.283+t/150;R_(I[0]+Math.cos(an)*2.5,I[1]+Math.sin(an)*2.5,1,1,k<3?'#3fd5ff':'#24304a')}}
+ else if(ic==='ok'){[[-2,0],[-1,1],[0,2],[1,1],[2,0],[3,-1]].forEach(([dx,dy])=>R_(I[0]+dx,I[1]+dy,1,1,'#3dff8f'))}
+ else if(ic==='x'){for(let k=-2;k<=2;k++){R_(I[0]+k,I[1]+k,1,1,'#ff4d5e');R_(I[0]+k,I[1]-k,1,1,'#ff4d5e')}}
+ tx(a.n,a.x,a.y+10,9,c===W?'#dfe3ea':c,'center',true)}
+function lasers(t){const ph=(t/60)|0;A.forEach((a,i)=>{if(now()>a.busyT||a.moving)return;const tx_=(TV[0]+20+i*(TV[2]-TV[0]-40)/7)/2,ty=TV[3]/2-1;pline(a.x/2,a.y/2-14,tx_,ty,a.c===W?'#cfd6e0':a.c,ph,5);R_(tx_-1,ty-1,3,3,'#fff')})}
+let last=now();
+function frame(t){const dt=Math.min(50,t-last);last=t;T.length=0;A.forEach(a=>step(a,dt));b.clearRect(0,0,BWd,BHd);
+ tvOverlay(t);lasers(t);A.slice().sort((p,q)=>p.y-q.y).forEach(a=>blob(a,t));
+ if(S&&S.cb&&((t/500|0)%2)){b.fillStyle='rgba(122,15,44,.85)';b.fillRect(200,150,112,20);tx(TI.cb_pause||'PAUSA',512,320,16,'#fff','center')}
+ g.clearRect(0,0,cv.width,cv.height);g.imageSmoothingEnabled=false;g.drawImage(buf,0,0,BWd*K,BHd*K);
+ T.forEach(([s,x,y,sz,c,al,gl])=>{g.font='700 '+sz*2+'px ui-monospace,Menlo,monospace';g.textAlign=al||'left';g.textBaseline='middle';if(gl){g.lineWidth=5;g.strokeStyle='rgba(5,5,10,.85)';g.strokeText(s,x*2,y*2);g.shadowColor=c;g.shadowBlur=8}g.fillStyle=c;g.fillText(s,x*2,y*2);g.shadowBlur=0});
+ A.forEach(a=>{const m=a.fixed||(now()<a.bubT?a.bub:'');if(!m)return;g.font='600 22px ui-monospace,monospace';const w=Math.min(520,g.measureText(m).width+30),h=38;let x=a.x*2-w/2,y=a.y*2-92;x=Math.max(6,Math.min(cv.width-w-6,x));if(y<6)y=a.y*2+44;
+  g.fillStyle='rgba(10,10,16,.92)';g.strokeStyle=a.c===W?'#cfd6e0':a.c;g.lineWidth=3;g.beginPath();g.roundRect(x,y,w,h,19);g.fill();g.stroke();g.beginPath();const tx0=Math.max(x+20,Math.min(x+w-20,a.x*2));g.moveTo(tx0-7,y+h);g.lineTo(tx0+7,y+h);g.lineTo(tx0,y+h+9);g.fill();
+  let s=m;while(g.measureText(s).width>w-30&&s.length)s=s.slice(0,-2);if(s!==m)s+='…';g.fillStyle='#ececf1';g.textAlign='left';g.fillText(s,x+15,y+h/2+1)});
+ if(!S){g.font='700 36px ui-monospace,monospace';g.fillStyle='#ececf1';g.textAlign='center';g.fillText(TI.connecting||'…',cv.width/2,cv.height/2)}
+ requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+// ---------- eventos reais → animação ----------
+function shortWhy(m){const r=[];if(/RugCheck/i.test(m))r.push(TI.why_norc||'sem RugCheck');if(/VET RUG/.test(m))r.push('VET RUG');if(/CA não/.test(m))r.push('CA ?');if(/conta X|perfil X/.test(m))r.push(TI.why_nox||'sem X');if(/website|placeholder/.test(m))r.push(TI.why_nosite||'sem site');if(/liquidez/.test(m))r.push(TI.why_lowliq||'liq baixa');if(/idade do par/.test(m))r.push(TI.why_baby||'par bebé');return r.slice(0,2).join(' · ')||(TI.why_rules||'regras')}
+function onLog(l){const m=l.msg||'',n=(m.match(/\$[^\s:]+/)||['—'])[0];
+ if(l.tag==='SCAN'){act(AB.SCAN);say(AB.SCAN,pick(TI.scan_lines||[': '])+n)}
+ else if(l.tag==='CRAWLER'){act(AB.CRAWLER,3000);if(Math.random()<.3)say(AB.CRAWLER,TI.crawler_read?TI.crawler_read((m.match(/\d+/)||['—'])[0]):m)}
+ else if(l.tag==='VET'||l.tag==='AUTO-VET'){const v=(m.match(/: (GOOD|WARN|RUG)/)||[])[1];act(AB.VET);ico(AB.VET,v==='GOOD'?'ok':v==='RUG'?'x':'spin');say(AB.VET,v==='RUG'?n+(TI.vet_rug||' rug'):v==='GOOD'?n+(TI.vet_good||' ok'):n+' hmm… '+(v||'—'))}
+ else if(/sentimento/.test(m)||l.tag==='SOCIAL'){const s=(m.match(/(\d+)\/100/)||[])[1];act(AB.SOCIAL);say(AB.SOCIAL,n+' hype '+(s??'—')+'/100'+(TI.sim_suffix||''))}
+ else if(l.tag==='PIPE'){act(AB.RISK);if(/BLOQUEADO/.test(m)){ico(AB.RISK,'x');say(AB.RISK,(TI.risk_no||'não: ')+n+' — '+shortWhy(m))}else{ico(AB.RISK,'ok');say(AB.RISK,m.slice(0,44))}}
+ else if(l.tag==='CHIEF'||l.tag==='SYS'){act(AB.CHIEF);say(AB.CHIEF,m.slice(0,44))}
+ else if(/TICKET/.test(m)){act(AB.FILLS,9000);ico(AB.FILLS,'ok');say(AB.FILLS,'ding! '+n+' (paper)')}}
+let lastId=null,lastTid=null;
+function derive(){const d=S;A.forEach(a=>a.fixed='');if(d.cb)AB.CHIEF.fixed=TI.chief_cb||'disjuntor';else if((d.open||[]).length)AB.RISK.fixed='$'+(d.open[0].name||'—')+(TI.risk_watch||' open');
+ const logs=d.logs||[];if(lastId==null)logs.slice(-5).forEach((l,i)=>setTimeout(()=>onLog(l),i*600));else logs.filter(l=>l.id>lastId).slice(-10).forEach((l,i)=>setTimeout(()=>onLog(l),i*900));
+ lastId=logs.length?Math.max(...logs.map(l=>l.id||0)):lastId;if(lastTid!=null&&d.tid>lastTid){act(AB.FILLS,9000);say(AB.FILLS,'ding ding! ticket paper #'+d.tid);act(AB.JOURNAL,8000);say(AB.JOURNAL,(TI.journal_reg||'log')+' #'+d.tid)}lastTid=d.tid??lastTid}
+setInterval(()=>{if(!S)return;const a=pick(A);if(a.fixed||now()<a.bubT||a.moving)return;const ag=agOf(a);if(ag&&ag.last&&Math.random()<.6){const lt=tr(ag.last);say(a,lt.length>44?lt.slice(0,43)+'…':lt,3200)}},4500);
+// ================= SALDO =================
+function balance(){const c=$('bal'),x=c.getContext('2d'),W_=c.width,H_=c.height,d=S||{};x.clearRect(0,0,W_,H_);const fs=Math.max(18,Math.round(Math.min(H_*.2,W_*.055))),RX=W_-Math.round(fs*5.4);const eq=(d.equity||[]).map(e=>+e.v).filter(v=>!isNaN(v));
+ const pnl=d.bal!=null&&d.dayStart!=null?d.bal-d.dayStart:null;$('bday').textContent=(TI.day||'DIA')+' '+((d.dayKey||'—').slice(5));$('bstat').textContent=(d.wins??'—')+'W '+(d.losses??'—')+'L · '+(TI.day||'DIA')+' '+(pnl==null?'—':(pnl>=0?'+':'')+f2(pnl/d.dayStart*100)+'%');
+ x.font='700 '+Math.round(fs*.45)+'px ui-monospace,monospace';x.fillStyle='#8a8a99';x.textAlign='left';x.fillText(TI.bal||'SALDO',RX,H_*0.42);x.font='900 '+fs+'px ui-monospace,monospace';x.fillStyle='#3dff8f';x.shadowColor='#3dff8f';x.shadowBlur=18;x.fillText(usd(d.bal),RX,H_*0.64);x.shadowBlur=0;
+ if(eq.length<2){x.fillStyle='#8a8a99';x.fillText('—',W_/2,H_/2);return}
+ const cw=RX-60,ch=H_*0.68;let lo=Math.min(...eq),hi=Math.max(...eq);if(hi-lo<1){lo-=5;hi+=5}const P=i=>[20+i*cw/(eq.length-1),14+(1-(eq[i]-lo)/(hi-lo))*(ch-20)];
+ x.font='500 '+Math.round(fs*.33)+'px ui-monospace,monospace';x.fillStyle='#55556a';[hi,(hi+lo)/2,lo].forEach((v,k)=>x.fillText('$'+f2(v,0),24,22+k*(ch-30)/2));
+ const gr=x.createLinearGradient(0,14,0,ch);gr.addColorStop(0,'rgba(61,255,143,.28)');gr.addColorStop(1,'rgba(61,255,143,0)');x.fillStyle=gr;x.beginPath();x.moveTo(20,ch);eq.forEach((_,i)=>x.lineTo(...P(i)));x.lineTo(20+cw,ch);x.fill();
+ x.strokeStyle='#3dff8f';x.lineWidth=5;x.shadowColor='#3dff8f';x.shadowBlur=22;x.beginPath();eq.forEach((_,i)=>i?x.lineTo(...P(i)):x.moveTo(...P(i)));x.stroke();x.shadowBlur=0;const lp=P(eq.length-1);x.fillStyle='#fff';x.beginPath();x.arc(lp[0],lp[1],8,0,7);x.fill();
+ const dv=eq.map((v,i)=>i?v-eq[i-1]:0),mx=Math.max(1,...dv.map(Math.abs)),bw=cw/eq.length;dv.forEach((v,i)=>{const h=Math.abs(v)/mx*(H_-ch-12)+2;x.fillStyle=v>=0?'#1f8a50':'#b0283c';x.fillRect(20+i*bw,H_-h,Math.max(2,bw-3),h)})}
+// ================= ANÁLISE + THRESHOLDS =================
+const GATES=[['NO_RUGCHECK','relatório RugCheck'],['NO_X','perfil X'],['VET_','VET só GOOD'],['SITE_PLACEHOLDER','website real'],['CA_UNCONFIRMED','CA confirmado'],['PAID_HYPE','sem hype pago'],['LIQ_LT_40K','liquidez ≥ $40k'],['VOL_GE_10X_LIQ','vol < 10× liq'],['PAIR_AGE_LT_30M','par ≥ 30 min'],['BOOSTS_GE_30','boosts < 30']];
+if(TI.gates)GATES.forEach((g2,i)=>{if(TI.gates[i])g2[1]=TI.gates[i]});
+let sel=0;
+function finalOf(t){const f=(S.finals||{})[t.addr];return{final:t.final&&t.final!=='PENDENTE'?t.final:f?f.final:(t.final||null),keys:(t.finalKeys&&t.finalKeys.length?t.finalKeys:f?f.keys:t.finalKeys)||[]}}
+function analysis(){const d=S,tk=(d.tokens||[]).slice(0,40);if(!tk.length){$('atab').innerHTML='<tr><td>—</td></tr>';return}const t=tk[sel%tk.length];const F=finalOf(t);
+ $('nscan').textContent=(d.seen?d.seen.length:'—')+(TI.analyzed||' ANALISADOS');$('atok').innerHTML='· $'+esc(t.name)+' <span class="b '+(F.final||'PENDENTE')+'">'+(F.final||'—')+'</span>';
+ $('astats').innerHTML=[['FDV',fk(t.fdv)],[(TI.p_price||'Preço'),t.price==null?'—':t.price<0.001?(+t.price).toExponential(3):f2(t.price,6)],['24h',t.ch==null?'—':(t.ch>=0?'+':'')+f2(t.ch,1)+'%'],['Vol 24h',fk(t.vol)],[(TI.p_liq||'Liquidez'),fk(t.liq)],[(TI.p_age||'Idade'),age(t.created)]].map(([l,v])=>`<div>${l}<b>${v}</b></div>`).join('');
+ $('achk').innerHTML=GATES.map(([k,l])=>{const fail=F.keys.some(x=>x.startsWith(k));const st=!F.final||F.final==='PENDENTE'?(fail?'FAIL':'—'):fail?'FAIL':'PASS';return`<tr><td>${l}</td><td class="${st==='PASS'?'pass':st==='FAIL'?'fail':'pend'}">${st}</td></tr>`}).join('');
+ // gráfico: 24h dos tokens analisados (dados reais; sem histórico de preço no motor)
+ const c=$('ach'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.fillStyle='#0c0c10';x.fillRect(0,0,c.width,c.height);const v=tk.slice(0,24);const mx=Math.max(1,...v.map(q=>Math.abs(Math.max(-100,Math.min(300,q.ch||0)))));const z=c.height*0.55;
+ x.strokeStyle='#24242c';x.beginPath();x.moveTo(0,z);x.lineTo(c.width,z);x.stroke();v.forEach((q,i)=>{const val=Math.max(-100,Math.min(300,q.ch||0)),h=val/mx*(c.height*0.5),bw=c.width/v.length;x.fillStyle=i===sel%tk.length?PK:val>=0?'#2fd47a':'#ff4d5e';x.fillRect(i*bw+2,val>=0?z-h:z,bw-4,Math.abs(h)||1)});
+ x.font='600 '+Math.round(Math.max(11,c.height*.075))+'px ui-monospace,monospace';x.fillStyle='#8a8a99';x.fillText(TI.ach_cap||'24h',8,20);
+ $('atab').innerHTML=tk.slice(0,7).map((q,i)=>{const f=finalOf(q);return`<tr class="${q===t?'sel':''}"><td>$${esc(q.name)}</td><td>${fk(q.liq)}</td><td>${fk(q.vol)}</td><td class="${(q.ch||0)>=0?'pos':'neg'}">${q.ch==null?'—':f2(q.ch,1)+'%'}</td><td><span class="b ${q.vet||''}">${q.vet||'—'}</span></td><td><span class="b ${f.final||'PENDENTE'}">${f.final||'—'}</span></td><td class="mut">${esc(f.keys.slice(0,3).join(', '))||'—'}${f.keys.length>3?' +'+(f.keys.length-3):''}</td></tr>`}).join('');
+ thresholds(t,F)}
+function thresholds(t,F){const v=(S.vetCache||{})[t.addr]||t.vd||{},mk=(v.markets||[]).find(m=>m.pubkey===t.pairAddress),am=t.created?(Date.now()-t.created)/6e4:null,vr=t.liq>0&&t.vol!=null?t.vol/t.liq:null;
+ const ok=(c)=>c==null?'<span class="mut">·</span>':c?'<span class="pass">✓</span>':'<span class="fail">✗</span>';
+ const H=[['min_liquidez_usd','40 000',fk(t.liq),t.liq==null?null:t.liq>=40000],['max_vol_sobre_liq','10×',vr==null?'—':f2(vr,1)+'×',vr==null?null:vr<10],['min_idade_par_min','30',am==null?'—':f2(am,0),am==null?null:am>=30],
+  ['max_boosts_ativos','30',t.activeBoosts??'—',t.activeBoosts==null?null:t.activeBoosts<30],['max_top10_pct','38',v.top10!=null?f2(v.top10,1):'—',v.top10==null?null:v.top10<38],['min_lp_lock_pct','100',mk&&mk.lpLockedPct!=null?f2(mk.lpLockedPct,0):'—',mk?mk.lpLockedPct>=99.999:null],['max_posicoes_abertas','3',String((S.open||[]).length),(S.open||[]).length<3]];
+ const So=[['rugcheck_obrigatorio',(TI.yes||'sim'),v.src||'—',v.src?v.src==='onchain':null],['vet_auto_pre','GOOD',t.vet||'—',t.vet?t.vet==='GOOD':null],['perfil_x',(TI.yes||'sim'),t.xAccount?(TI.yes||'sim'):(TI.no||'não'),!!t.xAccount],['mint/freeze_revogados',(TI.yes||'sim'),v.mintAuth===undefined?'—':(v.mintAuth||v.freezeAuth)?(TI.no||'não'):(TI.yes||'sim'),v.mintAuth===undefined?null:!(v.mintAuth||v.freezeAuth)]];
+ const row=r=>`<div class="rw ${r[3]===false?'bad':''}"><span class="k">${r[0]}</span><span class="v">${r[1]}</span><span>${esc(r[2])}</span>${ok(r[3])}</div>`;
+ $('thr').innerHTML=`<div class="c">HARD = { # ${(TI.hard_note||'')} · token: $${esc(t.name)}</div>${H.map(row).join('')}<div class="c" style="margin-top:4px">VET/SOCIAL = { # ${(TI.vet_note||'')}</div>${So.map(row).join('')}`;
+ $('pills').innerHTML='<b style="color:var(--pk)">filter.py</b>'+(TI.pills_note||' — ')+['rugcheck','x','vet','site/CA','hype','liq/vol/idade','ENTRY'].map((p,i)=>`<span class="${i===(pillI%7)?'on':''}">${p}</span>`).join('→')}
+let pillI=0;setInterval(()=>{pillI++;if(S){const p=$('pills');p&&p.querySelectorAll('span').forEach((s,i)=>s.classList.toggle('on',i===pillI%7))}},900);
+// teia de vetos (contagem real das chaves de veto)
+function spider(t){const c=$('spd'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);if(!S)return requestAnimationFrame(spider);const k_=Math.min(c.width/420,c.height/500);x.save();x.translate((c.width-420*k_)/2,(c.height-500*k_)/2);x.scale(k_,k_);const cnt={};const add=k=>{cnt[k]=(cnt[k]||0)+1};
+ (S.tokens||[]).forEach(q=>(q.finalKeys||[]).forEach(add));Object.values(S.finals||{}).forEach(f=>(f.keys||[]).forEach(add));const ks=Object.keys(cnt).sort((a,b2)=>cnt[b2]-cnt[a]).slice(0,10);
+ const cx=210,cy=240,R=150,mx=Math.max(1,...ks.map(k=>cnt[k])),rot=t/9000;x.strokeStyle='rgba(255,154,60,.35)';x.lineWidth=2;[60,110,150].forEach(r=>{x.beginPath();x.arc(cx,cy,r,0,7);x.stroke()});
+ ks.forEach((k,i)=>{const a=rot+i/ks.length*6.283,r=60+cnt[k]/mx*90,px=cx+Math.cos(a)*r,py=cy+Math.sin(a)*r;x.strokeStyle='#ff9a3c';x.lineWidth=3;x.beginPath();x.moveTo(cx,cy);x.lineTo(px,py);x.stroke();
+  x.fillStyle='#3dff8f';x.beginPath();x.arc(px,py,7+cnt[k]/mx*6,0,7);x.fill();x.font='600 17px ui-monospace,monospace';x.fillStyle=i<2?'#ff4fb4':'#ececf1';x.textAlign=px<cx?'right':'left';x.fillText(k+' '+cnt[k],px+(px<cx?-12:12),py+5)});
+ x.save();x.translate(cx,cy);x.rotate(rot*3);x.strokeStyle='#ff4fb4';x.lineWidth=3;x.strokeRect(-26,-12,52,24);x.restore();x.fillStyle='#ff9a3c';x.beginPath();x.arc(cx,cy,7,0,7);x.fill();
+ if(!ks.length){x.fillStyle='#8a8a99';x.font='600 24px ui-monospace,monospace';x.textAlign='center';x.fillText('—',cx,cy)}x.font='600 16px ui-monospace,monospace';x.fillStyle='#8a8a99';x.textAlign='center';x.fillText(TI.spider_cap||'vetos',cx,492);x.restore();requestAnimationFrame(spider)}
+requestAnimationFrame(spider);
+setInterval(()=>{if(S){sel++;analysis()}},7000);
+// ================= export =================
+const FIELDS=['id','name','addr','entryTime','entry','exitTime','exit','size','slInitial','sl','tp','pnl','exitReason','vet','vetSrc','heurVerdict','vetScore','social','sentiment','boosts','sizeMult','gating','url'];
+function rows(){if(!S)return[];return[...(S.closed||[]),...(S.open||[])].sort((a,b2)=>a.id-b2.id).map(t=>{const o={};FIELDS.forEach(f=>o[f]=t[f]??null);return o})}
+function dl(n,s,ty){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:ty}));a.download=n;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+$('expJ').onclick=()=>dl('trades-history.json',JSON.stringify(rows(),null,2),'application/json');
+$('expC').onclick=()=>{const r=rows();if(!r.length)return;const k=Object.keys(r[0]),q=v=>v==null?'':/[",\n;]/.test(String(v))?'"'+String(v).replace(/"/g,'""')+'"':String(v);dl('trades-history.csv',[k.join(','),...r.map(o=>k.map(z=>q(o[z])).join(','))].join('\n'),'text/csv')};
+// ================= dados =================
+async function j(u,o){const c=new AbortController();const to=setTimeout(()=>c.abort(),12000);try{const r=await fetch(u,{cache:'no-store',signal:c.signal,...o});if(!r.ok)throw new Error(r.status);return r}finally{clearTimeout(to)}}
+async function load(){let d=null;try{d=await (await j('/api/office/state')).json()}catch(e){}
+ if(!d){$('live').textContent=S?'⚠ 更新失败 · 保留最近快照 · '+snapshotTime(S.updatedAt):'⚠ '+(TI.nodata||'SEM DADOS');return}S=d;window.__state=()=>S;const ag=d.updatedAt?(Date.now()-Date.parse(d.updatedAt))/1000:null;$('live').textContent=ag==null?'⚠ 源时间未提供':(ag<300?'● '+(TI.live||'AO VIVO'):'● '+(TI.delayed||'ATRASADO'))+' · '+snapshotTime(d.updatedAt)+' · '+ageLabel(ag);
+ $('day').textContent=(TI.day||'DIA')+' '+((d.dayKey||'—').slice(5))+(d.cb?' · ⛔ '+(TI.cb||'DISJUNTOR'):' · '+(TI.cb_ok||'disjuntor OK'));derive();cards();balance();analysis();scale()}
+setInterval(()=>{$('clk').textContent=new Intl.DateTimeFormat(LOC,{timeZone:'Europe/Lisbon',hour:'2-digit',minute:'2-digit'}).format(new Date())+(TI.clk_suffix||' PT')},1000);
+setInterval(()=>S&&cards(),15000);cards();scale();load();setInterval(load,POLL);
+function applyStatic(){const M={hsub:'sub',hpaper:'paper',hSaldo:'saldo',hJev:'jev',hThrNote:'thr_note',hFailClosed:'fail_closed',hAutoPre:'th_autopre',hVeto:'th_veto',rn_office:'nav_office',rn_trade:'nav_trade',rn_markets:'nav_markets',rn_race:'nav_race',rn_spider:'nav_spider',rn_observatory:'nav_observatory',rn_settings:'nav_settings'};for(const id in M){const e=$(id);if(e&&TI[M[id]])e.textContent=TI[M[id]]}const lb=$('langBtn');if(lb){lb.textContent=LANG==='zh'?'EN':'中文';lb.onclick=()=>{try{localStorage.setItem('office_lang',LANG==='zh'?'en':'zh')}catch(e){}location.reload()}}}
+applyStatic();
+const CSYM={CNY:'¥',HKD:'HK$',USD:'$'};
+async function stockTick(){const el=$('stockchip');if(!el)return;try{const a=await(await fetch('/api/trade/account')).json();const o=await(await fetch('/api/trade/orders')).json();const eq=(a.accounts||[]).map(x=>(CSYM[x.currency]||'')+f2(x.equity,0)).join(' · ');const os=o.orders||[];const last=os.find(x=>x.status==='filled')||os[0];el.innerHTML='<b>📈 '+(TI.stocks||'STOCKS')+'</b> · '+(TI.stocks_paper||'PAPER')+'<br>'+eq+(last?'<br><span class="mut">'+(TI.stocks_last||'last')+':</span> '+(last.side==='buy'?(LANG==='zh'?'买':'BUY'):(LANG==='zh'?'卖':'SELL'))+' '+esc(last.symbol)+' ×'+last.qty+(last.fill_price?' @'+last.fill_price:''):'<br><span class="mut">'+(TI.stocks_none||'—')+'</span>')}catch(e){el.style.display='none'}}
+stockTick();setInterval(stockTick,20000);
+async function aiTick(){const el=$('aichip');if(!el)return;try{const d=await(await fetch('/api/ai/status')).json();const cfg=d.config||{},st=d.status||{};const evs=st.events||[];const last=evs[evs.length-1];
+const head='<b>🤖 '+(LANG==='zh'?'AI 炒股小队':'AI CREW')+'</b> · '+(cfg.enabled?(d.running?(LANG==='zh'?'运行中':'LIVE'):(LANG==='zh'?'引擎未运行':'ENGINE OFF')):(LANG==='zh'?'未启用':'OFF'));
+el.innerHTML=head+(last?'<br><span style="color:#ffd23f">'+esc(last.persona)+'</span> '+esc(String(last.text).slice(0,66)):'<br><span class="mut">'+(LANG==='zh'?'去交易台开启 →':'enable in Trade Desk →')+'</span>');
+el.onclick=()=>location.href='trade.html';}catch(e){el.style.display='none'}}
+aiTick();setInterval(aiTick,20000);
+})();
+</script></body></html>

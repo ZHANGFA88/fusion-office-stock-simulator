@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球配置 · 六大指数定投赛跑（2010—2026）</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:#02040a;overflow:hidden;font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;color:#e8eef7;-webkit-font-smoothing:antialiased}
+  #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 700px at 50% 40%,#081226 0%,#02040a 70%)}
+  #stage{position:relative;width:1920px;height:1080px;flex:0 0 auto;transform-origin:center center;background:#04070f;box-shadow:0 0 120px rgba(40,120,255,.12)}
+  canvas#gl{position:absolute;inset:0;width:1920px;height:1080px}
+  .layer{position:absolute;inset:0;pointer-events:none}
+  .hidden{display:none!important}
+  /* ---- title ---- */
+  #titleText{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:5}
+  #titleText .l1{font-size:44px;letter-spacing:8px;color:#cfe0f5;margin-bottom:26px}
+  #titleText .l2{font-size:44px;letter-spacing:6px;color:#cfe0f5;margin-bottom:26px}
+  #titleText .l2 b{color:#f5c542}
+  #titleText .l3{font-size:88px;font-weight:800;letter-spacing:10px;color:#f5c542;text-shadow:0 0 40px rgba(245,197,66,.55);margin-bottom:30px}
+  #titleText .l4{font-size:30px;letter-spacing:14px;color:#8fa3c2;margin-bottom:26px}
+  #titleText .l5{font-size:40px;letter-spacing:6px;color:#e8eef7}
+  /* ---- generic fades ---- */
+  .fade{transition:opacity .45s ease}
+  /* ---- rules ---- */
+  #rules{position:absolute;left:120px;top:230px;width:900px;z-index:6}
+  #rules h2{font-size:54px;letter-spacing:10px;color:#fff;margin-bottom:10px}
+  #rules .ul{height:5px;width:0;background:linear-gradient(90deg,#4aa8ff,#f5c542);margin-bottom:46px;transition:width .8s ease}
+  #rules .rule{font-size:38px;line-height:1.5;margin-bottom:34px;color:#dbe7f7;min-height:60px}
+  #rules .rule .no{color:#f5c542;font-weight:800;margin-right:6px}
+  #rules .rule .nm{color:#fff;font-weight:700;margin-right:10px}
+  #rules .rule .sep{color:#4aa8ff;margin-right:14px}
+  #rules .foot{font-size:26px;color:#7d8fa9;letter-spacing:3px;margin-top:30px}
+  /* ---- mix panel ---- */
+  #mix{position:absolute;left:1020px;top:150px;width:800px;z-index:6}
+  #mix h2{font-size:56px;letter-spacing:12px;color:#fff}
+  #mix .sub{font-size:30px;color:#8fa3c2;letter-spacing:6px;margin:12px 0 34px}
+  #mix .tc{font-size:32px;color:#dbe7f7;margin-bottom:16px;line-height:1.6}
+  #mix .tc b{color:#f5c542}
+  #mix .sumbar{height:26px;background:rgba(120,150,190,.15);border-radius:13px;margin:26px 0 30px;overflow:hidden;position:relative}
+  #mix .sumbar .fill{position:absolute;inset:0;width:0;background:linear-gradient(90deg,#4aa8ff,#f5c542);border-radius:13px}
+  #mix .sumbar .tag{position:absolute;right:16px;top:0;font-size:19px;line-height:26px;color:#fff;letter-spacing:2px}
+  .mrow{display:flex;align-items:center;margin-bottom:20px;opacity:0}
+  .mrow .flag{font-size:34px;width:56px}
+  .mrow .nm{font-size:32px;width:190px;color:#fff}
+  .mrow .track{flex:1;height:20px;background:rgba(120,150,190,.14);border-radius:10px;overflow:hidden;margin:0 18px}
+  .mrow .track .f{height:100%;width:0;border-radius:10px}
+  .mrow .amt{font-size:32px;color:#f5c542;width:150px;text-align:right;font-variant-numeric:tabular-nums}
+  .mrow .pc{font-size:30px;color:#8fa3c2;width:120px;text-align:right}
+  #mix .note{font-size:25px;color:#7d8fa9;line-height:1.7;margin-top:26px;letter-spacing:1px}
+  #mix .note b{color:#e8eef7}
+  /* ---- part titles ---- */
+  #partTitle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:7;text-align:center}
+  #partTitle .p{font-size:40px;letter-spacing:26px;color:#8fa3c2;margin-bottom:22px}
+  #partTitle .t{font-size:76px;font-weight:800;letter-spacing:14px;color:#fff;text-shadow:0 0 34px rgba(74,168,255,.5);margin-bottom:20px}
+  #partTitle .f{font-size:30px;color:#9fb3cf;letter-spacing:4px}
+  /* ---- race HUD ---- */
+  #raceHud{position:absolute;inset:0;z-index:6}
+  #hudL{position:absolute;left:96px;top:64px}
+  #hudL .date{font-size:64px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:2px}
+  #hudL .wk{font-size:30px;color:#8fa3c2;margin-top:6px;letter-spacing:4px}
+  #hudL .inv{font-size:28px;color:#9fb3cf;margin-top:14px;letter-spacing:2px}
+  #hudL .inv b{color:#f5c542}
+  #hudR{position:absolute;right:96px;top:64px;width:430px}
+  #hudR .ttl{font-size:30px;letter-spacing:8px;color:#fff;margin-bottom:16px;text-align:right}
+  #hudR .ttl .live{color:#ff5b5b;font-size:24px;letter-spacing:2px;margin-left:10px}
+  #rankList{list-style:none}
+  #rankList li{display:flex;align-items:center;justify-content:flex-end;font-size:29px;padding:7px 0;color:#dbe7f7;transition:all .3s}
+  #rankList li .flag{margin-right:12px;font-size:26px}
+  #rankList li .nm{width:150px;text-align:left}
+  #rankList li .v{width:170px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+  #rankList li.top1 .v{color:#f5c542;text-shadow:0 0 12px rgba(245,197,66,.6)}
+  /* ---- event cards ---- */
+  #cards{position:absolute;inset:0;z-index:7}
+  .ecard{position:absolute;left:96px;width:660px;background:rgba(8,14,26,.88);border:1px solid rgba(74,168,255,.35);border-radius:14px;padding:26px 30px;backdrop-filter:blur(4px);box-shadow:0 8px 40px rgba(0,0,0,.5)}
+  .ecard .eb{font-size:25px;letter-spacing:3px;margin-bottom:10px;font-weight:700}
+  .ecard .eb.up{color:#ff6b6b}.ecard .eb.down{color:#4ade80}
+  .ecard .ew{font-size:24px;color:#8fa3c2;margin-bottom:12px;letter-spacing:1px}
+  .ecard h3{font-size:44px;color:#fff;margin-bottom:12px;letter-spacing:4px}
+  .ecard .sub{font-size:26px;color:#aebfd6;line-height:1.55;margin-bottom:18px}
+  .ecard .idxrow{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+  .ecard .idx .k{font-size:24px;color:#8fa3c2;margin-bottom:6px}
+  .ecard .idx .v{font-size:46px;font-weight:800;font-variant-numeric:tabular-nums}
+  .ecard .dc{font-size:24px;color:#8fa3c2;margin-bottom:4px}
+  .ecard .dcv{font-size:38px;font-weight:700;font-variant-numeric:tabular-nums}
+  .ecard .dcv .arr{color:#5b6b84;margin:0 10px}
+  .ecard .verdict{margin-top:16px;padding-top:14px;border-top:1px dashed rgba(125,143,169,.4);font-size:26px;color:#f5c542;letter-spacing:1px}
+  /* ---- banners ---- */
+  #banner{position:absolute;left:0;right:0;top:150px;text-align:center;z-index:8;pointer-events:none}
+  #banner .b{display:inline-block;font-size:36px;letter-spacing:4px;color:#f5c542;background:rgba(8,12,22,.82);border:1px solid rgba(245,197,66,.5);border-radius:40px;padding:14px 44px;box-shadow:0 0 30px rgba(245,197,66,.25)}
+  /* ---- PART II ---- */
+  #p2Hud{position:absolute;inset:0;z-index:6}
+  #p2L{position:absolute;left:96px;top:64px}
+  #p2L .date{font-size:64px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums}
+  #p2L .wk{font-size:30px;color:#8fa3c2;margin-top:6px;letter-spacing:4px}
+  #drift{margin-top:22px;width:640px}
+  #drift .t{font-size:26px;color:#8fa3c2;letter-spacing:6px;margin-bottom:10px}
+  #driftBar{display:flex;height:34px;border-radius:8px;overflow:hidden;background:rgba(120,150,190,.12)}
+  #driftBar div{height:100%;transition:width .2s linear;display:flex;align-items:center;justify-content:center;font-size:20px;color:#04101f;font-weight:700;min-width:0;overflow:hidden;white-space:nowrap}
+  #p2R{position:absolute;right:96px;top:64px;width:520px;text-align:right}
+  #p2R .big{font-size:66px;font-weight:800;color:#f5c542;font-variant-numeric:tabular-nums;text-shadow:0 0 24px rgba(245,197,66,.4)}
+  #p2R .row{font-size:28px;color:#c6d4e8;margin-top:10px;font-variant-numeric:tabular-nums}
+  #p2R .row b{color:#fff}
+  #p2R .lead{font-size:30px;margin-top:14px;color:#4ade80;font-weight:700}
+  #p2R .lead.neg{color:#ff6b6b}
+  #floatTxt{position:absolute;z-index:8;font-size:40px;font-weight:800;color:#fff;text-shadow:0 2px 18px #000;letter-spacing:2px;pointer-events:none}
+  #floatTxt b{color:#f5c542}
+  /* ---- finale ---- */
+  #finale{position:absolute;inset:0;z-index:9;background:rgba(3,5,10,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  #finale .eb{font-size:34px;letter-spacing:10px;color:#8fa3c2;margin-bottom:14px}
+  #finale .eb2{font-size:30px;letter-spacing:6px;color:#5f7190;margin-bottom:54px}
+  #bigNum{font-size:150px;font-weight:800;color:#f5c542;font-variant-numeric:tabular-nums;text-shadow:0 0 60px rgba(245,197,66,.45);margin-bottom:50px}
+  #finCols{display:flex;gap:120px;align-items:flex-start}
+  #finStats{text-align:left}
+  #finStats .s{margin-bottom:26px;opacity:0}
+  #finStats .k{font-size:28px;color:#8fa3c2;letter-spacing:3px;margin-bottom:6px}
+  #finStats .v{font-size:58px;font-weight:800;font-variant-numeric:tabular-nums}
+  #contrib{border-collapse:collapse;font-size:27px}
+  #contrib td,#contrib th{padding:9px 18px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  #contrib th{color:#8fa3c2;font-weight:400;font-size:24px;letter-spacing:2px}
+  #contrib td:first-child,#contrib th:first-child{text-align:left}
+  #contrib tr{opacity:0}
+  #contrib tr.total td{border-top:2px solid rgba(245,197,66,.6);color:#f5c542;font-weight:800}
+  #jinju{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#02040a;text-align:center}
+  #jinju .j1{font-size:52px;color:#fff;letter-spacing:4px;margin-bottom:30px}
+  #jinju .j1 b{color:#f5c542}
+  #jinju .j2{font-size:64px;font-weight:800;color:#f5c542;letter-spacing:8px;margin-bottom:60px}
+  #jinju .src{font-size:23px;color:#5f7190;line-height:1.9;max-width:1500px;padding:0 80px}
+  /* ---- controls ---- */
+  #ctrl{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:50;display:flex;align-items:center;gap:16px;background:rgba(6,10,20,.78);border:1px solid rgba(74,168,255,.25);border-radius:40px;padding:10px 26px;backdrop-filter:blur(8px)}
+  #ctrl button{background:none;border:none;color:#e8eef7;font-size:26px;cursor:pointer;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  #ctrl button:hover{background:rgba(74,168,255,.2)}
+  #prog{width:520px;accent-color:#4aa8ff;cursor:pointer}
+  #tlabel{font-size:22px;color:#9fb3cf;font-variant-numeric:tabular-nums;min-width:150px;text-align:center}
+  #backlink{position:fixed;left:24px;top:18px;z-index:50;font-size:22px;color:#7d8fa9;text-decoration:none;letter-spacing:2px;background:rgba(6,10,20,.6);padding:8px 18px;border-radius:20px;border:1px solid rgba(125,143,169,.25)}
+  #backlink:hover{color:#e8eef7;border-color:#4aa8ff}
+  #err{position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;background:#02040a;color:#ff8a8a;font-size:30px;text-align:center;padding:60px}
+
+  /* ---- 数据时间轴 / 事件 / 曲线（活数据交互层） ---- */
+  #dctrl{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;z-index:50;display:flex;align-items:center;gap:14px;background:rgba(6,10,20,.82);border:1px solid rgba(245,197,66,.35);border-radius:40px;padding:8px 22px;backdrop-filter:blur(8px);max-width:96vw}
+  #dctrl .dlab{font-size:19px;color:#f5c542;letter-spacing:2px;white-space:nowrap}
+  #dscrub{width:400px;accent-color:#f5c542;cursor:pointer}
+  #dread{font-size:19px;color:#e8eef7;font-variant-numeric:tabular-nums;white-space:nowrap;min-width:330px}
+  #dread b{color:#f5c542}
+  #speed{background:#0b1220;color:#e8eef7;border:1px solid rgba(125,143,169,.4);border-radius:14px;font-size:17px;padding:3px 6px;cursor:pointer}
+  #btnCurve{background:none;border:1px solid rgba(74,168,255,.5);color:#bcd7ff;font-size:18px;border-radius:16px;padding:5px 14px;cursor:pointer;white-space:nowrap}
+  #btnCurve:hover{background:rgba(74,168,255,.18)}
+  #evchips{position:fixed;left:50%;transform:translateX(-50%);bottom:152px;z-index:49;display:flex;gap:8px;max-width:97vw;overflow-x:auto;padding:2px}
+  #evchips button{flex:0 0 auto;background:rgba(6,10,20,.78);border:1px solid rgba(125,143,169,.35);color:#c9d6ea;font-size:16px;border-radius:16px;padding:5px 13px;cursor:pointer;white-space:nowrap}
+  #evchips button:hover{border-color:#f5c542;color:#fff}
+  #evchips button.on{border-color:#f5c542;color:#f5c542}
+  #evpanel{position:fixed;left:auto;right:22px;top:84px;z-index:55;width:440px;max-width:44vw;background:rgba(8,12,22,.94);border:1px solid rgba(245,197,66,.4);border-radius:14px;padding:22px 24px;color:#e8eef7;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+  #evpanel h3{margin:6px 0 4px;font-size:27px}
+  #evpanel .x{position:absolute;right:12px;top:8px;background:none;border:none;color:#8fa3c2;font-size:24px;cursor:pointer}
+  #evpanel .sub{color:#a9bcd8;font-size:17px;line-height:1.5}
+  #curveWrap{position:fixed;inset:0;z-index:60;background:#04070f;display:flex;flex-direction:column}
+  #curveWrap .chead{display:flex;align-items:center;gap:16px;padding:14px 22px;border-bottom:1px solid rgba(74,168,255,.2);flex-wrap:wrap}
+  #curveWrap .chead .ct{font-size:22px;color:#e8eef7;letter-spacing:2px}
+  #curveLegend{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  #curveWrap label{font-size:17px;color:#c9d6ea;display:flex;gap:6px;align-items:center;cursor:pointer;white-space:nowrap}
+  #curveCv{flex:1;width:100%}
+  #curveRead{font-size:18px;color:#9fb3cf;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div id="viewport">
+  <div id="stage">
+    <canvas id="gl" width="1920" height="1080"></canvas>
+    <div id="titleText" class="layer hidden">
+      <div class="l1">一场跨越十六年、横跨六大市场的定投实验</div>
+      <div class="l2">如果从 2010 年起，每月拿出 <b>3000 元</b></div>
+      <div class="l3">定投全球六大指数</div>
+      <div class="l4">GLOBAL INDEX DOLLAR-COST AVERAGING · 2010 — 2026</div>
+      <div class="l5">按收益率最大化，这 3000 元该怎么分？</div>
+    </div>
+    <div id="rules" class="layer hidden">
+      <h2>回测规则 <span style="font-size:30px;color:#5f7190;letter-spacing:6px">BACKTEST</span></h2>
+      <div class="ul" id="ruleUl"></div>
+      <div class="rule" id="rule0"></div>
+      <div class="rule" id="rule1"></div>
+      <div class="rule" id="rule2"></div>
+      <div class="rule" id="rule3"></div>
+      <div class="foot fade hidden" id="ruleFoot">共 202 期 · 累计投入 60.6 万元 · 数据截至 2026.10.08</div>
+    </div>
+    <div id="mix" class="layer hidden">
+      <h2>OPTIMAL MIX</h2>
+      <div class="sub">收益率最大化 · 最优分配</div>
+      <div class="tc fade hidden" id="mixT">目标：<b>十六年定投期末收益率最高</b></div>
+      <div class="tc fade hidden" id="mixC">约束：组合波动率 ≤ 六市场平均分配（年化 13.8%）· 每个市场 ≥ 5%</div>
+      <div class="sumbar"><div class="fill" id="sumFill"></div><div class="tag">¥3,000 / 月</div></div>
+      <div id="mixRows"></div>
+      <div class="note fade hidden" id="mixNote">沪深300 收益虽低，却分到 10.7%——<br>它与其他五个市场的相关性仅 <b>0.30</b>，是组合里的「减震器」。</div>
+    </div>
+    <div id="partTitle" class="layer hidden">
+      <div class="p" id="ptP"></div><div class="t" id="ptT"></div><div class="f" id="ptF"></div>
+    </div>
+    <div id="raceHud" class="layer hidden">
+      <div id="hudL"><div class="date" id="hDate"></div><div class="wk" id="hWk"></div><div class="inv" id="hInv"></div></div>
+      <div id="hudR"><div class="ttl">定投收益率排行<span class="live">● LIVE</span></div><ul id="rankList"></ul></div>
+    </div>
+    <div id="cards" class="layer hidden"></div>
+    <div id="banner" class="layer hidden"><div class="b" id="bannerTxt"></div></div>
+    <div id="p2Hud" class="layer hidden">
+      <div id="p2L"><div class="date" id="p2Date"></div><div class="wk" id="p2Wk"></div>
+        <div id="drift"><div class="t">持仓构成 · 按市值漂移</div><div id="driftBar"></div></div>
+      </div>
+      <div id="p2R">
+        <div class="big" id="p2Ret"></div>
+        <div class="row">账户市值 <b id="p2Val"></b></div>
+        <div class="row">累计投入 <b id="p2Inv"></b> · 累计收益 <b id="p2Gain"></b></div>
+        <div class="row">六等分 <b id="p2Eq"></b></div>
+        <div class="lead" id="p2Lead"></div>
+      </div>
+    </div>
+    <div id="floatTxt" class="hidden"></div>
+    <div id="finale" class="layer hidden">
+      <div class="eb">—— 十六年 · 二百零二期 · 六大市场 ——</div>
+      <div class="eb2">2010.01.01 — 2026.10.08 · 每月 ¥3,000</div>
+      <div id="bigNum">¥606,000</div>
+      <div id="finCols">
+        <div id="finStats">
+          <div class="s" id="fs0"><div class="k">总收益率</div><div class="v" style="color:#f5c542" id="fs0v"></div></div>
+          <div class="s" id="fs1"><div class="k">最大回撤（2020.03 新冠疫情）</div><div class="v" style="color:#4ade80" id="fs1v"></div></div>
+          <div class="s" id="fs2"><div class="k">年化收益率（IRR）</div><div class="v" style="color:#fff" id="fs2v"></div></div>
+          <div class="s" id="fs3"><div class="k">对照 · 六市场平均分配</div><div class="v" style="color:#8fa3c2;font-size:44px" id="fs3v"></div></div>
+        </div>
+        <table id="contrib">
+          <tr><th>市场</th><th>每月</th><th>期末市值</th><th>收益率</th></tr>
+        </table>
+      </div>
+    </div>
+    <div id="jinju" class="layer hidden">
+      <div class="j1 fade hidden" id="jj1">同样的风险，最优分配比平均分配多赚 <b>81.8 万元</b>；</div>
+      <div class="j2 fade hidden" id="jj2">选对比例，再交给时间。</div>
+      <div class="src fade hidden" id="jjSrc">数据来源：Yahoo Finance（QQQ、SPY、EXS1.DE、CAC.PA 复权价及汇率）、日经 1346.T 收盘价＋分红自建全收益（Yahoo 1321.T 复权价存在坏数据，未采用）、东方财富 / 新浪财经（510300 及分红）、中证指数公司（H00300 沪深300全收益），截至 2026-10-08。<br>最优比例基于 2010—2026 年历史数据事后求解，存在后视偏差；历史回测不代表未来收益，不构成任何投资建议。市场有风险，投资需谨慎。</div>
+    </div>
+  </div>
+</div>
+<a id="backlink" href="../../">← 门户</a>
+<div id="ctrl">
+  <button id="btnPlay" title="播放/暂停">⏸</button>
+  <button id="btnReplay" title="重播">⟲</button>
+  <input id="prog" type="range" min="0" max="117.5" step="0.05" value="0">
+  <div id="tlabel">0.0s / 117.5s</div>
+</div>
+
+<div id="dctrl">
+  <span class="dlab">数据</span>
+  <input id="dscrub" type="range" min="0" max="4379" step="1" value="0">
+  <div id="dread">载入中…</div>
+  <select id="speed" title="播放速度"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+  <button id="btnCurve">曲线对比</button>
+</div>
+<div id="evchips"></div>
+<div id="evpanel" class="hidden ecard"></div>
+<div id="curveWrap" class="hidden">
+  <div class="chead"><span class="ct">累计收益曲线对比</span><span id="curveLegend"></span><span id="curveRead"></span><span style="flex:1"></span><button id="btnCurveX" style="background:none;border:1px solid rgba(125,143,169,.4);color:#e8eef7;font-size:18px;border-radius:14px;padding:5px 16px;cursor:pointer">返回赛跑 ✕</button></div>
+  <canvas id="curveCv"></canvas>
+</div>
+<div id="err" class="hidden"></div>
+<script>
+"use strict";
+/* ================================================================
+   全球配置 · 六大指数定投赛跑 —— 静态动画页
+   规格：FRAME_SPEC_V3（逐帧）+ FRAME_SPEC_V2（文案）；数字一律取引擎 engine.json
+   ================================================================ */
+const DUR = 117.5, W = 1920, H = 1080;
+let LAST = 4379; // 末日序号：静态版 4379，活数据载入后按实际天数更新
+const cv = document.getElementById('gl'), ctx = cv.getContext('2d');
+const $ = id => document.getElementById(id);
+
+/* ---------- 市场 ---------- */
+const MK = [
+  {k:'qqq', name:'纳指100',  code:'QQQ',    city:'纽约',   clat:40.7, clon:-74.0, flag:'🇺🇸', color:'#f471b5', amt:1190, pct:39.7},
+  {k:'spy', name:'标普500',  code:'SPY',    city:'纽约',   clat:40.7, clon:-74.0, flag:'🇺🇸', color:'#38bdf8', amt:920,  pct:30.7},
+  {k:'csi', name:'沪深300',  code:'510300', city:'上海',   clat:31.2, clon:121.5, flag:'🇨🇳', color:'#f87171', amt:320,  pct:10.7},
+  {k:'n225',name:'日经225',  code:'1321',   city:'东京',   clat:35.7, clon:139.7, flag:'🇯🇵', color:'#34d399', amt:270,  pct:9.0},
+  {k:'dax', name:'德国DAX',  code:'EXS1',   city:'法兰克福',clat:50.1, clon:8.7,   flag:'🇩🇪', color:'#fbbf24', amt:150,  pct:5.0},
+  {k:'cac', name:'法国CAC40',code:'CAC',    city:'巴黎',   clat:48.9, clon:2.4,   flag:'🇫🇷', color:'#a78bfa', amt:150,  pct:5.0},
+];
+const GOLD = '#f5c542', BLUE = '#4aa8ff';
+
+/* ---------- 格式化 ---------- */
+const fmtY = v => '¥' + Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+const fmtPct = (v, dec=1) => (v < 0 ? '−' : '+') + (Math.abs(v)*100).toFixed(dec) + '%';
+const WK = ['日','一','二','三','四','五','六'];
+const wkOf = ds => '星期' + WK[new Date(ds+'T12:00:00').getDay()];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,f)=>a+(b-a)*f;
+const easeOut = f => 1-Math.pow(1-f,3);
+const fadeIO=(t,a,b,c2,d2)=>{ // 0→1 in [a,b], 1→0 in [c2,d2]
+  if(t<a||t>d2) return 0; if(t<b) return (t-a)/(b-a); if(t<c2) return 1; return 1-(t-c2)/(d2-c2);
+};
+
+/* ---------- 数据 ---------- */
+let D=null; // engine.json
+const dayCache={};
+function dayOf(ds){ if(dayCache[ds]!==undefined) return dayCache[ds]; const i=D.dates.indexOf(ds); dayCache[ds]=i; return i; }
+function epOf(day){ let n=0; for(const b of D.buy_idx){ if(b<=day) n++; else break; } return n; }
+
+/* PART I 变速时间轴（关键帧：[胶片秒, 数据日序号]；慢段≈2.77期/s，安静段≈6.9期/s） */
+let PART1_KF=[[20.5,0],[22,184],[23.24,369],[24.82,464],[26.58,727],[29.31,891],[31.74,1254],[37.36,1592],[44.27,2624],[52.34,3109],[52.37,3113],[56.21,3344],[56.4,3372],[63.5,3799],[64.38,3931],[65.41,3993],[68,4379]];
+function dayOfP1(t){
+  if(t<=PART1_KF[0][0]) return PART1_KF[0][1];
+  for(let i=0;i<PART1_KF.length-1;i++){
+    const [t0,d0]=PART1_KF[i],[t1,d1]=PART1_KF[i+1];
+    if(t>=t0&&t<=t1){ const f=(t1===t0)?0:(t-t0)/(t1-t0); return Math.round(lerp(d0,d1,f)); }
+  }
+  return PART1_KF[PART1_KF.length-1][1];
+}
+function tOfP1(day){
+  for(let i=0;i<PART1_KF.length-1;i++){
+    const [t0,d0]=PART1_KF[i],[t1,d1]=PART1_KF[i+1];
+    if((d0<=day&&day<=d1)||(d1<=day&&day<=d0)){
+      const f=(d1===d0)?0:(day-d0)/(d1-d0); return lerp(t0,t1,f);
+    }
+  }
+  return 68;
+}
+const dayOfP2 = t => Math.round(clamp((t-74)/23,0,1)*LAST);
+
+/* ---------- 事件卡元数据（文案取自 FRAME_SPEC_V2，数值引擎） ---------- */
+const EV_META=[
+ {dir:'down',dur:'历时 3 个月',sub:'希腊债务危机席卷欧洲，美国主权信用评级首遭下调。',hero:'cac',pairs:['cac','dax'],verdict:null,top:'30%'},
+ {dir:'up',dur:'历时 6 个月',sub:'日本央行推出「异次元」宽松，日经225半年暴涨八成。',hero:'n225',pairs:['n225'],verdict:'中途登顶第一',top:'52%'},
+ {dir:'up',dur:'历时 7 个月',sub:'两融与场外配资推波助澜，沪深300七个月翻倍。',hero:'csi',pairs:['csi'],verdict:'沪深300 逆袭，登顶第一',top:'38%'},
+ {dir:'down',dur:'历时 8 个月',sub:'千股跌停反复上演，熔断机制四天内两度触发。',hero:'csi',pairs:['csi'],verdict:'七个月，收益率回到首个百分点',top:'56%'},
+ {dir:'down',dur:'历时 33 天',sub:'美股十天四次熔断，德国DAX一个月跌去近四成。',hero:'dax',pairs:['qqq','spy'],verdict:'六个市场无一幸免',top:'34%'},
+ {dir:'up',dur:'历时 1 年 8 个月',sub:'零利率叠加天量刺激，科技巨头领涨全球。',hero:'qqq',pairs:['qqq'],verdict:null,top:'50%'},
+ {dir:'down',dur:'历时 9 个月',sub:'美联储全年加息425个基点，高估值科技股首当其冲。',hero:'qqq',pairs:['qqq','n225'],verdict:'涨得多，回调也最深',top:'32%'},
+ {dir:'up',dur:'历时 1 年 6 个月',sub:'ChatGPT 引爆算力需求，英伟达市值登顶全球。',hero:'qqq',pairs:['qqq'],verdict:null,top:'54%'},
+ {dir:'down',dur:'历时 48 天',sub:'4月2日美国宣布「对等关税」，全球股市剧烈震荡。',hero:'qqq',pairs:['qqq','n225'],verdict:null,top:'36%'},
+];
+let EV=[]; // 运行时：合并 engine events + meta + 胶片时间
+function buildEvents(){
+  EV=D.events.map((e,i)=>{
+    const m=EV_META[i];
+    const s=dayOf(e.start), en=dayOf(e.end);
+    const a=Math.max(0,s-22), b=Math.min(LAST,en+6);
+    const tA=tOfP1(a), tS=tOfP1(s), tE=tOfP1(en), tB=tOfP1(b);
+    const hero=MK.find(x=>x.k===m.hero);
+    const pairs=m.pairs.map(k=>({m:MK.find(x=>x.k===k),lo:e.pairs_minmax[k][0]/100,hi:e.pairs_minmax[k][1]/100}));
+    // 极值点（标注圈位置）
+    let exDay=s, exVal=pairs[0].hi;
+    if(m.dir==='down'){ exVal=Math.min(...pairs.map(p=>p.lo)); exDay=argDay(pairs[0].m.k,s,en,Math.min); }
+    else { exVal=Math.max(...pairs.map(p=>p.hi)); exDay=argDay(pairs[0].m.k,s,en,Math.max); }
+    return {name:e.name,dir:m.dir,dur:m.dur,sub:m.sub,hero,pairs,verdict:m.verdict,top:m.top,
+      s,en,a,b,tA,tS,tE,tB,heroChg:e.hero_idx_change,exDay,exT:tOfP1(exDay)};
+  });
+}
+function argDay(k,s,en,fn){
+  const arr=D.solo_ret[k]; let bi=s, bv=arr[s];
+  for(let i=s;i<=en;i++){ if(fn===Math.min?arr[i]<bv:arr[i]>bv){bv=arr[i];bi=i;} }
+  return bi;
+}
+
+/* ---------- 地球大陆（经纬度椭圆近似） ---------- */
+const LAND=[
+ [-100,48,30,15],[-150,64,13,8],[-88,15,9,5],[-42,74,11,8],[-60,-15,11,20],[-64,-36,7,11],
+ [12,50,15,8],[14,63,9,8],[-2,54,4,5],[-4,40,5,5],[13,42,4,5],[33,39,7,5],
+ [20,5,15,16],[25,-20,11,13],[47,-19,4,7],[45,22,9,8],
+ [90,60,42,13],[65,42,13,9],[108,35,15,11],[78,22,8,10],[102,12,9,9],[127,37,4,5],[139,38,5,8],
+ [115,-2,11,5],[140,-6,8,4],[134,-25,13,9],[172,-42,4,6],[100,20,9,7],[-97,24,8,6]
+];
+function isLand(lon,lat){
+  for(const [clon,clat,rx,ry] of LAND){
+    let dlon=Math.abs(lon-clon); if(dlon>180) dlon=360-dlon;
+    const dx=dlon/rx, dy=(lat-clat)/ry;
+    if(dx*dx+dy*dy<=1) return true;
+  }
+  return false;
+}
+const DOTS=[];
+for(let lat=-58;lat<=82;lat+=3){
+  const step=3/Math.max(0.25,Math.cos(lat*Math.PI/180));
+  for(let lon=-180;lon<180;lon+=step){
+    DOTS.push({lon:lon+step/2,lat,land:isLand(lon,lat)});
+  }
+}
+/* ================= 地球 ================= */
+function proj(lon,lat,lon0,tilt){
+  const lo=(lon-lon0)*Math.PI/180, la=lat*Math.PI/180;
+  let x=Math.cos(la)*Math.sin(lo), y=Math.sin(la), z=Math.cos(la)*Math.cos(lo);
+  const t=tilt*Math.PI/180, x2=x*Math.cos(t)-y*Math.sin(t), y2=x*Math.sin(t)+y*Math.cos(t);
+  return [x2,y2,z];
+}
+function drawGlobe(p){ // {cx,cy,r,lon0,tilt,alpha,dim}
+  const {cx,cy,r,lon0,tilt}=p, alpha=p.alpha===undefined?1:p.alpha;
+  if(alpha<=0.01) return;
+  ctx.save(); ctx.globalAlpha=alpha;
+  // 球体底
+  const g=ctx.createRadialGradient(cx-r*0.3,cy-r*0.3,r*0.1,cx,cy,r);
+  g.addColorStop(0,'rgba(20,50,100,0.55)'); g.addColorStop(0.75,'rgba(8,18,40,0.5)'); g.addColorStop(1,'rgba(4,8,18,0)');
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,r,0,7); ctx.fill();
+  const s=3.2*r/520;
+  for(const d of DOTS){
+    const [x,y,z]=proj(d.lon,d.lat,lon0,tilt);
+    if(z<0.03) continue;
+    const px=cx+x*r, py=cy-y*r;
+    const edge=z; // 边缘渐暗
+    if(d.land){
+      ctx.fillStyle=`rgba(110,190,255,${(0.35+0.55*edge)*(p.dim||1)})`;
+      ctx.fillRect(px-s/2,py-s/2,s,s);
+    }else{
+      ctx.fillStyle=`rgba(70,110,170,${0.10*edge})`;
+      ctx.fillRect(px-s/2,py-s/2,s,s);
+    }
+  }
+  // 电蓝辉光边
+  const lg=ctx.createRadialGradient(cx,cy,r*0.92,cx,cy,r*1.12);
+  lg.addColorStop(0,'rgba(74,168,255,0)'); lg.addColorStop(0.55,'rgba(74,168,255,0.35)'); lg.addColorStop(1,'rgba(74,168,255,0)');
+  ctx.fillStyle=lg; ctx.beginPath(); ctx.arc(cx,cy,r*1.12,0,7); ctx.fill();
+  ctx.restore();
+}
+function arcPath(pts,lon0,tilt,cx,cy,r){
+  const out=[];
+  for(const [lon,lat] of pts){ const [x,y,z]=proj(lon,lat,lon0,tilt); out.push([cx+x*r,cy-y*r,z]); }
+  return out;
+}
+function drawComet(pts,frac,color,headR){
+  const n=Math.max(2,Math.floor(pts.length*clamp(frac,0,1)));
+  ctx.save(); ctx.lineCap='round';
+  for(let i=1;i<n;i++){
+    const f=i/n, a=clamp((f-(1-frac))*3,0,1);
+    ctx.strokeStyle=color.replace('A',(0.15+0.75*f*a).toFixed(2));
+    ctx.lineWidth=1+5*f;
+    ctx.beginPath(); ctx.moveTo(pts[i-1][0],pts[i-1][1]); ctx.lineTo(pts[i][0],pts[i][1]); ctx.stroke();
+  }
+  const h=pts[n-1];
+  ctx.fillStyle='#fff'; ctx.shadowColor='#fff'; ctx.shadowBlur=18;
+  ctx.beginPath(); ctx.arc(h[0],h[1],headR,0,7); ctx.fill();
+  ctx.restore();
+}
+const ARCS=[
+ {pts:[[150,28],[162,48],[178,66],[-168,76]], c:'rgba(150,140,255,A)', t0:2.4,t1:3.2, cities:null},
+ {pts:[[121.5,31.2],[130,33],[139.7,35.7]], c:'rgba(244,114,182,A)', t0:3.6,t1:4.3},
+ {pts:[[139.7,35.7],[112,44],[84,49],[52,52],[22,51],[8.7,50.1]], c:'rgba(52,211,153,A)', t0:4.2,t1:5.2},
+];
+const LABELS=[ // [marketIdx, appearT]
+ [3,4.4],[1,5.0],[4,5.2],[0,5.4],[5,5.55],[2,6.0]
+];
+function drawCityLabels(t,pose){
+  const {cx,cy,r,lon0,tilt}=pose;
+  ctx.save(); ctx.textBaseline='middle';
+  for(const [mi,ta] of LABELS){
+    const age=t-ta; if(age<0) continue;
+    const m=MK[mi];
+    const [x,y,z]=proj(m.clon,m.clat,lon0,tilt);
+    let px=cx+x*r, py=cy-y*r;
+    if(z<0.05){ const ang=Math.atan2(y,x); px=cx+Math.cos(ang)*r*1.02; py=cy-Math.sin(ang)*r*1.02; }
+    const pop=clamp(age/0.4,0,1);
+    // 双环雷达脉冲
+    for(let k=0;k<2;k++){
+      const ph=((age*0.9+k*0.5)%1);
+      ctx.strokeStyle=`rgba(120,190,255,${(1-ph)*0.8})`; ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.arc(px,py,(8+ph*44)*pop,0,7); ctx.stroke();
+    }
+    ctx.fillStyle=m.color; ctx.shadowColor=m.color; ctx.shadowBlur=14;
+    ctx.beginPath(); ctx.arc(px,py,7*pop,0,7); ctx.fill(); ctx.shadowBlur=0;
+    if(mi===0&&t>5.0&&t<6.6){ // 纽约星形闪光
+      const tw=Math.sin(t*14)*0.5+0.5;
+      ctx.strokeStyle=`rgba(255,255,255,${0.4+0.6*tw})`; ctx.lineWidth=2;
+      const R=16+8*tw;
+      ctx.beginPath();
+      for(let k=0;k<4;k++){ const a2=k*Math.PI/4;
+        ctx.moveTo(px+Math.cos(a2)*R*0.4,py+Math.sin(a2)*R*0.4);
+        ctx.lineTo(px+Math.cos(a2)*R,py+Math.sin(a2)*R); }
+      ctx.stroke();
+    }
+    ctx.globalAlpha=pop;
+    ctx.font='700 30px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillStyle='#fff'; ctx.fillText(`${m.flag} ${m.name}`,px+22,py-24);
+    ctx.font='26px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillStyle=m.color; ctx.fillText(m.code,px+22,py+12);
+    ctx.font='22px "PingFang SC","Microsoft YaHei",sans-serif';
+    ctx.fillStyle='#8fa3c2'; ctx.fillText(m.city,px+22,py+42);
+    ctx.globalAlpha=1;
+  }
+  ctx.restore();
+}
+
+/* ---------- 场景：幕0 标题 ---------- */
+function sceneTitle(t){
+  const tilt=lerp(35,12,clamp(t/1.6,0,1));
+  const lon0=lerp(75,120,clamp(t/1.6,0,1));
+  drawGlobe({cx:960,cy:540,r:520,lon0,tilt,alpha:1});
+  $('titleText').classList.remove('hidden');
+  $('titleText').style.opacity=fadeIO(t,0,0.01,1.3,1.6);
+}
+/* ---------- 场景：幕1 标点 ---------- */
+function sceneMarks(t){
+  const lon0=120+30*(t-2), tilt=lerp(12,8,(t-2)/6);
+  let cx=960,cy=540,r=520;
+  if(t>7.6){ const f=clamp((t-7.6)/0.6,0,1); cx=lerp(960,1260,f); cy=lerp(540,520,f); r=lerp(520,430,f); }
+  drawGlobe({cx,cy,r,lon0,tilt,alpha:1});
+  for(const a of ARCS){
+    if(t<a.t0) continue;
+    const pts=arcPath(a.pts,lon0,tilt,cx,cy,r).filter(p=>p[2]>-0.05);
+    if(pts.length>2) drawComet(pts,clamp((t-a.t0)/(a.t1-a.t0),0,1)+0.25,a.c,7);
+  }
+  drawCityLabels(t,{cx,cy,r,lon0,tilt});
+}
+/* ---------- 场景：幕2 规则 ---------- */
+const RULES=[
+ ['01','标的','纳指100 · 标普500 · 日经225 · 沪深300 · DAX · CAC40',8.4],
+ ['02','定投','2010 年 1 月起，每月首个交易日，合计投入 3000 元',9.1],
+ ['03','计价','人民币按当日汇率换汇 · ETF 分红自动再投资',9.9],
+ ['04','假设','不计手续费、税费与换汇成本',10.7],
+];
+function sceneRules(t){
+  $('titleText').classList.add('hidden');
+  const lon0=120+30*(t-2), tilt=8;
+  let cx=1260,cy=520,r=430,a=1;
+  if(t>13.7){ const f=clamp((t-13.7)/0.6,0,1); cx=lerp(1260,700,f); cy=lerp(520,540,f); r=lerp(430,520,f); }
+  drawGlobe({cx,cy,r,lon0,tilt,alpha:a,dim:lerp(1,0.5,clamp((t-13.7)/0.6,0,1))});
+  const R=$('rules'); R.classList.remove('hidden');
+  R.style.opacity=t>13.7?clamp(1-(t-13.7)/0.5,0,1):1;
+  $('ruleUl').style.width=(t>8?clamp((t-8)/0.8,0,1)*100:0)+'%';
+  $('rules').querySelector('h2').style.opacity=fadeIO(t,7.9,8.3,99,100);
+  RULES.forEach((rl,i)=>{
+    const el=$('rule'+i), [no,nm,body,t0]=rl;
+    if(t<t0){ el.innerHTML=''; return; }
+    const n=Math.floor((t-t0)*67);
+    el.innerHTML=`<span class="no">${no}</span><span class="nm">${nm}</span><span class="sep">|</span>${body.slice(0,n)}`;
+  });
+  const f=$('ruleFoot'); f.classList.remove('hidden'); f.style.opacity=fadeIO(t,11.3,11.5,99,100);
+}
+/* ---------- 场景：幕3 配比 ---------- */
+let mixBuilt=false;
+function buildMix(){
+  if(mixBuilt) return; mixBuilt=true;
+  const box=$('mixRows');
+  MK.forEach(m=>{
+    const d=document.createElement('div'); d.className='mrow'; d.id='mrow_'+m.k;
+    d.innerHTML=`<div class="flag">${m.flag}</div><div class="nm">${m.name}</div>
+      <div class="track"><div class="f" style="background:${m.color};box-shadow:0 0 12px ${m.color}"></div></div>
+      <div class="amt">¥0</div><div class="pc">${m.pct.toFixed(1)}%</div>`;
+    box.appendChild(d);
+  });
+}
+function sceneMix(t){
+  $('rules').classList.add('hidden');
+  buildMix();
+  const M=$('mix'); M.classList.remove('hidden');
+  M.style.opacity=t>18.5?clamp(1-(t-18.5)/0.6,0,1):1;
+  $('mix').querySelector('h2').style.opacity=fadeIO(t,14.3,14.5,99,100);
+  $('mix').querySelector('.sub').style.opacity=fadeIO(t,14.3,14.5,99,100);
+  $('mixT').classList.remove('hidden'); $('mixT').style.opacity=fadeIO(t,14.7,14.9,99,100);
+  $('mixC').classList.remove('hidden'); $('mixC').style.opacity=fadeIO(t,14.9,15.1,99,100);
+  $('sumFill').style.width=(t>14.5?clamp((t-14.5)/0.4,0,1)*100:0)+'%';
+  let shown=0;
+  MK.forEach((m,i)=>{
+    const st=15.7+i*0.4, el=$('mrow_'+m.k);
+    if(t<st){ el.style.opacity=0; return; }
+    const f=clamp((t-st)/0.25,0,1); el.style.opacity=f;
+    const bf=clamp((t-st)/0.6,0,1);
+    el.querySelector('.f').style.width=(m.pct/39.7*100*bf)+'%';
+    const cf=clamp((t-st)/0.4,0,1);
+    el.querySelector('.amt').textContent='¥'+Math.round(m.amt*easeOut(cf)).toLocaleString();
+    shown+=m.pct*bf;
+  });
+  $('sumFill').style.width=clamp(shown,0,100)+'%';
+  $('mixNote').classList.remove('hidden'); $('mixNote').style.opacity=fadeIO(t,17.7,18.1,99,100);
+  // 18.7 地球向镜头放大
+  if(t>18.7){
+    const f=clamp((t-18.7)/0.6,0,1);
+    drawGlobe({cx:700,cy:540,r:lerp(520,1500,easeOut(f)),lon0:120+30*(t-2),tilt:8,alpha:1-f,dim:0.5});
+  }else{
+    drawGlobe({cx:700,cy:540,r:520,lon0:120+30*(t-2),tilt:8,alpha:1,dim:0.5});
+  }
+}
+/* ---------- 转场 A ---------- */
+function transA(t){
+  $('mix').classList.add('hidden');
+  const P=$('partTitle'); P.classList.remove('hidden');
+  // 白闪
+  const fl=t<19.3?clamp((t-19.05)/0.25,0,1):clamp(1-(t-19.3)/0.2,0,1);
+  if(fl>0){ ctx.fillStyle=`rgba(255,255,255,${fl})`; ctx.fillRect(0,0,W,H); }
+  if(t>=19.35){
+    drawFloor(t);
+    $('ptP').textContent='PART I'; $('ptT').textContent='六大市场 · 各自的定投收益率';
+    $('ptF').textContent='每月按最优比例分别买入 · 收益率 = 市值 ÷ 累计投入 − 1';
+    $('ptP').style.opacity=fadeIO(t,19.7,20.0,21.6,22.3);
+    $('ptT').style.opacity=fadeIO(t,19.9,20.2,21.6,22.3);
+    $('ptF').style.opacity=fadeIO(t,20.1,20.4,21.6,22.3);
+    if(t>20.3){ // 六色光点
+      const f=clamp((t-20.3)/0.2,0,1);
+      MK.forEach((m,i)=>{
+        const a2=-Math.PI/2+i*Math.PI/3;
+        const x=960+Math.cos(a2)*260*f, y=620+Math.sin(a2)*120*f;
+        ctx.save(); ctx.fillStyle=m.color; ctx.shadowColor=m.color; ctx.shadowBlur=24;
+        ctx.globalAlpha=f; ctx.beginPath(); ctx.arc(x,y,10,0,7); ctx.fill(); ctx.restore();
+      });
+    }
+  }
+}
+function drawFloor(t){
+  // 黑暗透视地板 + 中央光晕
+  const g=ctx.createRadialGradient(960,620,10,960,620,900);
+  g.addColorStop(0,'rgba(70,130,230,0.35)'); g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle='#04070f'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  ctx.save(); ctx.strokeStyle='rgba(74,168,255,0.22)'; ctx.lineWidth=1.5;
+  const hy=560;
+  for(let i=0;i<=24;i++){ // 纵线（透视汇聚）
+    const x=960+(i-12)*70;
+    ctx.beginPath(); ctx.moveTo(960+(i-12)*14,hy); ctx.lineTo(x,H); ctx.stroke();
+  }
+  for(let i=0;i<9;i++){ // 横线
+    const y=hy+Math.pow(i/8,1.8)*(H-hy);
+    ctx.globalAlpha=0.25+0.5*i/8;
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  }
+  ctx.restore(); ctx.globalAlpha=1;
+}
+
+/* ================= PART I ================= */
+const P1X0=80,P1X1=1740,P1Y0=130,P1Y1=860;
+let cardEls=[];
+function buildCards(){
+  const box=$('cards'); box.innerHTML=''; cardEls=[];
+  EV.forEach((e,i)=>{
+    const d=document.createElement('div'); d.className='ecard'; d.style.top=e.top; d.style.opacity=0; d.style.transition='opacity .5s';
+    box.appendChild(d); cardEls.push(d);
+  });
+}
+function cardHTML(e,d,vals){
+  const ebCls=e.dir==='up'?'up':'down', ebTxt=e.dir==='up'?'▲ 上涨行情':'▼ 下跌事件';
+  const heroV=vals.heroChg, hc=heroV<0?'#4ade80':'#ff6b6b';
+  let pairs='';
+  for(const p of vals.pairs){
+    pairs+=`<div style="margin-bottom:8px"><span style="color:#8fa3c2">${p.m.flag} ${p.m.name}</span>
+      <span style="float:right">${fmtPct(p.hi)} <span class="arr">→</span> <b style="color:${p.cur<0?'#4ade80':'#ff6b6b'}">${fmtPct(p.cur)}</b></span></div>`;
+  }
+  const win=`${e.s>=0?D.dates[e.s].replace(/-/g,'.'):''} → ${D.dates[e.en].replace(/-/g,'.')}`;
+  return `<div class="eb ${ebCls}">${ebTxt}</div>
+    <div class="ew">${win} · ${e.dur}</div>
+    <h3>${e.name}</h3><div class="sub">${e.sub}</div>
+    <div class="idx"><div class="k">${e.hero.name}指数 · 窗内涨跌</div>
+      <div class="v" style="color:${hc}">${fmtPct(heroV)}</div></div>
+    <div style="margin-top:14px"><div class="dc">定投收益率 · 高点 → 低点</div>
+      <div class="dcv">${pairs}</div></div>
+    ${vals.verdict?`<div class="verdict">${vals.verdict}</div>`:''}`;
+}
+function evCardState(e,t,i){
+  // 返回 null=隐藏；否则 {frozen, showVerdict}
+  const next=EV[i+1];
+  let tOut=next?e.tB:tOfP1(Math.min(LAST,e.en+304));
+  // 交替：下一卡 tA 时本卡开始淡出
+  let op=0, frozen=false, showVerdict=false;
+  if(t>=e.tA-0.5&&t<tOut){
+    op=fadeIO(t,e.tA-0.5,e.tA,99,100);
+    if(next&&t>next.tA-0.5) op=clamp(1-(t-(next.tA-0.5))/0.5,0,1);
+    if(!next&&t>tOut-1.5) op=clamp((tOut-t)/1.5,0,1);
+    if(t>=e.tE){ frozen=true; showVerdict=true; }
+    return {op,frozen,showVerdict};
+  }
+  return null;
+}
+const P1_BANNERS=[
+ {t:39.2,hold:4.5,txt:'◆ 纳指100 定投收益率突破 +100%（2017）'},
+ {t:61.8,hold:5,txt:'◆ 日经225 时隔34年，突破1989年泡沫高点（2024）'},
+ {t:66.7,hold:3.2,txt:'◆ 日经225 首次站上 60000 点（2026）'},
+];
+function drawRaceChart(d,opt){
+  opt=opt||{};
+  const dx=x=>P1X0+(d<=0?0:(x/d))*(P1X1-P1X0);
+  // y 标尺
+  let mx=0.2; for(const m of MK){ mx=Math.max(mx,D.solo_ret[m.k][d]); }
+  const yMax=Math.max(4.5,mx*1.06);
+  const y=v=>P1Y1-(v/yMax)*(P1Y1-P1Y0);
+  ctx.save();
+  if(opt.shiftX) ctx.translate(opt.shiftX,0);
+  // 地板年份水印
+  ctx.fillStyle='rgba(120,160,220,0.05)'; ctx.font='800 380px sans-serif'; ctx.textAlign='center';
+  ctx.fillText(D.dates[d].slice(0,4),960,760);
+  ctx.textAlign='left';
+  // 网格
+  ctx.font='24px sans-serif';
+  for(let g=0;g<=Math.ceil(yMax);g++){
+    const yy=y(g);
+    ctx.strokeStyle=g===0?'rgba(255,255,255,0.75)':'rgba(120,150,190,0.14)';
+    ctx.lineWidth=g===0?2.5:1;
+    ctx.beginPath(); ctx.moveTo(P1X0,yy); ctx.lineTo(P1X1,yy); ctx.stroke();
+    ctx.fillStyle=g===0?'#fff':'#5f7190';
+    ctx.fillText(g===0?'0% 本金':('+'+g*100+'%'),P1X1+14,yy+8);
+  }
+  // 底部年份轴 + 事件刻度段
+  const yx=985;
+  ctx.strokeStyle='rgba(120,150,190,0.35)'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(P1X0,yx); ctx.lineTo(P1X1,yx); ctx.stroke();
+  ctx.font='24px sans-serif'; ctx.fillStyle='#7d8fa9';
+  for(let yr=2010;yr<=2026;yr++){
+    const dd=dayOf(yr+'-01-01'); if(dd<0) continue;
+    const xx=P1X0+dd/LAST*(P1X1-P1X0);
+    ctx.fillRect(xx-1,yx-6,2,12); ctx.fillText(yr,xx-26,yx+36);
+  }
+  EV.forEach(e=>{
+    const x0=P1X0+e.s/LAST*(P1X1-P1X0), x1=P1X0+e.en/LAST*(P1X1-P1X0);
+    ctx.fillStyle=e.dir==='up'?'rgba(255,80,80,0.5)':'rgba(60,220,120,0.5)';
+    ctx.fillRect(x0,yx-5,Math.max(3,x1-x0),10);
+  });
+  ctx.fillStyle='#f5c542'; ctx.beginPath(); ctx.arc(P1X0+d/LAST*(P1X1-P1X0),yx,7,0,7); ctx.fill();
+  // 六线
+  const step=Math.max(1,Math.floor(d/900));
+  MK.forEach(m=>{
+    const arr=D.solo_ret[m.k];
+    ctx.save(); ctx.strokeStyle=m.color; ctx.lineWidth=4.5; ctx.shadowColor=m.color; ctx.shadowBlur=12;
+    ctx.lineJoin='round'; ctx.beginPath();
+    for(let i=0;i<=d;i+=step){ const xx=P1X0+i/LAST*(P1X1-P1X0), yy=y(arr[i]); i===0?ctx.moveTo(xx,yy):ctx.lineTo(xx,yy); }
+    const ex=P1X0+d/LAST*(P1X1-P1X0), ey=y(arr[d]);
+    ctx.lineTo(ex,ey); ctx.stroke(); ctx.restore();
+    // 线头
+    ctx.save(); ctx.fillStyle='#fff'; ctx.shadowColor=m.color; ctx.shadowBlur=16;
+    ctx.beginPath(); ctx.arc(ex,ey,7,0,7); ctx.fill(); ctx.restore();
+    // 线尾标签
+    if(!opt.noLabels){
+      ctx.font='700 27px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.fillStyle=m.color; ctx.fillText(m.name+' '+fmtPct(arr[d]),ex+16,ey+8);
+    }
+  });
+  ctx.restore();
+  return {y,dx};
+}
+function sceneP1(t){
+  $('partTitle').classList.add('hidden');
+  const d=dayOfP1(t);
+  drawFloor(t);
+  const {y}=drawRaceChart(d);
+  // 事件卡
+  const C=$('cards'); C.classList.remove('hidden');
+  EV.forEach((e,i)=>{
+    const st=evCardState(e,t,i), el=cardEls[i];
+    if(!st){ el.style.opacity=0; return; }
+    const dd=st.frozen?e.en:Math.min(d,e.en);
+    const heroChg=D.prices[e.hero.k][dd]/D.prices[e.hero.k][e.s]-1;
+    const pairs=e.pairs.map(p=>({m:p.m,hi:p.hi,cur:D.solo_ret[p.m.k][dd]}));
+    el.innerHTML=cardHTML(e,dd,{heroChg,pairs,verdict:st.showVerdict?(e.verdict||`窗内定投：${fmtPct(Math.max(...e.pairs.map(p=>p.hi)))} → ${fmtPct(Math.min(...e.pairs.map(p=>p.lo)))}`):null});
+    el.style.opacity=st.op;
+  });
+  // 极值标注圈
+  EV.forEach(e=>{
+    if(t>e.exT-0.3&&t<e.exT+2.5&&t<e.tB+1){
+      const xx=P1X0+e.exDay/LAST*(P1X1-P1X0), yy=y(e.exVal);
+      const ph=(t-(e.exT-0.3))*1.4;
+      ctx.save(); ctx.strokeStyle=e.hero.color; ctx.lineWidth=3;
+      for(let k=0;k<2;k++){ const rr=14+((ph+k*0.5)%1)*36;
+        ctx.globalAlpha=clamp(1-((ph+k*0.5)%1),0,1)*0.9;
+        ctx.beginPath(); ctx.arc(xx,yy,rr,0,7); ctx.stroke(); }
+      ctx.restore(); ctx.globalAlpha=1;
+    }
+  });
+  // HUD
+  const hud=$('raceHud'); hud.classList.remove('hidden');
+  hud.style.opacity=t>68.5?clamp(1-(t-68.5)/1,0,1):1;
+  C.style.opacity=t>68.5?clamp(1-(t-68.5)/1,0,1):1;
+  $('hDate').textContent=D.dates[d];
+  $('hWk').textContent=wkOf(D.dates[d])+' · 第 '+epOf(d)+' 期';
+  $('hInv').innerHTML=`累计投入 <b>${fmtY(D.invested[d])}</b> · 每月 ¥3,000 · 六个市场`;
+  const rk=[...MK].sort((a,b)=>D.solo_ret[b.k][d]-D.solo_ret[a.k][d]);
+  $('rankList').innerHTML=rk.map((m,i)=>
+    `<li class="${i===0?'top1':''}"><span class="flag">${m.flag}</span><span class="nm">${m.name}</span><span class="v" style="color:${m.color}">${fmtPct(D.solo_ret[m.k][d])}</span></li>`).join('');
+  // 里程碑横幅
+  const B=$('banner'); let shown=false;
+  for(const b of P1_BANNERS){
+    if(t>=b.t&&t<b.t+b.hold){ B.classList.remove('hidden'); $('bannerTxt').textContent=b.txt;
+      B.style.opacity=fadeIO(t,b.t,b.t+0.4,b.t+b.hold-0.6,b.t+b.hold); shown=true; break; }
+  }
+  if(!shown) B.classList.add('hidden');
+}
+/* ================= 转场 B ================= */
+let bpParts=null;
+function initBursts(){
+  bpParts=[];
+  for(let i=0;i<520;i++){
+    const m=MK[i%6], d0=Math.floor(Math.random()*LAST);
+    bpParts.push({x:P1X0+d0/LAST*(P1X1-P1X0), y:200+Math.random()*560,
+      vx:(Math.random()-0.3)*260, vy:-120-Math.random()*380, c:m.color, life:1});
+  }
+}
+function transB(t,dt){
+  $('raceHud').classList.add('hidden'); $('cards').classList.add('hidden'); $('banner').classList.add('hidden');
+  const P=$('partTitle'); P.classList.remove('hidden');
+  if(t<70){ // 定格（60000 横幅延续到 ~69.5）
+    drawFloor(t); drawRaceChart(LAST,{noLabels:false});
+    const B=$('banner');
+    if(t>=66.7&&t<69.5){ B.classList.remove('hidden'); $('bannerTxt').textContent=P1_BANNERS[2].txt;
+      B.style.opacity=t>69?clamp((69.5-t)/0.5,0,1):1; }
+    return;
+  }
+  if(t<71){ // 镜头右掠
+    const f=(t-70);
+    drawFloor(t);
+    drawRaceChart(LAST,{shiftX:-f*900});
+    ctx.fillStyle='rgba(120,160,220,0.06)'; ctx.font='800 300px sans-serif'; ctx.textAlign='center';
+    for(let k=0;k<5;k++) ctx.fillText(2021+k, 960-f*1400+k*700, 700);
+    ctx.textAlign='left';
+    return;
+  }
+  if(t<73.4){ // 粒子飞散
+    if(!bpParts) initBursts();
+    ctx.fillStyle='#04070f'; ctx.fillRect(0,0,W,H);
+    drawFloor(t);
+    for(const p of bpParts){
+      p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=140*dt; p.life-=dt*0.5;
+      if(p.life<=0) continue;
+      ctx.globalAlpha=clamp(p.life,0,1);
+      ctx.fillStyle=p.c; ctx.fillRect(p.x,p.y,5,5);
+    }
+    ctx.globalAlpha=1;
+    $('ptP').textContent='PART II'; $('ptT').textContent='六线合一 · 组合总收益率';
+    $('ptF').textContent='金线：最优分配组合　虚线：六市场平均分配（每个 500 元）';
+    $('ptP').style.opacity=fadeIO(t,72.4,72.7,99,100);
+    $('ptT').style.opacity=fadeIO(t,72.6,72.9,99,100);
+    $('ptF').style.opacity=fadeIO(t,72.8,73.1,99,100);
+    return;
+  }
+  // 73.4 粒子汇聚成金色双环
+  ctx.fillStyle='#04070f'; ctx.fillRect(0,0,W,H);
+  const cf=clamp((t-73.4)/0.6,0,1);
+  ctx.save(); ctx.strokeStyle=GOLD; ctx.shadowColor=GOLD; ctx.shadowBlur=30;
+  ctx.lineWidth=5; ctx.globalAlpha=cf;
+  ctx.beginPath(); ctx.arc(960,620,60+ (1-cf)*300,0,7); ctx.stroke();
+  ctx.lineWidth=2; ctx.beginPath(); ctx.arc(960,620,90+(1-cf)*380,0,7); ctx.stroke();
+  ctx.restore(); ctx.globalAlpha=1;
+  $('ptP').style.opacity=clamp(1-(t-73.4)/0.4,0,1);
+  $('ptT').style.opacity=clamp(1-(t-73.4)/0.4,0,1);
+  $('ptF').style.opacity=clamp(1-(t-73.4)/0.4,0,1);
+  if(t>=74){ // 74.0 金线诞生描画
+    const f=clamp((t-74)/0.8,0,1);
+    const yMax=4.2, y=v=>P1Y1-(v/yMax)*(P1Y1-P1Y0);
+    ctx.save(); ctx.globalAlpha=0.35; ctx.lineWidth=2;
+    MK.forEach(m=>{ ctx.strokeStyle=m.color; ctx.beginPath();
+      for(let i=0;i<=LAST;i+=40){ const xx=P1X0+i/LAST*(P1X1-P1X0); i===0?ctx.moveTo(xx,y(D.solo_ret[m.k][i])):ctx.lineTo(xx,y(D.solo_ret[m.k][i])); }
+      ctx.stroke(); });
+    ctx.restore();
+    ctx.save(); ctx.setLineDash([14,10]); ctx.strokeStyle='rgba(255,255,255,0.85)'; ctx.lineWidth=3;
+    ctx.beginPath();
+    for(let i=0;i<=LAST*f;i+=30){ const xx=P1X0+i/LAST*(P1X1-P1X0); i===0?ctx.moveTo(xx,y(D.eq_ret[i])):ctx.lineTo(xx,y(D.eq_ret[i])); }
+    ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.strokeStyle=GOLD; ctx.lineWidth=7; ctx.shadowColor=GOLD; ctx.shadowBlur=22; ctx.lineCap='round';
+    ctx.beginPath();
+    for(let i=0;i<=LAST*f;i+=24){ const xx=P1X0+i/LAST*(P1X1-P1X0); i===0?ctx.moveTo(xx,y(D.port_ret[i])):ctx.lineTo(xx,y(D.port_ret[i])); }
+    ctx.stroke(); ctx.restore();
+    const hx=P1X0+f*(P1X1-P1X0), hy=y(D.port_ret[Math.floor(LAST*f)]);
+    ctx.save(); ctx.fillStyle='#fff'; ctx.shadowColor=GOLD; ctx.shadowBlur=26;
+    ctx.beginPath(); ctx.arc(hx,hy,11,0,7); ctx.fill(); ctx.restore();
+  }
+}
+
+/* ================= PART II ================= */
+let CH=null, P2_BANNERS=[];
+function firstCross(arr,lvl){ for(let i=0;i<arr.length;i++) if(arr[i]>=lvl) return i; return arr.length-1; }
+function buildP2Banners(){
+  const t2=day=>74+(day/LAST)*23;
+  const d100=firstCross(D.port_ret,1.0), d200=firstCross(D.port_ret,2.0), d300=firstCross(D.port_ret,3.0);
+  const dLast=Math.max(...D.port_ret.map((v,i)=>v<0?i:-1));
+  const dMdd=dayOf(D.portfolio.mdd_day);
+  P2_BANNERS=[
+   {t:t2(dLast),hold:4.5,txt:`◆ 最后一次跌破本金 — 此后再未亏损（${D.dates[dLast].slice(0,4)}）`},
+   {t:t2(d100),hold:4.5,txt:`◆ 组合收益率突破 +100%（${D.dates[d100].slice(0,4)}）`},
+   {t:t2(dMdd),hold:4.5,txt:`◆ 新冠疫情：组合最大回撤 ${fmtPct(D.portfolio.mdd)}（${D.portfolio.mdd_day.slice(0,7).replace('-','．')}）`},
+   {t:t2(d200),hold:4.5,txt:`◆ 组合收益率突破 +200%（${D.dates[d200].slice(0,4)}）`},
+   {t:t2(d300),hold:4.5,txt:`◆ 组合收益率突破 +300%（${D.dates[d300].slice(0,4)}）`},
+  ];
+}
+function drawP2Chart(d,zoom){
+  const yMax=Math.max(4.2,D.port_ret[d]*1.06,D.eq_ret[d]*1.06);
+  const y=v=>P1Y1-(v/yMax)*(P1Y1-P1Y0);
+  CH={y};
+  drawFloor(80);
+  ctx.save();
+  if(zoom){ const zx=zoom.cx, zy=zoom.cy, z=zoom.z;
+    ctx.translate(zx,zy); ctx.scale(z,z); ctx.translate(-zx,-zy); }
+  // 网格
+  ctx.font='24px sans-serif';
+  for(let g=0;g<=Math.ceil(yMax);g++){
+    const yy=y(g);
+    ctx.strokeStyle=g===0?'rgba(255,255,255,0.75)':'rgba(120,150,190,0.14)';
+    ctx.lineWidth=g===0?2.5:1;
+    ctx.beginPath(); ctx.moveTo(P1X0,yy); ctx.lineTo(P1X1,yy); ctx.stroke();
+    ctx.fillStyle=g===0?'#fff':'#5f7190';
+    ctx.fillText(g===0?'0% 本金':('+'+g*100+'%'),P1X1+14,yy+8);
+  }
+  // 成分细线
+  const step=Math.max(1,Math.floor(d/700));
+  ctx.save(); ctx.globalAlpha=0.45; ctx.lineWidth=2;
+  MK.forEach(m=>{ ctx.strokeStyle=m.color; ctx.beginPath();
+    for(let i=0;i<=d;i+=step){ const xx=P1X0+i/LAST*(P1X1-P1X0); i===0?ctx.moveTo(xx,y(D.solo_ret[m.k][i])):ctx.lineTo(xx,y(D.solo_ret[m.k][i])); }
+    ctx.stroke(); });
+  ctx.restore();
+  // 六等分白虚线
+  ctx.save(); ctx.setLineDash([14,10]); ctx.strokeStyle='rgba(255,255,255,0.8)'; ctx.lineWidth=3;
+  ctx.beginPath();
+  for(let i=0;i<=d;i+=step){ const xx=P1X0+i/LAST*(P1X1-P1X0); i===0?ctx.moveTo(xx,y(D.eq_ret[i])):ctx.lineTo(xx,y(D.eq_ret[i])); }
+  ctx.stroke(); ctx.restore();
+  // 金线面积 + 线
+  const hx=P1X0+d/LAST*(P1X1-P1X0), hy=y(D.port_ret[d]);
+  const ag=ctx.createLinearGradient(0,y(0),0,hy);
+  ag.addColorStop(0,'rgba(245,197,66,0)'); ag.addColorStop(1,'rgba(245,197,66,0.28)');
+  ctx.save(); ctx.fillStyle=ag; ctx.beginPath(); ctx.moveTo(P1X0,y(0));
+  for(let i=0;i<=d;i+=step) ctx.lineTo(P1X0+i/LAST*(P1X1-P1X0),y(D.port_ret[i]));
+  ctx.lineTo(hx,y(0)); ctx.closePath(); ctx.fill(); ctx.restore();
+  ctx.save(); ctx.strokeStyle=GOLD; ctx.lineWidth=8; ctx.shadowColor=GOLD; ctx.shadowBlur=24; ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.beginPath();
+  for(let i=0;i<=d;i+=step){ const xx=P1X0+i/LAST*(P1X1-P1X0); i===0?ctx.moveTo(xx,y(D.port_ret[i])):ctx.lineTo(xx,y(D.port_ret[i])); }
+  ctx.stroke(); ctx.restore();
+  // 线头火花
+  for(let k=0;k<14;k++){
+    const a2=Math.random()*6.28, rr=8+Math.random()*26;
+    ctx.fillStyle=`rgba(245,197,66,${0.25+Math.random()*0.5})`;
+    ctx.fillRect(hx+Math.cos(a2)*rr-2,hy+Math.sin(a2)*rr-2,4,4);
+  }
+  ctx.save(); ctx.fillStyle='#fff'; ctx.shadowColor=GOLD; ctx.shadowBlur=28;
+  ctx.beginPath(); ctx.arc(hx,hy,11,0,7); ctx.fill(); ctx.restore();
+  // 线尾标签
+  ctx.font='700 28px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle=GOLD; ctx.fillText('最优组合 '+fmtPct(D.port_ret[d]),hx+18,hy-14);
+  const ex=P1X0+d/LAST*(P1X1-P1X0), ey=y(D.eq_ret[d]);
+  ctx.fillStyle='#dbe7f7'; ctx.fillText('六等分 '+fmtPct(D.eq_ret[d]),ex+18,ey+34);
+  ctx.restore();
+  return {hx,hy,y};
+}
+let driftBuilt=false;
+function buildDrift(){
+  if(driftBuilt) return; driftBuilt=true;
+  const bar=$('driftBar');
+  MK.forEach(m=>{ const s=document.createElement('div'); s.id='df_'+m.k; s.style.background=m.color; bar.appendChild(s); });
+}
+function sceneP2(t){
+  $('partTitle').classList.add('hidden');
+  const d=dayOfP2(t);
+  buildDrift();
+  const {hx,hy,y}=drawP2Chart(d);
+  // HUD
+  const hud=$('p2Hud'); hud.classList.remove('hidden');
+  hud.style.opacity=fadeIO(t,74.0,74.4,99,100);
+  $('p2Date').textContent=D.dates[d];
+  $('p2Wk').textContent='最优组合 · '+wkOf(D.dates[d])+' · 第 '+epOf(d)+' 期';
+  MK.forEach(m=>{ const el=$('df_'+m.k), v=D.drift[m.k][d];
+    el.style.width=(v*100)+'%'; el.textContent=Math.round(v*100)>=8?m.name.replace('德国','').replace('法国','')+Math.round(v*100)+'%':''; });
+  $('p2Ret').textContent=fmtPct(D.port_ret[d],2);
+  $('p2Val').textContent=fmtY(D.port_value[d]);
+  $('p2Inv').textContent=fmtY(D.invested[d]);
+  const gain=D.port_value[d]-D.invested[d];
+  $('p2Gain').textContent=(gain<0?'−¥':'¥')+Math.abs(Math.round(gain)).toString().replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  $('p2Eq').textContent=fmtPct(D.eq_ret[d]);
+  const lead=(D.port_ret[d]-D.eq_ret[d])*100, L=$('p2Lead');
+  L.textContent=(lead<0?'落后 ':'领先 ')+(lead<0?'−':'+')+Math.abs(lead).toFixed(1)+' 个百分点';
+  L.className='lead'+(lead<0?' neg':'');
+  // 横幅
+  const B=$('banner'); let shown=false;
+  for(const b of P2_BANNERS){
+    if(t>=b.t&&t<b.t+b.hold){ B.classList.remove('hidden'); $('bannerTxt').textContent=b.txt;
+      B.style.opacity=fadeIO(t,b.t,b.t+0.4,b.t+b.hold-0.6,b.t+b.hold); shown=true; break; }
+  }
+  if(!shown) B.classList.add('hidden');
+  // 终局浮字
+  const F=$('floatTxt');
+  if(t>95.3&&t<98){ F.classList.remove('hidden');
+    F.style.opacity=fadeIO(t,95.3,95.8,97.4,98);
+    F.style.left=(hx+30)+'px'; F.style.top=(hy-90)+'px';
+    F.innerHTML='同样的风险 多赚 <b>81.8 万元</b> · <b>+134.9 个百分点</b>';
+  } else F.classList.add('hidden');
+}
+/* ================= 终局 ================= */
+let contribBuilt=false;
+function buildContrib(){
+  if(contribBuilt) return; contribBuilt=true;
+  const tb=$('contrib');
+  MK.forEach((m,i)=>{
+    const f=D.finals[m.k];
+    const tr=document.createElement('tr'); tr.id='cr'+i;
+    tr.innerHTML=`<td>${m.flag} ${m.name}</td><td>¥${m.amt.toLocaleString()}</td><td>${fmtY(f.contrib)}</td><td style="color:${m.color}">${fmtPct(f.solo_ret)}</td>`;
+    tb.appendChild(tr);
+  });
+  const tr=document.createElement('tr'); tr.id='crT'; tr.className='total';
+  tr.innerHTML=`<td>最优组合</td><td>¥3,000</td><td>${fmtY(D.portfolio.value)}</td><td>${fmtPct(D.portfolio.ret)}</td>`;
+  tb.appendChild(tr);
+}
+function sceneDive(t){ // 97–100 俯冲
+  $('banner').classList.add('hidden'); $('p2Hud').classList.add('hidden'); $('floatTxt').classList.add('hidden');
+  const d=LAST, f=clamp((t-97)/2.5,0,1), z=1+f*1.3;
+  const yMax=Math.max(4.2,D.port_ret[d]*1.06), y=v=>P1Y1-(v/yMax)*(P1Y1-P1Y0);
+  const hx=P1X1, hy=y(D.port_ret[d]);
+  drawP2Chart(d,{cx:hx,cy:hy,z});
+  ctx.save(); ctx.font='800 52px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.fillStyle='rgba(255,255,255,0.92)'; ctx.shadowColor='#000'; ctx.shadowBlur=12;
+  ctx.fillText('同样的风险 多赚 81.8 万元 · +134.9 个百分点',hx-1150,hy-160);
+  ctx.restore();
+}
+function sceneFinale(t){
+  const F=$('finale'); F.classList.remove('hidden');
+  F.style.opacity=t>110?clamp(1-(t-110)/0.8,0,1):fadeIO(t,100,100.5,99,100);
+  buildContrib();
+  // 大数滚动 100.3–102.3
+  const f=clamp((t-100.3)/2.0,0,1);
+  $('bigNum').textContent=fmtY(lerp(606000,D.portfolio.value,easeOut(f)));
+  const rows=['cr0','cr1','cr2','cr3','cr4','cr5'];
+  rows.forEach((id,i)=>{ $(id).style.opacity=fadeIO(t,100.8+i*0.35,101.1+i*0.35,99,100); });
+  $('crT').style.opacity=fadeIO(t,103.5,103.8,99,100);
+  $('fs0v').textContent=fmtPct(D.portfolio.ret);
+  $('fs1v').textContent=fmtPct(D.portfolio.mdd);
+  $('fs2v').textContent=(D.portfolio.irr*100).toFixed(2)+'%';
+  $('fs3v').textContent=`${fmtPct(D.portfolio.eq_ret)} · ${fmtY(D.portfolio.eq_value)}`;
+  $('fs0').style.opacity=fadeIO(t,101.5,101.8,99,100);
+  $('fs1').style.opacity=fadeIO(t,102.0,102.3,99,100);
+  $('fs2').style.opacity=fadeIO(t,102.5,102.8,99,100);
+  $('fs3').style.opacity=fadeIO(t,102.5,102.8,99,100);
+  // 金句
+  const J=$('jinju');
+  if(t>=110){ J.classList.remove('hidden');
+    $('jj1').classList.remove('hidden'); $('jj1').style.opacity=fadeIO(t,110.0,110.5,99,100);
+    $('jj2').classList.remove('hidden'); $('jj2').style.opacity=fadeIO(t,111.0,111.5,99,100);
+    $('jjSrc').classList.remove('hidden'); $('jjSrc').style.opacity=fadeIO(t,112.5,113.0,99,100);
+  } else J.classList.add('hidden');
+  if(t>=117){ ctx.fillStyle=`rgba(0,0,0,${clamp((t-117)/0.5,0,1)})`; ctx.fillRect(0,0,W,H); }
+}
+/* ================= 主循环 ================= */
+const LAYERS=['titleText','rules','mix','partTitle','raceHud','cards','banner','p2Hud','floatTxt','finale','jinju'];
+function hideAll(){ for(const id of LAYERS) $(id).classList.add('hidden'); }
+let PT={t:0,playing:true,last:0,speed:1};
+function render(t,dt){
+  ctx.fillStyle='#04070f'; ctx.fillRect(0,0,W,H);
+  hideAll();
+  if(t<1.7) sceneTitle(t);
+  else if(t<2){ drawGlobe({cx:960,cy:540,r:520,lon0:120,tilt:12,alpha:1}); }
+  else if(t<8) sceneMarks(t);
+  else if(t<14) sceneRules(t);
+  else if(t<18.5) sceneMix(t);
+  else if(t<20.5) transA(t);
+  else if(t<68) sceneP1(t);
+  else if(t<74) transB(t,dt);
+  else if(t<97) sceneP2(t);
+  else if(t<100) sceneDive(t);
+  else sceneFinale(t);
+  $('prog').value=t;
+  $('tlabel').textContent=t.toFixed(1)+'s / '+DUR+'s';
+  if(D) syncData(t);
+}
+function loop(ts){
+  const dt=Math.min(0.1,(ts-PT.last)/1000||0); PT.last=ts;
+  if(PT.playing){ PT.t=Math.min(DUR,PT.t+dt*(PT.speed||1)); if(PT.t>=DUR){ PT.playing=false; $('btnPlay').textContent='⏵'; } }
+  try{ render(PT.t,dt); }catch(err){ console.error(err); }
+  requestAnimationFrame(loop);
+}
+/* ---------- 控制 ---------- */
+$('btnPlay').onclick=()=>{ PT.playing=!PT.playing; $('btnPlay').textContent=PT.playing?'⏸':'⏵'; };
+$('btnReplay').onclick=()=>{ PT.t=0; PT.playing=true; bpParts=null; $('btnPlay').textContent='⏸'; };
+$('prog').addEventListener('input',e=>{ PT.t=parseFloat(e.target.value); render(PT.t,0); });
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'){ e.preventDefault(); $('btnPlay').click(); }
+  if(e.code==='ArrowRight'){ PT.t=clamp(PT.t+5,0,DUR); }
+  if(e.code==='ArrowLeft'){ PT.t=clamp(PT.t-5,0,DUR); }
+});
+function fit(){
+  const s=Math.min(innerWidth/W,innerHeight/H);
+  $('stage').style.transform=`scale(${s})`;
+}
+addEventListener('resize',fit); fit();
+
+/* ================= 活数据交互层（数据轴 / 事件点评 / 曲线） ================= */
+let curDay = 0, scrubbing = false, curveOpen = false;
+const SERIES = [
+  {k:'port', name:'组合（最优配比）', color:GOLD, get:()=>D.port_ret, def:true},
+  {k:'eq', name:'等分', color:BLUE, get:()=>D.eq_ret, def:true},
+  ...MK.map(m=>({k:m.k, name:m.name, color:m.color, get:()=>D.solo_ret[m.k], def:m.k==='qqq'}))
+];
+function dataReadout(day){
+  $('dread').innerHTML = D.dates[day] + ' · 第' + epOf(day) + '期 · 组合 <b>' + fmtY(D.port_value[day]) + '</b>（' + fmtPct(D.port_ret[day]) + '）';
+}
+function syncData(t){
+  let day = null;
+  if(t >= 20.5 && t < 68) day = dayOfP1(t);
+  else if(t >= 74 && t < 97) day = dayOfP2(t);
+  if(day === null) return;
+  day = clamp(day, 0, LAST);
+  if(day !== curDay){ curDay = day; if(curveOpen) drawCurve(); }
+  if(!scrubbing){ $('dscrub').value = day; dataReadout(day); }
+}
+$('dscrub').addEventListener('pointerdown', ()=>{ scrubbing = true; });
+addEventListener('pointerup', ()=>{ scrubbing = false; });
+$('dscrub').addEventListener('input', e=>{
+  const day = clamp(parseInt(e.target.value, 10) || 0, 0, LAST);
+  curDay = day; dataReadout(day);
+  PT.playing = false; $('btnPlay').textContent = '⏵';
+  PT.t = tOfP1(day); render(PT.t, 0);
+  if(curveOpen) drawCurve();
+});
+$('speed').addEventListener('change', e=>{ PT.speed = parseFloat(e.target.value); });
+function buildChips(){
+  const box = $('evchips'); box.innerHTML = '';
+  EV.forEach((e, i)=>{
+    const b = document.createElement('button');
+    b.textContent = (e.dir === 'down' ? '▼ ' : '▲ ') + e.name;
+    b.onclick = ()=>seekEvent(i, b);
+    box.appendChild(b);
+  });
+}
+function seekEvent(i, btn){
+  const e = EV[i];
+  document.querySelectorAll('#evchips button').forEach(x=>x.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  PT.playing = false; $('btnPlay').textContent = '⏵';
+  PT.t = e.tS; render(PT.t, 0);
+  const heroV = parseFloat(e.heroChg);
+  let pairs = '';
+  for(const p of e.pairs){
+    const cur = D.solo_ret[p.m.k][e.en];
+    pairs += '<div style="margin-bottom:8px"><span style="color:#8fa3c2">' + p.m.flag + ' ' + p.m.name + '</span>' +
+      '<span style="float:right">' + fmtPct(p.hi) + ' <span style="color:#5b6b84">→</span> <b style="color:' + (cur < 0 ? '#4ade80' : '#ff6b6b') + '">' + fmtPct(cur) + '</b></span></div>';
+  }
+  const win = D.dates[e.s].replace(/-/g, '.') + ' → ' + D.dates[e.en].replace(/-/g, '.');
+  $('evpanel').innerHTML =
+    '<button class="x" onclick="document.getElementById(\'evpanel\').classList.add(\'hidden\')">✕</button>' +
+    '<div class="eb ' + (e.dir === 'up' ? 'up' : 'down') + '">' + (e.dir === 'up' ? '▲ 上涨行情' : '▼ 下跌事件') + '</div>' +
+    '<div class="ew">' + win + ' · ' + e.dur + '</div><h3>' + e.name + '</h3>' +
+    '<div class="sub">' + e.sub + '</div>' +
+    '<div class="idx"><div class="k">' + e.hero.name + '指数 · 窗内涨跌</div>' +
+    '<div class="v" style="color:' + (heroV < 0 ? '#4ade80' : '#ff6b6b') + '">' + fmtPct(heroV) + '</div></div>' +
+    '<div style="margin-top:14px"><div class="dc">定投收益率 · 高点 → 窗末</div><div class="dcv">' + pairs + '</div></div>' +
+    (e.verdict ? '<div class="verdict">' + e.verdict + '</div>' : '');
+  $('evpanel').classList.remove('hidden');
+}
+/* ---- 曲线对比 ---- */
+function buildLegend(){
+  const lg = $('curveLegend'); lg.innerHTML = '';
+  for(const s of SERIES){
+    const lab = document.createElement('label');
+    lab.innerHTML = '<input type="checkbox" ' + (s.def ? 'checked' : '') + ' data-k="' + s.k + '"> <span style="color:' + s.color + '">━</span> ' + s.name;
+    lab.querySelector('input').addEventListener('change', drawCurve);
+    lg.appendChild(lab);
+  }
+}
+function drawCurve(){
+  const cvv = $('curveCv'), r = cvv.getBoundingClientRect();
+  const dpr = Math.min(2, devicePixelRatio || 1);
+  cvv.width = Math.max(300, r.width * dpr); cvv.height = Math.max(200, r.height * dpr);
+  const g = cvv.getContext('2d'); g.scale(dpr, dpr);
+  const Wd = r.width, Hd = r.height, L = 84, R = 215, T = 26, B = 40;
+  const iw = Wd - L - R, ih = Hd - T - B;
+  const vis = SERIES.filter(s=>{
+    const inp = document.querySelector('#curveLegend input[data-k="' + s.k + '"]');
+    return inp && inp.checked;
+  });
+  if(!vis.length) return;
+  let mn = -0.35, mx = 0.5;
+  for(const s of vis){ const a = s.get(); for(let i = 0; i <= LAST; i += 7){ if(a[i] < mn) mn = a[i]; if(a[i] > mx) mx = a[i]; } }
+  mx = Math.min(6.5, mx * 1.05);
+  const X = d => L + d / LAST * iw, Y = v => T + (mx - v) / (mx - mn) * ih;
+  g.strokeStyle = 'rgba(125,143,169,.18)'; g.fillStyle = '#7d8fa9'; g.font = '15px system-ui'; g.lineWidth = 1;
+  const stepPct = mx > 3 ? 1 : 0.5;
+  for(let v = 0; v <= mx; v += stepPct){
+    g.beginPath(); g.moveTo(L, Y(v)); g.lineTo(L + iw, Y(v)); g.stroke();
+    g.fillText('+' + Math.round(v * 100) + '%', 18, Y(v) + 5);
+  }
+  g.beginPath(); g.moveTo(L, Y(0)); g.lineTo(L + iw, Y(0)); g.strokeStyle = 'rgba(232,238,247,.45)'; g.stroke();
+  g.fillStyle = '#7d8fa9';
+  for(let yr = 2010; yr <= parseInt(D.dates[LAST].slice(0, 4)); yr += 2){
+    const d = D.dates.findIndex(x => x >= yr + '-01-01');
+    if(d > 0){ g.fillText(String(yr), X(d) - 14, T + ih + 26); g.strokeStyle = 'rgba(125,143,169,.10)'; g.beginPath(); g.moveTo(X(d), T); g.lineTo(X(d), T + ih); g.stroke(); }
+  }
+  for(const s of vis){
+    const a = s.get(); g.strokeStyle = s.color; g.lineWidth = s.k === 'port' ? 3 : 1.6; g.beginPath();
+    const stp = Math.max(1, Math.floor(LAST / iw));
+    for(let i = 0; i <= LAST; i += stp){ const xx = X(i), yy = Y(a[i]); i === 0 ? g.moveTo(xx, yy) : g.lineTo(xx, yy); }
+    g.stroke();
+    g.fillStyle = s.color; g.font = 'bold 16px system-ui';
+    g.fillText(s.name + ' ' + fmtPct(a[LAST]), L + iw + 12, Y(a[LAST]) + 5);
+  }
+  const cd = clamp(curDay, 0, LAST);
+  g.strokeStyle = 'rgba(245,197,66,.55)'; g.lineWidth = 1; g.beginPath(); g.moveTo(X(cd), T); g.lineTo(X(cd), T + ih); g.stroke();
+  let read = D.dates[cd] + ' · ';
+  for(const s of vis){
+    const a = s.get(); g.fillStyle = s.color; g.beginPath(); g.arc(X(cd), Y(a[cd]), 4.5, 0, 7); g.fill();
+    read += s.name + ' ' + fmtPct(a[cd]) + ' ｜ ';
+  }
+  $('curveRead').textContent = read.replace(/ ｜ $/, '');
+  g.fillStyle = '#f5c542'; g.font = 'bold 16px system-ui'; g.fillText(D.dates[cd], X(cd) + 10, T + 18);
+}
+$('btnCurve').onclick = ()=>{ curveOpen = true; $('curveWrap').classList.remove('hidden'); drawCurve(); };
+$('btnCurveX').onclick = ()=>{ curveOpen = false; $('curveWrap').classList.add('hidden'); };
+addEventListener('resize', ()=>{ if(curveOpen) drawCurve(); });
+
+/* ---------- 启动 ---------- */
+fetch('/api/race/engine').then(r=>{ if(!r.ok) throw new Error('live '+r.status); return r.json(); })
+.catch(()=>fetch('data/engine.json').then(r=>{ if(!r.ok) throw new Error('engine.json 加载失败 '+r.status); return r.json(); }))
+.then(j=>{ D=j;
+  LAST = D.dates.length - 1;
+  PART1_KF = PART1_KF.map(([tt,dd])=>[tt, Math.round(dd * LAST / 4379)]);
+  $('dscrub').max = LAST;
+  try{
+    const diff = ((D.portfolio.value - D.portfolio.eq_value) / 10000).toFixed(1);
+    $('jj1').innerHTML = '同样的风险，最优分配比平均分配多赚 <b>' + diff + ' 万元</b>；';
+    $('jjSrc').innerHTML = $('jjSrc').innerHTML.replace(/截至 [\d-]+/, '截至 ' + D.dates[LAST]);
+  }catch(e){}
+  buildEvents(); buildCards(); buildP2Banners(); buildChips(); buildLegend();
+  dataReadout(0);
+  requestAnimationFrame(loop); })
+.catch(err=>{ const e=$('err'); e.classList.remove('hidden'); e.textContent='数据加载失败：'+err.message+'（请用 HTTP 服务打开本页，不要直接双击文件）'; });
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>行情 · Markets</title>
+<style>
+:root{--pk:#ff4fb4;--card:#111116;--ln:#24242c;--txt:#ececf1;--mut:#8a8a99;--g:#3dff8f;--r:#ff4d5e;--y:#ffd23f;--c:#3fd5ff}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:#e04aa6;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:6px 6px;color:var(--txt);font-family:ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace;padding:10px 12px}
+.hd{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.hd .lg{width:34px;height:34px;border-radius:8px;background:#111;display:grid;place-items:center}
+.hd h1{margin:0;font:900 26px/1 system-ui,sans-serif;color:#111}.hd .sub{font-size:11px;color:#2a0b1e;letter-spacing:1px}
+.paper{background:#111;color:var(--y);font-size:10px;font-weight:900;padding:3px 7px;border-radius:4px;letter-spacing:1px}
+#roomnav{display:flex;gap:4px;align-items:center;margin-left:10px}
+#roomnav a{color:#2a0b1e;text-decoration:none;font:800 12px ui-monospace,monospace;padding:4px 9px;border:2px solid #111;border-radius:5px;letter-spacing:1px}
+#roomnav a.on{background:#111;color:#ff4fb4}#roomnav a:hover{background:#111;color:#fff}
+#langBtn{background:#111;color:#ffd23f;border:2px solid #111;border-radius:5px;font:800 12px ui-monospace,monospace;padding:4px 9px;cursor:pointer}
+.hd .sp{flex:1}.hd .ttl{font:900 20px system-ui,sans-serif;color:#111}
+.pn{background:var(--card);border-radius:7px;padding:10px 12px;box-shadow:0 2px 0 rgba(0,0,0,.35)}
+.ph{display:flex;justify-content:space-between;font-size:11px;letter-spacing:1.5px;color:#d6d6e0;margin-bottom:6px}.ph b{color:var(--pk)}
+table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:4px 5px;text-align:left;white-space:nowrap}th{color:var(--mut);font-weight:500;border-bottom:1px solid var(--ln)}
+.pos{color:var(--g)}.neg{color:var(--r)}.mut{color:var(--mut)}
+.idx{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:8px}
+.idx .pn .v{font:900 20px ui-monospace,monospace}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}.col{display:grid;gap:8px;align-content:start}
+.news div{padding:5px 0;border-bottom:1px dashed var(--ln);font-size:12px}.news small{color:var(--mut)}
+.feed{font-size:10px;letter-spacing:0;color:var(--mut);font-weight:500}.feed.bad{color:var(--y)}.state{padding:8px 5px;color:var(--mut);font-size:12px;line-height:1.5}.retry{margin-left:8px;background:#111;color:var(--y);border:1px solid #4a2a3c;border-radius:4px;padding:4px 8px;font:700 11px ui-monospace,monospace;cursor:pointer}.idxstate{font-size:10px;color:var(--mut);margin:-3px 2px 6px}
+@media(max-width:768px){body{padding:8px}.hd{flex-wrap:wrap;gap:8px}.hd .sp{display:none}.hd .ttl{font-size:16px;margin-left:auto}#roomnav{order:10;flex:1 0 100%;width:100%;max-width:100%;margin:0;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}#roomnav a,#langBtn{flex:none}.two{grid-template-columns:minmax(0,1fr)}.idx{grid-template-columns:repeat(2,minmax(0,1fr))}.pn{min-width:0}.pn table{display:block;max-width:100%;overflow-x:auto}}
+@media(max-width:390px){body{padding:7px}.hd h1{font-size:22px}.hd .sub{font-size:9px;letter-spacing:.5px}.paper{font-size:9px}#roomnav{gap:3px}#roomnav a,#langBtn{font-size:11px;padding:4px 7px}.idx .pn .v{font-size:17px}.ph{flex-wrap:wrap;gap:4px;letter-spacing:.7px}.news div{font-size:11px}}
+</style></head><body>
+<div class="hd"><div class="lg"><svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" fill="#ff4fb4"/><rect x="6" y="8" width="3" height="4" fill="#111"/><rect x="13" y="8" width="3" height="4" fill="#111"/></svg></div>
+<div><h1>GROKBOT + JEV</h1><div class="sub" id="hsub"></div></div><span class="paper" id="hpaper"></span>
+<nav id="roomnav"><a href="index.html" id="rn_office"></a><a href="trade.html" id="rn_trade"></a><a href="markets.html" class="on" id="rn_markets"></a><a href="race.html" id="rn_race"></a><a href="spider.html" id="rn_spider"></a><a href="finance-observatory.html" id="rn_observatory"></a><a href="settings.html" id="rn_settings"></a><button id="langBtn"></button></nav>
+<div class="sp"></div><div class="ttl" id="httl"></div></div>
+<div class="idxstate" id="idxState" role="status" aria-live="polite">正在加载指数…</div><div class="idx" id="idx"></div>
+<div class="two">
+ <div class="col">
+  <div class="pn"><div class="ph"><span id="hwatch"></span><span class="feed" id="watchState">正在加载…</span></div><table><thead><tr><th data-i="c_sym"></th><th data-i="c_name"></th><th data-i="c_px"></th><th data-i="c_chg"></th><th data-i="c_hl"></th></tr></thead><tbody id="watch"><tr><td colspan="5" class="mut">正在加载…</td></tr></tbody></table></div>
+  <div class="pn"><div class="ph"><span id="hpicks"></span><span class="feed" id="picksState">正在加载…</span></div><div id="picks" class="mut" style="font-size:12px">正在加载…</div></div>
+ </div>
+ <div class="col">
+  <div class="pn"><div class="ph"><span id="hsec"></span><span class="feed" id="secState">正在加载…</span></div><table><thead><tr><th data-i="c_name"></th><th data-i="c_chg"></th></tr></thead><tbody id="sec"><tr><td colspan="2" class="mut">正在加载…</td></tr></tbody></table></div>
+  <div class="pn"><div class="ph"><span id="hnews"></span><span class="feed" id="newsState">正在加载…</span></div><div class="news" id="news"><span class="mut">正在加载…</span></div></div>
+ </div>
+</div>
+<script>
+const LANG=(()=>{try{const q=new URLSearchParams(location.search).get('lang');if(q==='en'||q==='zh')return q}catch(e){}try{return localStorage.getItem('office_lang')||'zh'}catch(e){return'zh'}})();
+const D={zh:{sub:'模拟股票桌面 · 行情与组合',paper:'📄 PAPER · 虚拟资金',office:'办公室',trade:'交易台',markets:'行情',race:'赛跑',spider:'蜘蛛',observatory:'财经观测台',settings:'设置',ttl:'行情室',watch:'自选股',picks:'今日精选',sec:'热门板块',news:'市场快讯',sec_src:'东方财富',c_sym:'代码',c_name:'名称',c_px:'现价',c_chg:'涨跌',c_hl:'高 / 低',na:'沙箱内板块源受限时为空（部署机正常）'},
+en:{sub:'PAPER STOCK DESK · MARKETS & PORTFOLIO',paper:'📄 PAPER · VIRTUAL MONEY',office:'Office',trade:'Trade Desk',markets:'Markets',race:'Race',spider:'Spider',observatory:'Observatory',settings:'Settings',ttl:'MARKETS',watch:'Watchlist',picks:'Daily picks',sec:'Hot sectors',news:'Market news',sec_src:'Eastmoney',c_sym:'Symbol',c_name:'Name',c_px:'Price',c_chg:'Change',c_hl:'High / Low',na:'empty when the sector source is blocked in sandbox'}};
+const T=D[LANG];document.documentElement.lang=LANG==='zh'?'zh-CN':'en';
+const $=i=>document.getElementById(i),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const f2=(v,d=2)=>v==null||isNaN(v)?'—':(+v).toLocaleString(LANG==='zh'?'zh-CN':'en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const TXT=LANG==='zh'?{loading:'加载中…',empty:'暂无数据',failed:'加载失败',retry:'重试',updated:'接口响应',source:'来源',sourceMissing:'来源未提供',timeMissing:'源时间未提供'}:{loading:'Loading…',empty:'No data',failed:'Load failed',retry:'Retry',updated:'API response',source:'Source',sourceMissing:'Source unavailable',timeMissing:'Source time unavailable'};
+const timeText=v=>{if(v==null||v==='')return TXT.timeMissing;const n=Number(v);const d=Number.isFinite(n)?new Date(n<1e12?n*1000:n):new Date(v);return isNaN(d.getTime())?TXT.timeMissing:d.toLocaleString(LANG==='zh'?'zh-CN':'en-US',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})};
+function setState(id,text,bad=false){const e=$(id);e.textContent=text;e.classList.toggle('bad',!!bad)}
+function stateHTML(message,withRetry=true){return `<div class="state">${esc(message)}${withRetry?`<button class="retry" type="button">${TXT.retry}</button>`:''}</div>`}
+function bindRetry(el){const b=el.querySelector('.retry');if(b)b.onclick=load}
+['watchState','picksState','secState','newsState'].forEach(id=>setState(id,TXT.loading));$('idxState').textContent=TXT.loading;$('watch').innerHTML=`<tr><td colspan="5" class="mut">${TXT.loading}</td></tr>`;$('sec').innerHTML=`<tr><td colspan="2" class="mut">${TXT.loading}</td></tr>`;$('picks').textContent=TXT.loading;$('news').textContent=TXT.loading;
+$('hsub').textContent=T.sub;$('hpaper').textContent=T.paper;$('httl').textContent=T.ttl;
+['office','trade','markets','race','spider','observatory','settings'].forEach(k=>$('rn_'+k).textContent=T[k]);
+$('langBtn').textContent=LANG==='zh'?'EN':'中文';$('langBtn').onclick=()=>{try{localStorage.setItem('office_lang',LANG==='zh'?'en':'zh')}catch(e){}location.href=location.pathname+'?lang='+(LANG==='zh'?'en':'zh')};
+document.querySelectorAll('[data-i]').forEach(e=>e.textContent=T[e.dataset.i]||e.dataset.i);
+$('hwatch').textContent=T.watch;$('hpicks').textContent=T.picks;$('hsec').textContent=T.sec;$('hnews').textContent=T.news;
+async function J(u){const r=await fetch(u);if(!r.ok)throw new Error(r.status);return r.json()}
+async function load(){['watchState','picksState','secState','newsState'].forEach(id=>setState(id,TXT.loading));
+ try{const st=await J('/api/fusion/status');const ix=(st.finance&&st.finance.indices)||[];
+ $('idx').innerHTML=ix.map(i=>`<div class="pn"><div class="ph"><span>${esc(i.name)}</span></div><div class="v ${i.pct>=0?'pos':'neg'}">${f2(i.price)} <small style="font-size:12px">${i.pct>=0?'+':''}${f2(i.pct)}%</small></div></div>`).join('')||`<div class="pn mut">${TXT.empty}</div>`;$('idxState').textContent=`${TXT.updated} ${timeText(st.ts)}`}catch(e){$('idx').innerHTML=stateHTML(TXT.failed);$('idxState').textContent=TXT.failed;bindRetry($('idx'))}
+ try{const w=await J('/api/finance/watchlist');const syms=(w.items||[]).map(x=>x.symbol).join(',');const q=await J('/api/finance/quotes?symbols='+encodeURIComponent(syms));const by={};(q.items||[]).forEach(x=>by[x.symbol]=x);const items=w.items||[];
+ $('watch').innerHTML=items.map(x=>{const v=by[x.symbol]||{};const source=v.provider||v.source||null;return`<tr><td>${esc(x.symbol)}</td><td>${esc(x.name)}</td><td>${f2(v.price)}</td><td class="${(v.change_pct||0)>=0?'pos':'neg'}">${v.change_pct==null?'—':(v.change_pct>=0?'+':'')+f2(v.change_pct)+'%'}</td><td class="mut">${f2(v.high)} / ${f2(v.low)}<br><small>${esc(source||TXT.sourceMissing)} · ${esc(timeText(v.ts))}</small></td></tr>`}).join('')||`<tr><td colspan="5" class="mut">${TXT.empty}</td></tr>`;setState('watchState',items.length?`${TXT.source} ${TXT.sourceMissing} · ${TXT.updated} ${timeText(q.ts)}`:TXT.empty,!items.length)}catch(e){if(!$('watch').querySelector('tr')||$('watch').textContent.includes(TXT.loading))$('watch').innerHTML=`<tr><td colspan="5">${stateHTML(TXT.failed)}</td></tr>`;bindRetry($('watch'));setState('watchState',TXT.failed,true)}
+ try{const s=await J('/api/finance/sectors?kind=concept&limit=10');const source=s.source||null;const items=s.items||s.sectors||[];$('sec').innerHTML=items.map(x=>`<tr><td>${esc(x.name)}</td><td class="${(x.pct||x.change_pct||0)>=0?'pos':'neg'}">${f2(x.pct??x.change_pct)}%</td></tr>`).join('')||`<tr><td class="mut" colspan="2">${TXT.empty}</td></tr>`;setState('secState',`${TXT.source} ${source||TXT.sourceMissing} · ${TXT.updated} ${timeText(s.ts)}`,!items.length)}catch(e){$('sec').innerHTML=`<tr><td colspan="2">${stateHTML(TXT.failed)}</td></tr>`;bindRetry($('sec'));setState('secState',TXT.failed,true)}
+ try{const o=await J('/api/finance/observatory');if(o.data_mode!=='DEMO'||o.demo!==true)throw new Error('Non-DEMO news response blocked');const items=Array.isArray(o.news)?o.news:[];$('news').innerHTML=items.map(x=>`<div>${esc(x.title||'')}<br><small>${esc(x.publisher||x.provider||'demo-fixture')} · DEMO · ${esc(timeText(x.event_ts))}</small></div>`).join('')||`<span class="mut">${TXT.empty}</span>`;setState('newsState',`DEMO · ${TXT.updated} ${timeText(o.generated_at)}`,!items.length)}catch(e){$('news').innerHTML=stateHTML(TXT.failed);bindRetry($('news'));setState('newsState',TXT.failed,true)}
+ try{const p=await J('/api/finance/picks');const items=p.items||p.picks||[];$('picks').innerHTML=items.length?items.map(x=>`<div style="padding:4px 0;border-bottom:1px dashed var(--ln)"><b style="color:var(--txt)">${esc(x.symbol||'')}</b> ${esc(x.name||'')} <span class="${(x.score||0)>=0?'pos':'mut'}">${x.score!=null?'★ '+f2(x.score,1):''}</span><br><span class="mut">${esc(x.reason||(x.reasons||[]).slice(0,2).join('；')||'')}</span></div>`).join(''):TXT.empty;setState('picksState',items.length?`${TXT.source} ${p.source||TXT.sourceMissing} · ${TXT.updated} ${timeText(p.ts)}`:TXT.empty,!items.length)}catch(e){if(!$('picks').querySelector('div')||$('picks').textContent.includes(TXT.loading)){$('picks').innerHTML=stateHTML(TXT.failed);bindRetry($('picks'))}setState('picksState',TXT.failed,true)}}
+load();setInterval(load,30000);
+</script></body></html>

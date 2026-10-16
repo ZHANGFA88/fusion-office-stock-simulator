@@ -1,0 +1,20 @@
+{
+  "cik": "0000000001",
+  "entityType": "operating",
+  "sic": "0000",
+  "sicDescription": "Fixture",
+  "name": "Fixture Issuer Inc.",
+  "tickers": ["MOCK"],
+  "exchanges": ["NYSE"],
+  "filings": {
+    "recent": {
+      "accessionNumber": ["0000000001-26-000001", "0000000001-26-000002"],
+      "filingDate": ["2026-10-15", "2026-10-16"],
+      "reportDate": ["2026-09-30", "2026-10-16"],
+      "acceptanceDateTime": ["2026-10-15T20:01:02.000Z", "2026-10-16T13:14:15.000Z"],
+      "form": ["10-Q", "8-K"],
+      "primaryDocDescription": ["Quarterly report", "Current report"],
+      "primaryDocument": ["fixture.htm", "current.htm"]
+    }
+  }
+}
