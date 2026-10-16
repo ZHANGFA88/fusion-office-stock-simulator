@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "domain": "finance",
   "data_mode": "DEMO",
-  "generated_at": "2026-10-16T08:00:00Z",
+  "generated_at": "2026-10-17T00:40:00Z",
   "demo_notice": "Synthetic fixture only; not live market data and not investment advice.",
   "items": [
     {
@@ -13,7 +13,9 @@
       "publisher": "Demo publisher",
       "market": "US",
       "symbol": "DEMO",
-      "symbols": ["DEMO"],
+      "symbols": [
+        "DEMO"
+      ],
       "event_ts": "2026-10-16T07:50:00Z",
       "received_at": "2026-10-16T07:51:00Z",
       "freshness": "unknown",
@@ -22,7 +24,126 @@
       "domain": "finance",
       "data_mode": "DEMO",
       "classification": "company_news",
-      "route_reason": "Synthetic fixture category; no model inference."
+      "route_reason": "Synthetic fixture category; no model inference.",
+      "title_zh": "模拟样例：示例公司季度经营更新",
+      "summary_zh": "虚构发行人样例：季度订单与资本开支口径变化，演示系统将公告、新闻与讨论归入“公司经营”主题。",
+      "why_hot": {
+        "zh": "该条仅因合成样例中的来源数、讨论样本数与主题关联分值排在前列；并非真实报道、情绪或交易热度。",
+        "en": "Ranks highly only on synthetic source, discussion-sample and topic-linkage scores; not real coverage, sentiment or trading activity."
+      },
+      "latest_progress": {
+        "zh": "演示快讯将更新归入“订单与资本开支”；未接入真实公告、媒体原文或行情验证。",
+        "en": "Demo briefs group the update under orders and capex; no real filings, media originals or quote checks are connected."
+      },
+      "attention_score": 91,
+      "source_count": 12,
+      "discussion_count": 38,
+      "publisher_count": 10,
+      "attention_delta_24h": 19,
+      "heat_trend": [
+        24,
+        31,
+        43,
+        56,
+        49,
+        72,
+        91
+      ],
+      "sources": [
+        {
+          "name": "Synthetic finance wire",
+          "name_zh": "合成财经快讯"
+        },
+        {
+          "name": "Demo issuer bulletin",
+          "name_zh": "示例公司公告"
+        }
+      ],
+      "discussions": [
+        {
+          "name": "Demo investor forum",
+          "name_zh": "演示投资者讨论区",
+          "excerpt": {
+            "zh": "模拟讨论片段；未连接真实社区。",
+            "en": "Synthetic discussion excerpt; no real forum is connected."
+          }
+        },
+        {
+          "name": "Demo market thread",
+          "name_zh": "演示市场话题",
+          "excerpt": {
+            "zh": "样例话题围绕主题标签展开，不代表真实情绪统计。",
+            "en": "Sample thread follows topic tags; not a real sentiment measure."
+          }
+        }
+      ],
+      "timeline": [
+        {
+          "time": "2026-10-16 07:50 UTC",
+          "title": {
+            "zh": "样例事件进入财经新闻流。",
+            "en": "Sample event enters the finance news stream."
+          }
+        },
+        {
+          "time": "2026-10-16 08:10 UTC",
+          "title": {
+            "zh": "演示系统完成主题归类并合并相关来源。",
+            "en": "Demo rules classify the topic and group related sources."
+          }
+        },
+        {
+          "time": "2026-10-16 09:00 UTC",
+          "title": {
+            "zh": "演示讨论样本更新；没有真实热度或行情数据。",
+            "en": "Demo discussion samples updated; no live attention or market data is used."
+          }
+        }
+      ],
+      "followups": [
+        {
+          "time": {
+            "zh": "待后续公告",
+            "en": "Await next announcement"
+          },
+          "title": {
+            "zh": "后续披露日期未在样例中设定；不预测事件或股价反应。",
+            "en": "No follow-up disclosure date is set in this sample; no event or price move is predicted."
+          }
+        }
+      ],
+      "hot_factors": [
+        {
+          "label": {
+            "zh": "主题关联",
+            "en": "Topic linkage"
+          },
+          "value": {
+            "zh": "公司经营 / 订单 / 资本开支",
+            "en": "Related finance themes"
+          }
+        },
+        {
+          "label": {
+            "zh": "来源覆盖",
+            "en": "Source coverage"
+          },
+          "value": {
+            "zh": "演示来源归并",
+            "en": "Demo sources grouped"
+          }
+        },
+        {
+          "label": {
+            "zh": "讨论增量",
+            "en": "Discussion activity"
+          },
+          "value": {
+            "zh": "合成讨论样本",
+            "en": "Synthetic discussion samples"
+          }
+        }
+      ]
     },
     {
       "kind": "filing",
@@ -32,7 +153,9 @@
       "publisher": "Demo regulator",
       "market": "US",
       "symbol": "DEMO",
-      "symbols": ["DEMO"],
+      "symbols": [
+        "DEMO"
+      ],
       "event_ts": "2026-10-16T07:30:00Z",
       "received_at": "2026-10-16T07:31:00Z",
       "freshness": "unknown",
@@ -53,7 +176,9 @@
       "publisher": null,
       "market": "US",
       "symbol": "DEMO",
-      "symbols": ["DEMO"],
+      "symbols": [
+        "DEMO"
+      ],
       "event_ts": "2026-10-16T07:59:00Z",
       "received_at": "2026-10-16T08:00:00Z",
       "freshness": "unknown",
@@ -83,7 +208,126 @@
       "domain": "finance",
       "data_mode": "DEMO",
       "classification": "policy_market_event",
-      "route_reason": "Synthetic fixture category; no causal claim."
+      "route_reason": "Synthetic fixture category; no causal claim.",
+      "title_zh": "模拟样例：资本市场制度优化征求意见",
+      "summary_zh": "虚构政策事件样例，展示制度变化、受影响市场与相关讨论的财经新闻追踪流程。",
+      "why_hot": {
+        "zh": "监管、券商和市场制度标签加上演示讨论样本，使它进入热点观察；数量只用于展示排序逻辑。",
+        "en": "Regulatory, brokerage and market-rules tags plus synthetic discussion samples put this item in Hot Watch; counts only demonstrate ranking logic."
+      },
+      "latest_progress": {
+        "zh": "演示摘要将事件归为“监管政策 / 市场制度”；没有真实政策原文、受影响证券清单或行情联动。",
+        "en": "The demo classifies this under regulatory policy and market rules; no real policy text, affected-security list or quote linkage is connected."
+      },
+      "attention_score": 88,
+      "source_count": 10,
+      "discussion_count": 61,
+      "publisher_count": 8,
+      "attention_delta_24h": 24,
+      "heat_trend": [
+        18,
+        29,
+        33,
+        46,
+        58,
+        71,
+        88
+      ],
+      "sources": [
+        {
+          "name": "Synthetic finance wire",
+          "name_zh": "合成财经快讯"
+        },
+        {
+          "name": "Demo issuer bulletin",
+          "name_zh": "示例公司公告"
+        }
+      ],
+      "discussions": [
+        {
+          "name": "Demo investor forum",
+          "name_zh": "演示投资者讨论区",
+          "excerpt": {
+            "zh": "模拟讨论片段；未连接真实社区。",
+            "en": "Synthetic discussion excerpt; no real forum is connected."
+          }
+        },
+        {
+          "name": "Demo market thread",
+          "name_zh": "演示市场话题",
+          "excerpt": {
+            "zh": "样例话题围绕主题标签展开，不代表真实情绪统计。",
+            "en": "Sample thread follows topic tags; not a real sentiment measure."
+          }
+        }
+      ],
+      "timeline": [
+        {
+          "time": "2026-10-16 07:50 UTC",
+          "title": {
+            "zh": "样例事件进入财经新闻流。",
+            "en": "Sample event enters the finance news stream."
+          }
+        },
+        {
+          "time": "2026-10-16 08:10 UTC",
+          "title": {
+            "zh": "演示系统完成主题归类并合并相关来源。",
+            "en": "Demo rules classify the topic and group related sources."
+          }
+        },
+        {
+          "time": "2026-10-16 09:00 UTC",
+          "title": {
+            "zh": "演示讨论样本更新；没有真实热度或行情数据。",
+            "en": "Demo discussion samples updated; no live attention or market data is used."
+          }
+        }
+      ],
+      "followups": [
+        {
+          "time": {
+            "zh": "待后续公告",
+            "en": "Await next announcement"
+          },
+          "title": {
+            "zh": "后续披露日期未在样例中设定；不预测事件或股价反应。",
+            "en": "No follow-up disclosure date is set in this sample; no event or price move is predicted."
+          }
+        }
+      ],
+      "hot_factors": [
+        {
+          "label": {
+            "zh": "主题关联",
+            "en": "Topic linkage"
+          },
+          "value": {
+            "zh": "监管 / 券商 / 市场制度",
+            "en": "Related finance themes"
+          }
+        },
+        {
+          "label": {
+            "zh": "来源覆盖",
+            "en": "Source coverage"
+          },
+          "value": {
+            "zh": "演示来源归并",
+            "en": "Demo sources grouped"
+          }
+        },
+        {
+          "label": {
+            "zh": "讨论增量",
+            "en": "Discussion activity"
+          },
+          "value": {
+            "zh": "合成讨论样本",
+            "en": "Synthetic discussion samples"
+          }
+        }
+      ]
     },
     {
       "kind": "insight",
@@ -103,6 +347,431 @@
       "data_mode": "DEMO",
       "classification": "topic_watch",
       "route_reason": "Synthetic fixture; not a verified trend."
+    },
+    {
+      "kind": "news",
+      "title": "Example semiconductor supplier raises capacity guidance (DEMO)",
+      "title_zh": "模拟样例：半导体供应链公司上调产能指引",
+      "summary": "A fictional supplier update is grouped with equipment orders and downstream demand as a finance-topic demo.",
+      "summary_zh": "虚构供应链公司上调产能指引，演示系统把它与设备订单和下游需求关联；不代表真实企业或行业数据。",
+      "provider": "demo-fixture",
+      "publisher": "Synthetic finance desk",
+      "market": "US",
+      "symbol": "DEMO",
+      "symbols": [
+        "DEMO"
+      ],
+      "event_ts": "2026-10-17T00:10:00Z",
+      "received_at": "2026-10-17T00:12:00Z",
+      "freshness": "unknown",
+      "source_url": null,
+      "provider_url": null,
+      "domain": "finance",
+      "data_mode": "DEMO",
+      "classification": "company_news",
+      "route_reason": "Synthetic finance demonstration; no causal or live-market inference.",
+      "why_hot": {
+        "zh": "演示图把设备、产能与下游需求归为一组；未接入真实公司公告、产能数据或订单验证。",
+        "en": "Demo links equipment, capacity and downstream demand; no real filing, capacity data or orders are connected."
+      },
+      "latest_progress": {
+        "zh": "演示主题为设备、产能与下游订单；没有真实公告或供需数据。",
+        "en": "Demo topics cover equipment, capacity and downstream orders; no real filing or supply-demand data is used."
+      },
+      "attention_score": 83,
+      "source_count": 8,
+      "discussion_count": 32,
+      "publisher_count": 6,
+      "attention_delta_24h": 16,
+      "heat_trend": [
+        22,
+        34,
+        45,
+        55,
+        62,
+        75,
+        83
+      ],
+      "sources": [
+        {
+          "name": "Synthetic finance brief",
+          "name_zh": "合成财经简报"
+        },
+        {
+          "name": "Demo sector monitor",
+          "name_zh": "演示行业观察台"
+        }
+      ],
+      "discussions": [
+        {
+          "name": "Demo investor thread",
+          "name_zh": "演示投资者话题",
+          "excerpt": {
+            "zh": "合成讨论片段，仅用于界面演示。",
+            "en": "Synthetic discussion excerpt for UI demo only."
+          }
+        },
+        {
+          "name": "Sample market notes",
+          "name_zh": "样例市场观察",
+          "excerpt": {
+            "zh": "未连接真实社区或评论源。",
+            "en": "No live forum or comment source is connected."
+          }
+        }
+      ],
+      "timeline": [
+        {
+          "time": "2026-10-17 00:10:00 UTC",
+          "title": {
+            "zh": "财经观测台收录该合成事件。",
+            "en": "The observatory records this synthetic event."
+          }
+        },
+        {
+          "time": "2026-10-17 00:12:00 UTC",
+          "title": {
+            "zh": "演示规则完成主题归类与来源去重。",
+            "en": "Demo rules finish topic classification and source deduplication."
+          }
+        },
+        {
+          "time": {
+            "zh": "样例时间 · 09:00 UTC",
+            "en": "Sample time · 09:00 UTC"
+          },
+          "title": {
+            "zh": "关联讨论样例更新；没有真实市场数据。",
+            "en": "Related discussion sample updated; no live market data is used."
+          }
+        }
+      ],
+      "followups": [
+        {
+          "time": {
+            "zh": "待后续公告",
+            "en": "Await next announcement"
+          },
+          "title": {
+            "zh": "后续披露日期未在样例中设定；不预测事件或股价反应。",
+            "en": "No follow-up disclosure date is set in this sample; no event or price move is predicted."
+          }
+        }
+      ],
+      "hot_factors": [
+        {
+          "label": {
+            "zh": "主题关联",
+            "en": "Topic linkage"
+          },
+          "value": {
+            "zh": "半导体设备 / 产能 / 下游需求",
+            "en": "Related finance themes"
+          }
+        },
+        {
+          "label": {
+            "zh": "来源覆盖",
+            "en": "Source coverage"
+          },
+          "value": {
+            "zh": "演示来源归并",
+            "en": "Demo sources grouped"
+          }
+        },
+        {
+          "label": {
+            "zh": "讨论增量",
+            "en": "Discussion activity"
+          },
+          "value": {
+            "zh": "合成讨论样本",
+            "en": "Synthetic discussion samples"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "news",
+      "title": "Sample liquidity and bond-yield watch (DEMO)",
+      "title_zh": "模拟样例：流动性与债券收益率观察",
+      "summary": "A synthetic market brief links liquidity, bond yields and risk appetite to show cross-asset topic tracing.",
+      "summary_zh": "合成市场简报把流动性、债券收益率与风险偏好串联展示，所有事件均为演示数据。",
+      "provider": "demo-fixture",
+      "publisher": "Synthetic finance desk",
+      "market": "CN",
+      "symbol": null,
+      "symbols": [],
+      "event_ts": "2026-10-17T00:20:00Z",
+      "received_at": "2026-10-17T00:21:00Z",
+      "freshness": "unknown",
+      "source_url": null,
+      "provider_url": null,
+      "domain": "finance",
+      "data_mode": "DEMO",
+      "classification": "policy_market_event",
+      "route_reason": "Synthetic finance demonstration; no causal or live-market inference.",
+      "why_hot": {
+        "zh": "该条被演示新闻流归入宏观与固定收益主题；未接入收益率曲线或资金面实时数据。",
+        "en": "The demo stream categorizes this under macro and fixed income; no live yield curve or liquidity data is connected."
+      },
+      "latest_progress": {
+        "zh": "演示主题为流动性、利率与债券；没有实时行情数据。",
+        "en": "Demo topics cover liquidity, rates and bonds; no live market data is used."
+      },
+      "attention_score": 78,
+      "source_count": 7,
+      "discussion_count": 26,
+      "publisher_count": 5,
+      "attention_delta_24h": 11,
+      "heat_trend": [
+        16,
+        25,
+        37,
+        42,
+        54,
+        68,
+        78
+      ],
+      "sources": [
+        {
+          "name": "Synthetic finance brief",
+          "name_zh": "合成财经简报"
+        },
+        {
+          "name": "Demo sector monitor",
+          "name_zh": "演示行业观察台"
+        }
+      ],
+      "discussions": [
+        {
+          "name": "Demo investor thread",
+          "name_zh": "演示投资者话题",
+          "excerpt": {
+            "zh": "合成讨论片段，仅用于界面演示。",
+            "en": "Synthetic discussion excerpt for UI demo only."
+          }
+        },
+        {
+          "name": "Sample market notes",
+          "name_zh": "样例市场观察",
+          "excerpt": {
+            "zh": "未连接真实社区或评论源。",
+            "en": "No live forum or comment source is connected."
+          }
+        }
+      ],
+      "timeline": [
+        {
+          "time": "2026-10-17 00:20:00 UTC",
+          "title": {
+            "zh": "财经观测台收录该合成事件。",
+            "en": "The observatory records this synthetic event."
+          }
+        },
+        {
+          "time": "2026-10-17 00:21:00 UTC",
+          "title": {
+            "zh": "演示规则完成主题归类与来源去重。",
+            "en": "Demo rules finish topic classification and source deduplication."
+          }
+        },
+        {
+          "time": {
+            "zh": "样例时间 · 09:00 UTC",
+            "en": "Sample time · 09:00 UTC"
+          },
+          "title": {
+            "zh": "关联讨论样例更新；没有真实市场数据。",
+            "en": "Related discussion sample updated; no live market data is used."
+          }
+        }
+      ],
+      "followups": [
+        {
+          "time": {
+            "zh": "待后续公告",
+            "en": "Await next announcement"
+          },
+          "title": {
+            "zh": "后续披露日期未在样例中设定；不预测事件或股价反应。",
+            "en": "No follow-up disclosure date is set in this sample; no event or price move is predicted."
+          }
+        }
+      ],
+      "hot_factors": [
+        {
+          "label": {
+            "zh": "主题关联",
+            "en": "Topic linkage"
+          },
+          "value": {
+            "zh": "流动性 / 利率 / 债券",
+            "en": "Related finance themes"
+          }
+        },
+        {
+          "label": {
+            "zh": "来源覆盖",
+            "en": "Source coverage"
+          },
+          "value": {
+            "zh": "演示来源归并",
+            "en": "Demo sources grouped"
+          }
+        },
+        {
+          "label": {
+            "zh": "讨论增量",
+            "en": "Discussion activity"
+          },
+          "value": {
+            "zh": "合成讨论样本",
+            "en": "Synthetic discussion samples"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "news",
+      "title": "Example energy-storage materials watch (DEMO)",
+      "title_zh": "模拟样例：储能材料产业链跟踪",
+      "summary": "Synthetic materials coverage is linked to storage-system costs and issuer filings for a UI demo.",
+      "summary_zh": "合成材料信息与储能系统成本及公司披露类别关联，仅用于演示产业链追踪。",
+      "provider": "demo-fixture",
+      "publisher": "Synthetic finance desk",
+      "market": "HK",
+      "symbol": null,
+      "symbols": [],
+      "event_ts": "2026-10-17T00:33:00Z",
+      "received_at": "2026-10-17T00:34:00Z",
+      "freshness": "unknown",
+      "source_url": null,
+      "provider_url": null,
+      "domain": "finance",
+      "data_mode": "DEMO",
+      "classification": "company_news",
+      "route_reason": "Synthetic finance demonstration; no causal or live-market inference.",
+      "why_hot": {
+        "zh": "样例主题新增材料成本与公司披露标签；没有真实原料报价或证券表现。",
+        "en": "The sample adds cost and issuer-disclosure tags; no real commodity quotes or security performance are used."
+      },
+      "latest_progress": {
+        "zh": "演示摘要追踪材料成本与公司披露；无真实报价。",
+        "en": "Demo summary tracks materials costs and issuer filings; no real quotes are used."
+      },
+      "attention_score": 74,
+      "source_count": 6,
+      "discussion_count": 21,
+      "publisher_count": 4,
+      "attention_delta_24h": 9,
+      "heat_trend": [
+        13,
+        24,
+        31,
+        44,
+        49,
+        63,
+        74
+      ],
+      "sources": [
+        {
+          "name": "Synthetic finance brief",
+          "name_zh": "合成财经简报"
+        },
+        {
+          "name": "Demo sector monitor",
+          "name_zh": "演示行业观察台"
+        }
+      ],
+      "discussions": [
+        {
+          "name": "Demo investor thread",
+          "name_zh": "演示投资者话题",
+          "excerpt": {
+            "zh": "合成讨论片段，仅用于界面演示。",
+            "en": "Synthetic discussion excerpt for UI demo only."
+          }
+        },
+        {
+          "name": "Sample market notes",
+          "name_zh": "样例市场观察",
+          "excerpt": {
+            "zh": "未连接真实社区或评论源。",
+            "en": "No live forum or comment source is connected."
+          }
+        }
+      ],
+      "timeline": [
+        {
+          "time": "2026-10-17 00:33:00 UTC",
+          "title": {
+            "zh": "财经观测台收录该合成事件。",
+            "en": "The observatory records this synthetic event."
+          }
+        },
+        {
+          "time": "2026-10-17 00:34:00 UTC",
+          "title": {
+            "zh": "演示规则完成主题归类与来源去重。",
+            "en": "Demo rules finish topic classification and source deduplication."
+          }
+        },
+        {
+          "time": {
+            "zh": "样例时间 · 09:00 UTC",
+            "en": "Sample time · 09:00 UTC"
+          },
+          "title": {
+            "zh": "关联讨论样例更新；没有真实市场数据。",
+            "en": "Related discussion sample updated; no live market data is used."
+          }
+        }
+      ],
+      "followups": [
+        {
+          "time": {
+            "zh": "待后续公告",
+            "en": "Await next announcement"
+          },
+          "title": {
+            "zh": "后续披露日期未在样例中设定；不预测事件或股价反应。",
+            "en": "No follow-up disclosure date is set in this sample; no event or price move is predicted."
+          }
+        }
+      ],
+      "hot_factors": [
+        {
+          "label": {
+            "zh": "主题关联",
+            "en": "Topic linkage"
+          },
+          "value": {
+            "zh": "储能材料 / 成本链 / 公司披露",
+            "en": "Related finance themes"
+          }
+        },
+        {
+          "label": {
+            "zh": "来源覆盖",
+            "en": "Source coverage"
+          },
+          "value": {
+            "zh": "演示来源归并",
+            "en": "Demo sources grouped"
+          }
+        },
+        {
+          "label": {
+            "zh": "讨论增量",
+            "en": "Discussion activity"
+          },
+          "value": {
+            "zh": "合成讨论样本",
+            "en": "Synthetic discussion samples"
+          }
+        }
+      ]
     }
   ],
   "quotes": [
@@ -114,7 +783,9 @@
       "publisher": null,
       "market": "US",
       "symbol": "DEMO",
-      "symbols": ["DEMO"],
+      "symbols": [
+        "DEMO"
+      ],
       "event_ts": "2026-10-16T07:59:00Z",
       "received_at": "2026-10-16T08:00:00Z",
       "freshness": "unknown",
@@ -137,7 +808,9 @@
       "publisher": "Demo regulator",
       "market": "US",
       "symbol": "DEMO",
-      "symbols": ["DEMO"],
+      "symbols": [
+        "DEMO"
+      ],
       "event_ts": "2026-10-16T07:30:00Z",
       "received_at": "2026-10-16T07:31:00Z",
       "freshness": "unknown",
@@ -160,7 +833,9 @@
       "publisher": "Demo publisher",
       "market": "US",
       "symbol": "DEMO",
-      "symbols": ["DEMO"],
+      "symbols": [
+        "DEMO"
+      ],
       "event_ts": "2026-10-16T07:50:00Z",
       "received_at": "2026-10-16T07:51:00Z",
       "freshness": "unknown",
@@ -169,7 +844,126 @@
       "domain": "finance",
       "data_mode": "DEMO",
       "classification": "company_news",
-      "route_reason": "Synthetic fixture category; no model inference."
+      "route_reason": "Synthetic fixture category; no model inference.",
+      "title_zh": "模拟样例：示例公司季度经营更新",
+      "summary_zh": "虚构发行人样例：季度订单与资本开支口径变化，演示系统将公告、新闻与讨论归入“公司经营”主题。",
+      "why_hot": {
+        "zh": "该条仅因合成样例中的来源数、讨论样本数与主题关联分值排在前列；并非真实报道、情绪或交易热度。",
+        "en": "Ranks highly only on synthetic source, discussion-sample and topic-linkage scores; not real coverage, sentiment or trading activity."
+      },
+      "latest_progress": {
+        "zh": "演示快讯将更新归入“订单与资本开支”；未接入真实公告、媒体原文或行情验证。",
+        "en": "Demo briefs group the update under orders and capex; no real filings, media originals or quote checks are connected."
+      },
+      "attention_score": 91,
+      "source_count": 12,
+      "discussion_count": 38,
+      "publisher_count": 10,
+      "attention_delta_24h": 19,
+      "heat_trend": [
+        24,
+        31,
+        43,
+        56,
+        49,
+        72,
+        91
+      ],
+      "sources": [
+        {
+          "name": "Synthetic finance wire",
+          "name_zh": "合成财经快讯"
+        },
+        {
+          "name": "Demo issuer bulletin",
+          "name_zh": "示例公司公告"
+        }
+      ],
+      "discussions": [
+        {
+          "name": "Demo investor forum",
+          "name_zh": "演示投资者讨论区",
+          "excerpt": {
+            "zh": "模拟讨论片段；未连接真实社区。",
+            "en": "Synthetic discussion excerpt; no real forum is connected."
+          }
+        },
+        {
+          "name": "Demo market thread",
+          "name_zh": "演示市场话题",
+          "excerpt": {
+            "zh": "样例话题围绕主题标签展开，不代表真实情绪统计。",
+            "en": "Sample thread follows topic tags; not a real sentiment measure."
+          }
+        }
+      ],
+      "timeline": [
+        {
+          "time": "2026-10-16 07:50 UTC",
+          "title": {
+            "zh": "样例事件进入财经新闻流。",
+            "en": "Sample event enters the finance news stream."
+          }
+        },
+        {
+          "time": "2026-10-16 08:10 UTC",
+          "title": {
+            "zh": "演示系统完成主题归类并合并相关来源。",
+            "en": "Demo rules classify the topic and group related sources."
+          }
+        },
+        {
+          "time": "2026-10-16 09:00 UTC",
+          "title": {
+            "zh": "演示讨论样本更新；没有真实热度或行情数据。",
+            "en": "Demo discussion samples updated; no live attention or market data is used."
+          }
+        }
+      ],
+      "followups": [
+        {
+          "time": {
+            "zh": "待后续公告",
+            "en": "Await next announcement"
+          },
+          "title": {
+            "zh": "后续披露日期未在样例中设定；不预测事件或股价反应。",
+            "en": "No follow-up disclosure date is set in this sample; no event or price move is predicted."
+          }
+        }
+      ],
+      "hot_factors": [
+        {
+          "label": {
+            "zh": "主题关联",
+            "en": "Topic linkage"
+          },
+          "value": {
+            "zh": "公司经营 / 订单 / 资本开支",
+            "en": "Related finance themes"
+          }
+        },
+        {
+          "label": {
+            "zh": "来源覆盖",
+            "en": "Source coverage"
+          },
+          "value": {
+            "zh": "演示来源归并",
+            "en": "Demo sources grouped"
+          }
+        },
+        {
+          "label": {
+            "zh": "讨论增量",
+            "en": "Discussion activity"
+          },
+          "value": {
+            "zh": "合成讨论样本",
+            "en": "Synthetic discussion samples"
+          }
+        }
+      ]
     },
     {
       "kind": "news",
@@ -188,7 +982,551 @@
       "domain": "finance",
       "data_mode": "DEMO",
       "classification": "policy_market_event",
-      "route_reason": "Synthetic fixture category; no causal claim."
+      "route_reason": "Synthetic fixture category; no causal claim.",
+      "title_zh": "模拟样例：资本市场制度优化征求意见",
+      "summary_zh": "虚构政策事件样例，展示制度变化、受影响市场与相关讨论的财经新闻追踪流程。",
+      "why_hot": {
+        "zh": "监管、券商和市场制度标签加上演示讨论样本，使它进入热点观察；数量只用于展示排序逻辑。",
+        "en": "Regulatory, brokerage and market-rules tags plus synthetic discussion samples put this item in Hot Watch; counts only demonstrate ranking logic."
+      },
+      "latest_progress": {
+        "zh": "演示摘要将事件归为“监管政策 / 市场制度”；没有真实政策原文、受影响证券清单或行情联动。",
+        "en": "The demo classifies this under regulatory policy and market rules; no real policy text, affected-security list or quote linkage is connected."
+      },
+      "attention_score": 88,
+      "source_count": 10,
+      "discussion_count": 61,
+      "publisher_count": 8,
+      "attention_delta_24h": 24,
+      "heat_trend": [
+        18,
+        29,
+        33,
+        46,
+        58,
+        71,
+        88
+      ],
+      "sources": [
+        {
+          "name": "Synthetic finance wire",
+          "name_zh": "合成财经快讯"
+        },
+        {
+          "name": "Demo issuer bulletin",
+          "name_zh": "示例公司公告"
+        }
+      ],
+      "discussions": [
+        {
+          "name": "Demo investor forum",
+          "name_zh": "演示投资者讨论区",
+          "excerpt": {
+            "zh": "模拟讨论片段；未连接真实社区。",
+            "en": "Synthetic discussion excerpt; no real forum is connected."
+          }
+        },
+        {
+          "name": "Demo market thread",
+          "name_zh": "演示市场话题",
+          "excerpt": {
+            "zh": "样例话题围绕主题标签展开，不代表真实情绪统计。",
+            "en": "Sample thread follows topic tags; not a real sentiment measure."
+          }
+        }
+      ],
+      "timeline": [
+        {
+          "time": "2026-10-16 07:50 UTC",
+          "title": {
+            "zh": "样例事件进入财经新闻流。",
+            "en": "Sample event enters the finance news stream."
+          }
+        },
+        {
+          "time": "2026-10-16 08:10 UTC",
+          "title": {
+            "zh": "演示系统完成主题归类并合并相关来源。",
+            "en": "Demo rules classify the topic and group related sources."
+          }
+        },
+        {
+          "time": "2026-10-16 09:00 UTC",
+          "title": {
+            "zh": "演示讨论样本更新；没有真实热度或行情数据。",
+            "en": "Demo discussion samples updated; no live attention or market data is used."
+          }
+        }
+      ],
+      "followups": [
+        {
+          "time": {
+            "zh": "待后续公告",
+            "en": "Await next announcement"
+          },
+          "title": {
+            "zh": "后续披露日期未在样例中设定；不预测事件或股价反应。",
+            "en": "No follow-up disclosure date is set in this sample; no event or price move is predicted."
+          }
+        }
+      ],
+      "hot_factors": [
+        {
+          "label": {
+            "zh": "主题关联",
+            "en": "Topic linkage"
+          },
+          "value": {
+            "zh": "监管 / 券商 / 市场制度",
+            "en": "Related finance themes"
+          }
+        },
+        {
+          "label": {
+            "zh": "来源覆盖",
+            "en": "Source coverage"
+          },
+          "value": {
+            "zh": "演示来源归并",
+            "en": "Demo sources grouped"
+          }
+        },
+        {
+          "label": {
+            "zh": "讨论增量",
+            "en": "Discussion activity"
+          },
+          "value": {
+            "zh": "合成讨论样本",
+            "en": "Synthetic discussion samples"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "news",
+      "title": "Example semiconductor supplier raises capacity guidance (DEMO)",
+      "title_zh": "模拟样例：半导体供应链公司上调产能指引",
+      "summary": "A fictional supplier update is grouped with equipment orders and downstream demand as a finance-topic demo.",
+      "summary_zh": "虚构供应链公司上调产能指引，演示系统把它与设备订单和下游需求关联；不代表真实企业或行业数据。",
+      "provider": "demo-fixture",
+      "publisher": "Synthetic finance desk",
+      "market": "US",
+      "symbol": "DEMO",
+      "symbols": [
+        "DEMO"
+      ],
+      "event_ts": "2026-10-17T00:10:00Z",
+      "received_at": "2026-10-17T00:12:00Z",
+      "freshness": "unknown",
+      "source_url": null,
+      "provider_url": null,
+      "domain": "finance",
+      "data_mode": "DEMO",
+      "classification": "company_news",
+      "route_reason": "Synthetic finance demonstration; no causal or live-market inference.",
+      "why_hot": {
+        "zh": "演示图把设备、产能与下游需求归为一组；未接入真实公司公告、产能数据或订单验证。",
+        "en": "Demo links equipment, capacity and downstream demand; no real filing, capacity data or orders are connected."
+      },
+      "latest_progress": {
+        "zh": "演示主题为设备、产能与下游订单；没有真实公告或供需数据。",
+        "en": "Demo topics cover equipment, capacity and downstream orders; no real filing or supply-demand data is used."
+      },
+      "attention_score": 83,
+      "source_count": 8,
+      "discussion_count": 32,
+      "publisher_count": 6,
+      "attention_delta_24h": 16,
+      "heat_trend": [
+        22,
+        34,
+        45,
+        55,
+        62,
+        75,
+        83
+      ],
+      "sources": [
+        {
+          "name": "Synthetic finance brief",
+          "name_zh": "合成财经简报"
+        },
+        {
+          "name": "Demo sector monitor",
+          "name_zh": "演示行业观察台"
+        }
+      ],
+      "discussions": [
+        {
+          "name": "Demo investor thread",
+          "name_zh": "演示投资者话题",
+          "excerpt": {
+            "zh": "合成讨论片段，仅用于界面演示。",
+            "en": "Synthetic discussion excerpt for UI demo only."
+          }
+        },
+        {
+          "name": "Sample market notes",
+          "name_zh": "样例市场观察",
+          "excerpt": {
+            "zh": "未连接真实社区或评论源。",
+            "en": "No live forum or comment source is connected."
+          }
+        }
+      ],
+      "timeline": [
+        {
+          "time": "2026-10-17 00:10:00 UTC",
+          "title": {
+            "zh": "财经观测台收录该合成事件。",
+            "en": "The observatory records this synthetic event."
+          }
+        },
+        {
+          "time": "2026-10-17 00:12:00 UTC",
+          "title": {
+            "zh": "演示规则完成主题归类与来源去重。",
+            "en": "Demo rules finish topic classification and source deduplication."
+          }
+        },
+        {
+          "time": {
+            "zh": "样例时间 · 09:00 UTC",
+            "en": "Sample time · 09:00 UTC"
+          },
+          "title": {
+            "zh": "关联讨论样例更新；没有真实市场数据。",
+            "en": "Related discussion sample updated; no live market data is used."
+          }
+        }
+      ],
+      "followups": [
+        {
+          "time": {
+            "zh": "待后续公告",
+            "en": "Await next announcement"
+          },
+          "title": {
+            "zh": "后续披露日期未在样例中设定；不预测事件或股价反应。",
+            "en": "No follow-up disclosure date is set in this sample; no event or price move is predicted."
+          }
+        }
+      ],
+      "hot_factors": [
+        {
+          "label": {
+            "zh": "主题关联",
+            "en": "Topic linkage"
+          },
+          "value": {
+            "zh": "半导体设备 / 产能 / 下游需求",
+            "en": "Related finance themes"
+          }
+        },
+        {
+          "label": {
+            "zh": "来源覆盖",
+            "en": "Source coverage"
+          },
+          "value": {
+            "zh": "演示来源归并",
+            "en": "Demo sources grouped"
+          }
+        },
+        {
+          "label": {
+            "zh": "讨论增量",
+            "en": "Discussion activity"
+          },
+          "value": {
+            "zh": "合成讨论样本",
+            "en": "Synthetic discussion samples"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "news",
+      "title": "Sample liquidity and bond-yield watch (DEMO)",
+      "title_zh": "模拟样例：流动性与债券收益率观察",
+      "summary": "A synthetic market brief links liquidity, bond yields and risk appetite to show cross-asset topic tracing.",
+      "summary_zh": "合成市场简报把流动性、债券收益率与风险偏好串联展示，所有事件均为演示数据。",
+      "provider": "demo-fixture",
+      "publisher": "Synthetic finance desk",
+      "market": "CN",
+      "symbol": null,
+      "symbols": [],
+      "event_ts": "2026-10-17T00:20:00Z",
+      "received_at": "2026-10-17T00:21:00Z",
+      "freshness": "unknown",
+      "source_url": null,
+      "provider_url": null,
+      "domain": "finance",
+      "data_mode": "DEMO",
+      "classification": "policy_market_event",
+      "route_reason": "Synthetic finance demonstration; no causal or live-market inference.",
+      "why_hot": {
+        "zh": "该条被演示新闻流归入宏观与固定收益主题；未接入收益率曲线或资金面实时数据。",
+        "en": "The demo stream categorizes this under macro and fixed income; no live yield curve or liquidity data is connected."
+      },
+      "latest_progress": {
+        "zh": "演示主题为流动性、利率与债券；没有实时行情数据。",
+        "en": "Demo topics cover liquidity, rates and bonds; no live market data is used."
+      },
+      "attention_score": 78,
+      "source_count": 7,
+      "discussion_count": 26,
+      "publisher_count": 5,
+      "attention_delta_24h": 11,
+      "heat_trend": [
+        16,
+        25,
+        37,
+        42,
+        54,
+        68,
+        78
+      ],
+      "sources": [
+        {
+          "name": "Synthetic finance brief",
+          "name_zh": "合成财经简报"
+        },
+        {
+          "name": "Demo sector monitor",
+          "name_zh": "演示行业观察台"
+        }
+      ],
+      "discussions": [
+        {
+          "name": "Demo investor thread",
+          "name_zh": "演示投资者话题",
+          "excerpt": {
+            "zh": "合成讨论片段，仅用于界面演示。",
+            "en": "Synthetic discussion excerpt for UI demo only."
+          }
+        },
+        {
+          "name": "Sample market notes",
+          "name_zh": "样例市场观察",
+          "excerpt": {
+            "zh": "未连接真实社区或评论源。",
+            "en": "No live forum or comment source is connected."
+          }
+        }
+      ],
+      "timeline": [
+        {
+          "time": "2026-10-17 00:20:00 UTC",
+          "title": {
+            "zh": "财经观测台收录该合成事件。",
+            "en": "The observatory records this synthetic event."
+          }
+        },
+        {
+          "time": "2026-10-17 00:21:00 UTC",
+          "title": {
+            "zh": "演示规则完成主题归类与来源去重。",
+            "en": "Demo rules finish topic classification and source deduplication."
+          }
+        },
+        {
+          "time": {
+            "zh": "样例时间 · 09:00 UTC",
+            "en": "Sample time · 09:00 UTC"
+          },
+          "title": {
+            "zh": "关联讨论样例更新；没有真实市场数据。",
+            "en": "Related discussion sample updated; no live market data is used."
+          }
+        }
+      ],
+      "followups": [
+        {
+          "time": {
+            "zh": "待后续公告",
+            "en": "Await next announcement"
+          },
+          "title": {
+            "zh": "后续披露日期未在样例中设定；不预测事件或股价反应。",
+            "en": "No follow-up disclosure date is set in this sample; no event or price move is predicted."
+          }
+        }
+      ],
+      "hot_factors": [
+        {
+          "label": {
+            "zh": "主题关联",
+            "en": "Topic linkage"
+          },
+          "value": {
+            "zh": "流动性 / 利率 / 债券",
+            "en": "Related finance themes"
+          }
+        },
+        {
+          "label": {
+            "zh": "来源覆盖",
+            "en": "Source coverage"
+          },
+          "value": {
+            "zh": "演示来源归并",
+            "en": "Demo sources grouped"
+          }
+        },
+        {
+          "label": {
+            "zh": "讨论增量",
+            "en": "Discussion activity"
+          },
+          "value": {
+            "zh": "合成讨论样本",
+            "en": "Synthetic discussion samples"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "news",
+      "title": "Example energy-storage materials watch (DEMO)",
+      "title_zh": "模拟样例：储能材料产业链跟踪",
+      "summary": "Synthetic materials coverage is linked to storage-system costs and issuer filings for a UI demo.",
+      "summary_zh": "合成材料信息与储能系统成本及公司披露类别关联，仅用于演示产业链追踪。",
+      "provider": "demo-fixture",
+      "publisher": "Synthetic finance desk",
+      "market": "HK",
+      "symbol": null,
+      "symbols": [],
+      "event_ts": "2026-10-17T00:33:00Z",
+      "received_at": "2026-10-17T00:34:00Z",
+      "freshness": "unknown",
+      "source_url": null,
+      "provider_url": null,
+      "domain": "finance",
+      "data_mode": "DEMO",
+      "classification": "company_news",
+      "route_reason": "Synthetic finance demonstration; no causal or live-market inference.",
+      "why_hot": {
+        "zh": "样例主题新增材料成本与公司披露标签；没有真实原料报价或证券表现。",
+        "en": "The sample adds cost and issuer-disclosure tags; no real commodity quotes or security performance are used."
+      },
+      "latest_progress": {
+        "zh": "演示摘要追踪材料成本与公司披露；无真实报价。",
+        "en": "Demo summary tracks materials costs and issuer filings; no real quotes are used."
+      },
+      "attention_score": 74,
+      "source_count": 6,
+      "discussion_count": 21,
+      "publisher_count": 4,
+      "attention_delta_24h": 9,
+      "heat_trend": [
+        13,
+        24,
+        31,
+        44,
+        49,
+        63,
+        74
+      ],
+      "sources": [
+        {
+          "name": "Synthetic finance brief",
+          "name_zh": "合成财经简报"
+        },
+        {
+          "name": "Demo sector monitor",
+          "name_zh": "演示行业观察台"
+        }
+      ],
+      "discussions": [
+        {
+          "name": "Demo investor thread",
+          "name_zh": "演示投资者话题",
+          "excerpt": {
+            "zh": "合成讨论片段，仅用于界面演示。",
+            "en": "Synthetic discussion excerpt for UI demo only."
+          }
+        },
+        {
+          "name": "Sample market notes",
+          "name_zh": "样例市场观察",
+          "excerpt": {
+            "zh": "未连接真实社区或评论源。",
+            "en": "No live forum or comment source is connected."
+          }
+        }
+      ],
+      "timeline": [
+        {
+          "time": "2026-10-17 00:33:00 UTC",
+          "title": {
+            "zh": "财经观测台收录该合成事件。",
+            "en": "The observatory records this synthetic event."
+          }
+        },
+        {
+          "time": "2026-10-17 00:34:00 UTC",
+          "title": {
+            "zh": "演示规则完成主题归类与来源去重。",
+            "en": "Demo rules finish topic classification and source deduplication."
+          }
+        },
+        {
+          "time": {
+            "zh": "样例时间 · 09:00 UTC",
+            "en": "Sample time · 09:00 UTC"
+          },
+          "title": {
+            "zh": "关联讨论样例更新；没有真实市场数据。",
+            "en": "Related discussion sample updated; no live market data is used."
+          }
+        }
+      ],
+      "followups": [
+        {
+          "time": {
+            "zh": "待后续公告",
+            "en": "Await next announcement"
+          },
+          "title": {
+            "zh": "后续披露日期未在样例中设定；不预测事件或股价反应。",
+            "en": "No follow-up disclosure date is set in this sample; no event or price move is predicted."
+          }
+        }
+      ],
+      "hot_factors": [
+        {
+          "label": {
+            "zh": "主题关联",
+            "en": "Topic linkage"
+          },
+          "value": {
+            "zh": "储能材料 / 成本链 / 公司披露",
+            "en": "Related finance themes"
+          }
+        },
+        {
+          "label": {
+            "zh": "来源覆盖",
+            "en": "Source coverage"
+          },
+          "value": {
+            "zh": "演示来源归并",
+            "en": "Demo sources grouped"
+          }
+        },
+        {
+          "label": {
+            "zh": "讨论增量",
+            "en": "Discussion activity"
+          },
+          "value": {
+            "zh": "合成讨论样本",
+            "en": "Synthetic discussion samples"
+          }
+        }
+      ]
     }
   ],
   "insights": [
@@ -213,10 +1551,30 @@
     }
   ],
   "sectors": [
-    ["Demo sector A", "+1.2%"],
-    ["Demo sector B", "+0.6%"],
-    ["Demo sector C", "−0.3%"],
-    ["Demo sector D", "+0.2%"]
+    [
+      "Demo semiconductors",
+      "+1.8%"
+    ],
+    [
+      "Demo liquidity",
+      "+0.9%"
+    ],
+    [
+      "Demo storage chain",
+      "+0.6%"
+    ],
+    [
+      "Demo rates",
+      "−0.3%"
+    ]
   ],
-  "trend": [28, 44, 38, 62, 51, 76, 68]
+  "trend": [
+    18,
+    27,
+    36,
+    47,
+    55,
+    69,
+    82
+  ]
 }
