@@ -62,4 +62,5 @@ async function loadObservatoryDemo(){try{const r=await fetch('/api/finance/obser
 function retry(){if(!stageReady){stage.src='/public/spider-stage/index.html?embed=finance-demo&retry='+Date.now();}loadObservatoryDemo()}
 if(LANG==='en'){$('stageEmptyTitle').textContent='Spider stage unavailable';$('stageEmptyText').textContent=T.stageUnavailable;$('stageRetry').textContent=T.retry}
 stage.addEventListener('load',stageLoaded);stage.addEventListener('error',stageLoaded);$('stageRetry').onclick=retry;stage.src='/public/spider-stage/index.html?embed=finance-demo&retry='+Date.now();loadObservatoryDemo();setInterval(loadObservatoryDemo,30000);
-</script></body></html>
+</script><script src="/app/back-to-top.js"></script>
+</body></html>

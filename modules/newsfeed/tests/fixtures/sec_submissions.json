@@ -14,7 +14,9 @@
       "acceptanceDateTime": ["2026-10-15T20:01:02.000Z", "2026-10-16T13:14:15.000Z"],
       "form": ["10-Q", "8-K"],
       "primaryDocDescription": ["Quarterly report", "Current report"],
-      "primaryDocument": ["fixture.htm", "current.htm"]
+      "primaryDocument": ["fixture.htm", "current.htm"],
+      "isXBRL": [1, 0],
+      "isInlineXBRL": [1, 0]
     }
   }
 }

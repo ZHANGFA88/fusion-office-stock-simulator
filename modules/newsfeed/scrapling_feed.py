@@ -13,6 +13,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 import hashlib
+import html
+from html.entities import html5 as HTML5_NAMED_ENTITIES
 import json
 import re
 import time
@@ -57,6 +59,8 @@ class FeedSource:
     max_body_bytes: int = 2_000_000
     max_stale_seconds: int = 900
     language: Optional[str] = None
+    include_summary: bool = False
+    allow_html_named_entities: bool = False
     # JSON mapping: items_path and fields {title,url,published_at,id,symbol,instrument_id}
     json_items_path: str = "items"
     json_fields: Optional[Mapping[str, str]] = None
@@ -89,6 +93,8 @@ class FeedSource:
             raise FeedPolicyError("market must be CN, HK, US or UNKNOWN")
         if self.min_poll_seconds < 0 or self.max_items < 1 or self.max_body_bytes < 1:
             raise FeedPolicyError("invalid polling or payload limits")
+        if self.allow_html_named_entities and self.feed_format not in {"rss", "atom"}:
+            raise FeedPolicyError("HTML named-entity compatibility applies only to XML feeds")
         if self.feed_format == "html" and not (self.html_selectors or {}).get("item"):
             raise FeedPolicyError("approved HTML list sources require an explicit item selector")
 
@@ -368,6 +374,8 @@ def parse_xml_feed(body: bytes, source: FeedSource) -> list[dict[str, Any]]:
         raise FeedParseError("empty feed body")
     if re.search(br"<!\s*(?:DOCTYPE|ENTITY)\b", body, flags=re.IGNORECASE):
         raise FeedParseError("DTD/entity declarations are not accepted")
+    if source.allow_html_named_entities:
+        body = _normalize_html_named_entities(body)
     try:
         root = ET.fromstring(body)
     except ET.ParseError as exc:
@@ -401,6 +409,24 @@ def parse_xml_feed(body: bytes, source: FeedSource) -> list[dict[str, Any]]:
         if len(items) >= source.max_items:
             break
     return items
+
+
+def _normalize_html_named_entities(body: bytes) -> bytes:
+    """Decode only known HTML5 named character references; never resolve DTDs."""
+    try:
+        text = body.decode("utf-8-sig")
+    except UnicodeDecodeError as exc:
+        raise FeedParseError("HTML-entity XML feed is not valid UTF-8") from exc
+
+    xml_predefined = {"amp", "lt", "gt", "quot", "apos"}
+
+    def replace(match: re.Match[str]) -> str:
+        name = match.group(1)
+        if name in xml_predefined:
+            return match.group(0)
+        return HTML5_NAMED_ENTITIES.get(name + ";", match.group(0))
+
+    return re.sub(r"&([A-Za-z][A-Za-z0-9]+);", replace, text).encode("utf-8")
 
 
 def parse_json_items(payload: Any, source: FeedSource) -> list[dict[str, Any]]:
@@ -486,6 +512,7 @@ def _to_contract_record(source: FeedSource, item: Mapping[str, Any], received_at
         "id": _stable_record_id(source.source_id, source_item_id, canonical_url, title),
         "provider": source.provider,
         "publisher": source.publisher,
+        "summary": item.get("summary") or None,
         "market": source.market,
         "instrument_id": item.get("instrument_id") or None,
         "symbol": item.get("symbol") or None,
@@ -520,12 +547,21 @@ def _to_contract_record(source: FeedSource, item: Mapping[str, Any], received_at
 
 
 def _optional_fields(entry: ET.Element, source: FeedSource) -> dict[str, Any]:
-    # Only recognized structured identifiers; never retain description/content body.
+    # Never retain description/content unless the feed is explicitly approved to
+    # expose its RSS summary; only the short description field is considered.
     fields = {}
     for name in ("symbol", "instrument_id"):
         value = _child_text(entry, name)
         if value:
             fields[name] = value
+    if source.include_summary:
+        raw = _child_text(entry, "description")
+        if raw:
+            raw = re.sub(r"(?is)<(script|style)\b[^>]*>.*?</\1\s*>", " ", raw)
+            summary = html.unescape(re.sub(r"(?is)<[^>]*>", " ", raw))
+            summary = " ".join(summary.split())
+            if summary:
+                fields["summary"] = summary[:700].rstrip()
     return fields
 
 

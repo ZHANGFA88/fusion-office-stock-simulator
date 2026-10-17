@@ -241,6 +241,7 @@ class AlpacaIEXPersonalProvider:
                 "instrument_id": f"US:{symbol}",
                 "symbol": symbol,
                 "currency": "USD",
+                "data_mode": "LIVE",
                 "event_ts": event_time,
                 "source_time": event_time,
                 "received_at": received_text,

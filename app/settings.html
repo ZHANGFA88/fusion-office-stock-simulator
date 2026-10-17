@@ -23,4 +23,5 @@ const T=D[LANG];document.documentElement.lang=LANG==='zh'?'zh-CN':'en';const $=i
 $('hsub').textContent=T.sub;$('hpaper').textContent=T.paper;$('pageTitle').textContent=T.page;$('heading').textContent=T.heading;$('lede').textContent=T.lede;$('state').textContent=T.state;$('providerTitle').textContent=T.providerTitle;$('timingTitle').textContent=T.timingTitle;$('securityNote').textContent=T.security;$('note').textContent=T.note;$('back').textContent=T.back;$('footer').textContent=T.footer;
 for(const [id,key] of [['nOffice','office'],['nTrade','trade'],['nMarkets','markets'],['nRace','race'],['nSpider','spider'],['nObservatory','observatory'],['nSettings','settings']])$(id).textContent=T[key];$('langBtn').textContent=LANG==='zh'?'EN':'中文';$('langBtn').onclick=()=>{try{localStorage.setItem('office_lang',LANG==='zh'?'en':'zh')}catch(e){}location.href=location.pathname+'?lang='+(LANG==='zh'?'en':'zh')};
 function rows(data){return data.map(([key,value,detail])=>`<div class="row"><span class="key">${esc(key)}</span><span class="value">${esc(value)} <span class="pill">${T.state}</span></span><span class="detail">${esc(detail)}</span></div>`).join('')}$('providers').innerHTML=rows(T.providerRows);$('timings').innerHTML=rows(T.timingRows);
-</script></body></html>
+</script><script src="/app/back-to-top.js"></script>
+</body></html>

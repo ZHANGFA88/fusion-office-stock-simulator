@@ -97,6 +97,7 @@ class AlpacaIEXProviderTests(unittest.TestCase):
         record = result.records["AAPL"]
         self.assertEqual(record["domain"], "finance")
         self.assertEqual(record["provider"], "Alpaca Market Data")
+        self.assertEqual(record["data_mode"], "LIVE")
         self.assertEqual(record["feed"], "iex")
         self.assertEqual(record["publisher"], "Investors Exchange (IEX)")
         self.assertEqual(record["event_ts"], "2026-10-16T14:30:00.456Z")

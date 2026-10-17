@@ -29,6 +29,7 @@ class QuoteNormalizerTests(unittest.TestCase):
         self.assertEqual(row["status"], "fresh")
         self.assertEqual(row["market"], "CN")
         self.assertEqual(row["currency"], "CNY")
+        self.assertEqual(row["data_mode"], "DEMO")
         self.assertEqual(row["feed"], "fixture-snapshot")
         self.assertEqual(row["source_id"], "quote-1001")
         self.assertEqual(validate_quote_record(row), [])
@@ -40,6 +41,12 @@ class QuoteNormalizerTests(unittest.TestCase):
         self.assertIsNone(row["event_ts"])
         self.assertEqual(row["quote"]["source_time"], "2026-10-16 15:00:00")
         self.assertEqual(row["status"], "unavailable")
+
+    def test_missing_data_mode_is_not_inferred_as_live(self):
+        row = normalize_quote({key: value for key, value in FIXTURE.items()
+                               if key != "data_mode"}, max_age_seconds=5)
+        self.assertIsNone(row["data_mode"])
+        self.assertIn("invalid:data_mode", validate_quote_record(row))
 
     def test_freshness_threshold_is_explicit_and_future_timestamp_is_unknown(self):
         self.assertEqual(classify_freshness("2026-10-16T07:00:00Z", "2026-10-16T07:00:03Z",

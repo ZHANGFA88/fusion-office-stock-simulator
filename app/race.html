@@ -41,4 +41,5 @@ $('langBtn').textContent=LANG==='zh'?'EN':'中文';$('langBtn').onclick=()=>{try
  fetch('/api/fusion/status').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(st=>{const r=st.race||{};const cell=(k,v,c)=>`<div class="pn"><div class="k">${k}</div><div class="v ${c||''}">${v}</div></div>`;
  $('strip').innerHTML=cell(T.final,'¥'+f2(r.final_value,0),'gold')+cell(T.ret,'+'+f2((r.port_ret||0)*100,2)+'%','gold')+cell(T.irr,f2((r.irr||0)*100,2)+'%','cy')+cell(T.mdd,f2((r.mdd||0)*100,1)+'%','')+cell(T.eq,'+'+f2((r.eq_ret||0)*100,2)+'%','')+cell(T.per,r.periods||'—','')}).catch(()=>{$('strip').innerHTML='<div class="pn mut" role="status">'+(LANG==='zh'?'总览暂不可用':'Summary unavailable')+'</div>'});
  fetch('/api/race/meta').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(m=>{$('raceMeta').innerHTML=(LANG==='zh'?'数据截至 ':'Data through ')+'<b>'+String(m.last_date||'—').replace(/[&<>"']/g,'')+'</b>'}).catch(()=>{$('raceMeta').textContent=LANG==='zh'?'数据日期暂不可用':'Data date unavailable'});
-</script></body></html>
+</script><script src="/app/back-to-top.js"></script>
+</body></html>

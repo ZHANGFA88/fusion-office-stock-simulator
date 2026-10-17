@@ -42,6 +42,7 @@ class SECSubmissionsConfig:
     max_stale_seconds: int = 900
     timeout_seconds: float = 8.0
     max_body_bytes: int = 8_000_000
+    max_records: int = 10
 
     @classmethod
     def from_environment(cls, cik: str, **overrides: Any) -> "SECSubmissionsConfig":
@@ -117,7 +118,7 @@ class SECSubmissionsProvider:
         self._last_attempt = tick
 
         headers = {
-            "User-Agent": f"FusionOffice-News/1.0 ({email})",
+            "User-Agent": f"Fusion Office/1.0 (contact {email})",
             "Accept": "application/json",
         }
         if self._etag:
@@ -184,7 +185,19 @@ class SECSubmissionsProvider:
         if not isinstance(accession_numbers, list):
             raise ValueError("SEC response has no accessionNumber array")
         rows: list[dict[str, Any]] = []
-        for index, accession in enumerate(accession_numbers):
+        indices = list(range(len(accession_numbers)))
+        indices.sort(
+            key=lambda index: (_at(recent, "filingDate", index)
+                               or _at(recent, "acceptanceDateTime", index)
+                               or ""),
+            reverse=True,
+        )
+        try:
+            max_records = max(1, min(50, int(self.config.max_records)))
+        except (TypeError, ValueError):
+            max_records = 10
+        for index in indices[:max_records]:
+            accession = accession_numbers[index]
             accession = str(accession or "").strip()
             if not accession:
                 continue
@@ -192,14 +205,11 @@ class SECSubmissionsProvider:
             filed = _at(recent, "filingDate", index)
             accepted = _at(recent, "acceptanceDateTime", index)
             description = _at(recent, "primaryDocDescription", index)
-            primary_document = _at(recent, "primaryDocument", index)
             published_raw = accepted or filed
             accession_path = accession.replace("-", "")
-            doc = str(primary_document or "").strip()
-            if doc and (".." in doc.split("/") or urlparse(doc).scheme):
-                doc = ""
             filing_path = f"https://www.sec.gov/Archives/edgar/data/{int(self.cik)}/{accession_path}/"
-            source_url = filing_path + doc if doc else filing_path
+            # Link only to the SEC filing index. No primary document or exhibit is fetched.
+            source_url = filing_path
             title_parts = [company_name, str(form or "Filing")]
             if description:
                 title_parts.append(str(description).strip())
@@ -223,6 +233,11 @@ class SECSubmissionsProvider:
                 "event_ts": published_at,
                 "published_at": published_at,
                 "published_at_raw": str(published_raw) if published_raw else None,
+                "filing_date": filed,
+                "acceptance_datetime": accepted,
+                "primary_doc_description": description,
+                "is_xbrl": _at_bool(recent, "isXBRL", index),
+                "is_inline_xbrl": _at_bool(recent, "isInlineXBRL", index),
                 "received_at": received_at,
                 "status": "fresh",
                 "source_url": source_url,
@@ -305,6 +320,24 @@ def _at(columns: Mapping[str, Any], name: str, index: int) -> Optional[str]:
         return None
     value = str(values[index]).strip()
     return value or None
+
+
+def _at_bool(columns: Mapping[str, Any], name: str, index: int) -> Optional[bool]:
+    values = columns.get(name)
+    if not isinstance(values, list) or index >= len(values):
+        return None
+    value = values[index]
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"1", "true", "yes"}:
+            return True
+        if normalized in {"0", "false", "no"}:
+            return False
+    return None
 
 
 def _parse_utc(value: Optional[str]) -> Optional[str]:

@@ -22,3 +22,14 @@ data/rea/
 
 # Local-only QA screenshot; not part of the source release
 artifacts/finance-observatory-detail.png
+
+# Private deployment files are never part of the public source release.
+private_ui/
+evidence/
+artifacts/
+data/
+*.sqlite
+*.sqlite3
+*.db
+admin-auth.json
+admin-settings.json

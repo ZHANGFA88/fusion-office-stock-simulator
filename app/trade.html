@@ -254,4 +254,5 @@ async function loadAI(){try{const d=await J('/api/ai/status');const cfg=d.config
  }catch(e){}}
 loadAI();setInterval(loadAI,10000);
 setInterval(()=>{loadWatch();refresh();loadSelQuote()},15000);setInterval(()=>{loadTape();loadNews();if(SEL)loadInd()},60000);
-</script></body></html>
+</script><script src="/app/back-to-top.js"></script>
+</body></html>

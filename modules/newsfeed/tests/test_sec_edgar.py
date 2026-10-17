@@ -115,16 +115,33 @@ class SECSubmissionsTests(unittest.TestCase):
         self.assertEqual(record["provider"], "SEC EDGAR Submissions API")
         self.assertEqual(record["publisher"], "Fixture Issuer Inc.")
         self.assertEqual(record["market"], "US")
-        self.assertEqual(record["event_ts"], "2026-10-15T20:01:02Z")
+        self.assertEqual(record["event_ts"], "2026-10-16T13:14:15Z")
+        self.assertEqual(record["news"]["form"], "8-K")
+        self.assertEqual(record["filing_date"], "2026-10-16")
+        self.assertEqual(record["acceptance_datetime"], "2026-10-16T13:14:15.000Z")
+        self.assertEqual(record["primary_doc_description"], "Current report")
+        self.assertFalse(record["is_xbrl"])
+        self.assertFalse(record["is_inline_xbrl"])
         self.assertEqual(record["received_at"], "2026-10-16T14:00:00Z")
         self.assertEqual(record["news"]["content_type"], "SEC Filing")
-        self.assertEqual(record["news"]["form"], "10-Q")
-        self.assertIn("https://www.sec.gov/Archives/edgar/data/1/000000000126000001/fixture.htm", record["source_url"])
+        self.assertEqual(record["source_url"], "https://www.sec.gov/Archives/edgar/data/1/000000000126000002/")
+        self.assertNotIn("primaryDocument", str(record))
+        self.assertNotIn("fixture.htm", record["source_url"])
         self.assertEqual(record["policy"]["authorized_scopes"], ["local_personal"])
         self.assertEqual(record["policy"]["policy_reference"], SEC_FAIR_ACCESS_URL)
         url, headers, _ = transport.calls[0]
         self.assertEqual(url, "https://data.sec.gov/submissions/CIK0000000001.json")
-        self.assertEqual(headers["User-Agent"], "FusionOffice-News/1.0 (operator@example.test)")
+        self.assertEqual(headers["User-Agent"], "Fusion Office/1.0 (contact operator@example.test)")
+
+    def test_latest_record_limit_is_applied_and_does_not_fetch_documents(self):
+        transport = FakeTransport(HTTPResponse(200, {}, json.dumps(self.payload).encode()))
+        provider = SECSubmissionsProvider(self.enabled_config(max_records=1), transport,
+                                          clock=self.clock, monotonic=lambda: 1000.0)
+        result = provider.read()
+        self.assertEqual(1, len(result.records))
+        self.assertEqual("8-K", result.records[0]["news"]["form"])
+        self.assertTrue(result.records[0]["source_url"].endswith("/000000000126000002/"))
+        self.assertEqual(1, len(transport.calls))
 
     def test_low_frequency_limit_and_conditional_request(self):
         transport = FakeTransport(

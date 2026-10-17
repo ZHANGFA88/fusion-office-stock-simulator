@@ -159,6 +159,7 @@ def normalize_quote(
         "event_ts": event_text,
         "received_at": received_text,
         "status": status,
+        "data_mode": (_string(source.get("data_mode")) or "").upper() or None,
         "source_url": _source_url(source.get("source_url")),
         "dedup_key": dedup_key,
         "source_id": _string(source.get("source_id")),
@@ -197,7 +198,7 @@ def _normalize_optional_ts(value: Any) -> Optional[str]:
 def validate_quote_record(record: Mapping[str, Any]) -> list[str]:
     """Return schema violations without throwing, for adapters and fixture tests."""
     problems: list[str] = []
-    required = ("schema_version", "record_type", "domain", "id", "provider", "market", "received_at", "status", "policy")
+    required = ("schema_version", "record_type", "domain", "id", "provider", "market", "received_at", "status", "data_mode", "policy")
     for field in required:
         if field not in record or record[field] in (None, ""):
             problems.append(f"missing:{field}")
@@ -207,6 +208,8 @@ def validate_quote_record(record: Mapping[str, Any]) -> list[str]:
         problems.append("invalid:domain")
     if record.get("status") not in VALID_STATUSES:
         problems.append("invalid:status")
+    if record.get("data_mode") not in {"LIVE", "DEMO"}:
+        problems.append("invalid:data_mode")
     quote = record.get("quote")
     if not isinstance(quote, Mapping):
         problems.append("missing:quote")
